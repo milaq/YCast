@@ -46,7 +46,7 @@ class YCastServer(BaseHTTPRequestHandler):
             xml = self.create_root()
             for category in sorted(stations, key=str.lower):
                 self.add_dir(xml, category,
-                             VTUNER_DNS + ':' + str(listen_port) + '/' + YCAST_LOCATION + '/' + text_to_url(category))
+                             VTUNER_DNS + '/' + YCAST_LOCATION + '/' + text_to_url(category))
             self.wfile.write(bytes(etree.tostring(xml).decode('utf-8'), 'utf-8'))
         elif self.path.startswith('/' + YCAST_LOCATION + '/'):
             category = url_to_text(self.path[len(YCAST_LOCATION) + 2:].partition('?')[0])
