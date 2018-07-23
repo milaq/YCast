@@ -53,7 +53,7 @@ You can also have a look at the provided [example](stations.yml.example) to bett
 
 While you can simply run YCast with root permissions listening on all interfaces on port 80, this may not be desired for various reasons.
 
-You can (and should) change the `listen_port` and `listen_address` variables in `ycast.py` if you are already running a HTTP server on the target machine
+You can (and should) change the listen address and port (via `-l` and `-p` respectively) if you are already running a HTTP server on the target machine
 and/or want to proxy or restrict YCast access.
 
 It is advised to use a proper webserver (e.g. Nginx) in front of YCast if you can.
