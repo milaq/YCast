@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import xml.etree.cElementTree as etree
@@ -18,8 +19,12 @@ stations = {}
 def get_stations():
     global stations
     ycast_dir = os.path.dirname(os.path.realpath(__file__))
-    with open(ycast_dir + '/stations.yml', 'r') as f:
-        stations = yaml.load(f)
+    try:
+        with open(ycast_dir + '/stations.yml', 'r') as f:
+            stations = yaml.load(f)
+    except FileNotFoundError:
+        print("ERROR: Station configuration not found. Please supply a proper stations.yml.")
+        sys.exit(1)
 
 
 def text_to_url(text):
@@ -88,8 +93,8 @@ arguments = parser.parse_args()
 try:
     server = HTTPServer((arguments.address, arguments.port), YCastServer)
 except PermissionError:
-    print("Error: No permission to create socket. Are you trying to use ports below 1024 without elevated rights?")
-    raise
+    print("ERROR: No permission to create socket. Are you trying to use ports below 1024 without elevated rights?")
+    sys.exit(1)
 print('YCast server listening on %s:%s' % (arguments.address, arguments.port))
 try:
     server.serve_forever()
