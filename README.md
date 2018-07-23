@@ -12,8 +12,8 @@ It _should_ also work for the following Yamaha AVR models:
 
 YCast is for you if:
  * You do not want to use a proprietary streaming service
- * You are sick of loading and/or downtimes of the vRadio server
- * You are unsure about the vTuner service's future
+ * You are sick of loading delays and/or downtimes of the vTuner service
+ * You are unsure about the continuation of the service from Yamaha/vTuner
 
 ## Dependencies:
 Python version: `3`
@@ -35,7 +35,7 @@ itself gets handled by the AVR directly, i.e. you can run it on a low-spec RISC 
 
 * Run `ycast.py` on the target machine.
 
-### Station configuration
+### stations.yml
 ```
 Category one name:
   First awesome station name: first.awesome/station/URL
@@ -46,27 +46,30 @@ Category two name:
   Fourth awesome station name: fourth.awesome/station/URL
 ```   
 
-You can also have a look at `stations.yml.example` for how it can be set up.
+You can also have a look at the provided [example](stations.yml.example) to better understand the configuration.
 
+
+## Web server configuration
+
+While you can simply run YCast with root permissions listening on all interfaces on port 80, this may not be desired for various reasons.
+
+You can (and should) change the `listen_port` and `listen_address` variables in `ycast.py` if you are already running a HTTP server on the target machine
+and/or want to proxy or restrict YCast access.
+
+It is advised to use a proper webserver (e.g. Nginx) in front of YCast if you can.
+Then, you also don't need to run YCast as root and can proxy the requests to YCast running on a higher port (>1024) listening only on `localhost`.
+
+You need to redirect the following URLs from your webserver to YCast (listening to requests to `radioyamaha.vtuner.com`):
+ * `/setupapp`
+ * `/ycast`
+
+__Attention__: Do not rewrite the request transparently. YCast expects the complete URL (i.e. including `/ycast/`).
 
 ## Firewall rules
 
  * The server running YCast does __not__ need internet access
  * The Yamaha AVR needs access to the internet (i.e. to the station URLs you defined)
  * The Yamaha AVR needs to reach port `80` of the machine running YCast
-
-## Web redirects
-
-You can (__and should__) change the `listen_port` and `listen_address` variables in `ycast.py` if you are already running a HTTP server on the target machine
-and/or want to proxy or encase YCast access.
-
-It is advised to use a proper webserver (e.g. Nginx) in front of YCast if you can.
-Then, you also don't need to run YCast as root and can proxy the requests to YCast running on a higher port (>1024) listening only on `localhost`.
-
-You _need_ to redirect the following URLs from your webserver to YCast (of course listening to requests to `radioyamaha.vtuner.com`):
- * `/setupapp`
- * `/ycast`
-
 
 ## Caveats
 
