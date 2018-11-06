@@ -1,3 +1,5 @@
+<img src="https://image.ibb.co/iBY6hq/yamaha.png" width="600">
+
 # YCast
 
 YCast is a self hosted replacement for the vTuner internet radio service which some Yamaha AVRs use.
@@ -46,7 +48,7 @@ Category two name:
   Fourth awesome station name: fourth.awesome/station/URL
 ```   
 
-You can also have a look at the provided [example](stations.yml.example) to better understand the configuration.
+You can also have a look at the provided [example](examples/stations.yml.example) to better understand the configuration.
 
 
 ## Web server configuration
@@ -65,6 +67,9 @@ You need to redirect the following URLs from your webserver to YCast (listening 
 
 __Attention__: Do not rewrite the request transparently. YCast expects the complete URL (i.e. including `/ycast/`).
 
+In case you are using (or plan on using) Nginx to proxy requests, have a look at [this example](examples/nginx-ycast.conf.example).
+This can be used together with [this systemd service example](examples/ycast.service.example) for a fully functional deployment.
+
 ## Firewall rules
 
  * The server running YCast does __not__ need internet access
@@ -76,6 +81,5 @@ __Attention__: Do not rewrite the request transparently. YCast expects the compl
 YCast was a quick and dirty project to lay the foundation for having a self hosted vTuner emulation.
 
 It is a barebone service at the moment. It provides your AVR with the basic info it needs to play internet radio stations. 
-Maybe this will change in the future.
-But for now just station names and URLs. No web-based management interface, no coverart, no fancy stuff.
-
+Maybe this will change in the future, maybe not.
+For now just station names and URLs; no web-based management interface, no coverart, no cute kittens, no fancy stuff.

@@ -1,0 +1,12 @@
+[Unit]
+Description=YCast internet radio service
+After=network.target
+
+[Service]
+Type=simple
+User=ycast
+Group=ycast
+ExecStart=/opt/ycast/ycast.py -l 127.0.0.1 -p 8010
+
+[Install]
+WantedBy=multi-user.target
