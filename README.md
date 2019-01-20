@@ -6,6 +6,10 @@ YCast is a self hosted replacement for the vTuner internet radio service which s
 
 It was developed for and tested with the __RX-Vx73__ series.
 
+Confirmed working:
+ * RX-V473
+ * R-N500
+
 It _should_ also work for the following Yamaha AVR models:
  * RX-Vx75
  * RX-Vx77
