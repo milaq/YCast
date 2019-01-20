@@ -38,7 +38,16 @@ def url_to_text(url):
 class YCastServer(BaseHTTPRequestHandler):
     def do_GET(self):
         get_stations()
-        if self.path == '/' \
+        if self.path.startswith(VTUNER_INITURL + "?token="):
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(bytes(XMLHEADER, 'utf-8'))
+            # return arbitrary token
+            self.wfile.write(
+                bytes("<EncryptedToken>aaaaaaaaaaaaaaaa</EncryptedToken>", 'utf-8')
+            )
+        elif self.path == '/' \
                 or self.path == '/' + YCAST_LOCATION \
                 or self.path == '/' + YCAST_LOCATION + '/'\
                 or self.path.startswith(VTUNER_INITURL):
