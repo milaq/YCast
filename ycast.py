@@ -8,7 +8,6 @@ import xml.etree.cElementTree as etree
 
 import yaml
 
-VTUNER_DNS = 'http://radioyamaha.vtuner.com'
 VTUNER_INITURL = '/setupapp/Yamaha/asp/BrowseXML/loginXML.asp'
 XMLHEADER = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'
 YCAST_LOCATION = 'ycast'
@@ -38,6 +37,7 @@ def url_to_text(url):
 class YCastServer(BaseHTTPRequestHandler):
     def do_GET(self):
         get_stations()
+        self.address = 'http://' + self.headers['Host']
         if self.path == '/' \
                 or self.path == '/' + YCAST_LOCATION \
                 or self.path == '/' + YCAST_LOCATION + '/'\
@@ -49,7 +49,7 @@ class YCastServer(BaseHTTPRequestHandler):
             xml = self.create_root()
             for category in sorted(stations, key=str.lower):
                 self.add_dir(xml, category,
-                             VTUNER_DNS + '/' + YCAST_LOCATION + '/' + text_to_url(category))
+                             self.address + '/' + YCAST_LOCATION + '/' + text_to_url(category))
             self.wfile.write(bytes(etree.tostring(xml).decode('utf-8'), 'utf-8'))
         elif self.path.startswith('/' + YCAST_LOCATION + '/'):
             category = url_to_text(self.path[len(YCAST_LOCATION) + 2:].partition('?')[0])
