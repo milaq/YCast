@@ -85,11 +85,11 @@ class YCastServer(BaseHTTPRequestHandler):
         return item
 
 
-get_stations()
 parser = argparse.ArgumentParser(description='vTuner API emulation')
 parser.add_argument('-l', action='store', dest='address', help='Listen address', default='0.0.0.0')
 parser.add_argument('-p', action='store', dest='port', type=int, help='Listen port', default=80)
 arguments = parser.parse_args()
+get_stations()
 try:
     server = HTTPServer((arguments.address, arguments.port), YCastServer)
 except PermissionError:
