@@ -2,24 +2,33 @@
 
 # YCast
 
-YCast is a self hosted replacement for the vTuner internet radio service which some Yamaha AVRs use.
-
-It was developed for and tested with the __RX-Vx73__ series.
-
-Confirmed working:
- * RX-V473
- * R-N500
-
-It _should_ also work for the following Yamaha AVR models:
- * RX-Vx75
- * RX-Vx77
- * RX-Vx79
- * RX-Vx81
+YCast is a self hosted replacement for the vTuner internet radio service which many AVRs use.
+It emulates a vTuner backend to provide your AVR with the necessary information to play self defined categorized internet radio stations.
 
 YCast is for you if:
  * You do not want to use a proprietary streaming service
  * You are sick of loading delays and/or downtimes of the vTuner service
- * You are unsure about the continuation of the service from Yamaha/vTuner
+ * You are unsure about the continuation of the vTuner service
+
+## Supported devices
+
+Theoretically, YCast should work for **most AVRs which support vTuner**.
+
+Go ahead and test it with yours, and kindly report the result back :)
+
+At the moment, only Yamaha AVRs are supported. Although, you can sniff the URL which your AVR requests, override its DNS entry  and change the `VTUNER_INITURL` to possibly make your non-Yamaha AVR work with YCast.
+
+### Confirmed working
+
+ * Yamaha RX-Vx73 series (RX-V373, RX-V473, RX-V573, RX-V673, RX-V773)
+ * Yamaha R-N500
+
+### Unconfirmed/Experimental
+
+ * Yamaha RX-Vx75 series (RX-V375, RX-V475, RX-V575, RX-V675, RX-V775)
+ * Yamaha RX-Vx77 series (RX-V377, RX-V477, RX-V577, RX-V677, RX-V777)
+ * Yamaha RX-Vx79 series (RX-V379, RX-V479, RX-V579, RX-V679, RX-V779)
+ * Yamaha RX-Vx81 series (RX-V381, RX-V481, RX-V581, RX-V681, RX-V781)
 
 ## Dependencies:
 Python version: `3`
@@ -32,14 +41,14 @@ Python packages:
 YCast really does not need much computing power nor bandwidth. It just serves the information to the AVR. The streaming
 itself gets handled by the AVR directly, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi.
 
-* Create your initial `stations.yml`. The config follows a basic YAML structure (see below)
-* Create a manual entry in your DNS server (read 'Router' for most home users) for:
+1) Create your initial `stations.yml` and put it in the same directory as `ycast.py`. The config follows a basic YAML structure (see below).
+2) Create a manual entry in your DNS server (read 'Router' for most home users) for:
 
   `radioyamaha.vtuner.com`
 
-  to point to the local machine running YCast.
+  to point to the machine running YCast.
 
-* Run `ycast.py` on the target machine.
+3) Run `ycast.py`.
 
 ### stations.yml
 ```
@@ -59,26 +68,26 @@ You can also have a look at the provided [example](examples/stations.yml.example
 
 While you can simply run YCast with root permissions listening on all interfaces on port 80, this may not be desired for various reasons.
 
-You can (and should) change the listen address and port (via `-l` and `-p` respectively) if you are already running a HTTP server on the target machine
+You can change the listen address and port (via `-l` and `-p` respectively) if you are already running a HTTP server on the target machine
 and/or want to proxy or restrict YCast access.
 
 It is advised to use a proper webserver (e.g. Nginx) in front of YCast if you can.
 Then, you also don't need to run YCast as root and can proxy the requests to YCast running on a higher port (>1024) listening only on `localhost`.
 
-You need to redirect the following URLs from your webserver to YCast (listening to requests to `radioyamaha.vtuner.com`):
+You can redirect all traffic destined for the original request URL (e.g. `radioyamaha.vtuner.com`) or need to redirect the following URLs from your webserver to YCast:
  * `/setupapp`
  * `/ycast`
 
-__Attention__: Do not rewrite the request transparently. YCast expects the complete URL (i.e. including `/ycast/`).
+__Attention__: Do not rewrite the request transparently. YCast expects the complete URL (i.e. including `/ycast` or `/setupapp`). It also need an intact `Host` header; so if you're proxying YCast you need to pass the original header on. For Nginx, this can be accomplished with `proxy_set_header Host $host;`.
 
 In case you are using (or plan on using) Nginx to proxy requests, have a look at [this example](examples/nginx-ycast.conf.example).
 This can be used together with [this systemd service example](examples/ycast.service.example) for a fully functional deployment.
 
 ## Firewall rules
 
- * The server running YCast does __not__ need internet access
- * The Yamaha AVR needs access to the internet (i.e. to the station URLs you defined)
- * The Yamaha AVR needs to reach port `80` of the machine running YCast
+ * The server running YCast does __not__ need internet access.
+ * The Yamaha AVR needs access to the internet (i.e. to the station URLs you defined).
+ * The Yamaha AVR needs to reach port `80` of the machine running YCast.
 
 ## Caveats
 
