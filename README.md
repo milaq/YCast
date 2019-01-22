@@ -29,6 +29,13 @@ At the moment, only Yamaha AVRs are supported. Although, you can sniff the URL w
  * Yamaha RX-Vx77 series (RX-V377, RX-V477, RX-V577, RX-V677, RX-V777)
  * Yamaha RX-Vx79 series (RX-V379, RX-V479, RX-V579, RX-V679, RX-V779)
  * Yamaha RX-Vx81 series (RX-V381, RX-V481, RX-V581, RX-V681, RX-V781)
+ * Yamaha RX-S600D
+ * Yamaha RX-S601D
+ * Yamaha WX-030
+ * Yamaha RX-A1060
+ * Yamaha RX-V2700
+ * Yamaha RX-V3800
+ * Yamaha CX-A5000
 
 ## Dependencies:
 Python version: `3`
