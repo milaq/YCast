@@ -16,12 +16,11 @@ Theoretically, YCast should work for **most AVRs which support vTuner**.
 
 Go ahead and test it with yours, and kindly report the result back :)
 
-At the moment, only Yamaha AVRs are supported. Although, you can sniff the URL which your AVR requests, override its DNS entry  and change the `VTUNER_INITURL` to possibly make your non-Yamaha AVR work with YCast.
-
 ### Confirmed working
 
  * Yamaha RX-Vx73 series (RX-V373, RX-V473, RX-V573, RX-V673, RX-V773)
  * Yamaha R-N500
+ * Onkyo TX-NR414
 
 ### Unconfirmed/Experimental
 
@@ -49,11 +48,10 @@ YCast really does not need much computing power nor bandwidth. It just serves th
 itself gets handled by the AVR directly, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi.
 
 1) Create your initial `stations.yml` and put it in the same directory as `ycast.py`. The config follows a basic YAML structure (see below).
-2) Create a manual entry in your DNS server (read 'Router' for most home users) for:
+2) Create a manual entry in your DNS server (read 'Router' for most home users) pointing to the IP/Hostname of the machine YCast is running on for each vendor you want to use:
 
-  `radioyamaha.vtuner.com`
-
-  to point to the machine running YCast.
+  * Yamaha AVRs: `radioyamaha.vtuner.com`
+  * Onkyo AVRs: `onkyo.vtuner.com`
 
 3) Run `ycast.py`.
 
@@ -81,7 +79,7 @@ and/or want to proxy or restrict YCast access.
 It is advised to use a proper webserver (e.g. Nginx) in front of YCast if you can.
 Then, you also don't need to run YCast as root and can proxy the requests to YCast running on a higher port (>1024) listening only on `localhost`.
 
-You can redirect all traffic destined for the original request URL (e.g. `radioyamaha.vtuner.com`) or need to redirect the following URLs from your webserver to YCast:
+You can redirect all traffic destined for the original request URL (e.g. `radioyamaha.vtuner.com`, `onkyo.vtuner.com`) or need to redirect the following URLs from your webserver to YCast:
  * `/setupapp`
  * `/ycast`
 
@@ -93,8 +91,8 @@ This can be used together with [this systemd service example](examples/ycast.ser
 ## Firewall rules
 
  * The server running YCast does __not__ need internet access.
- * The Yamaha AVR needs access to the internet (i.e. to the station URLs you defined).
- * The Yamaha AVR needs to reach port `80` of the machine running YCast.
+ * Your AVR needs access to the internet (i.e. to the station URLs you defined).
+ * Your AVR needs to reach port `80` of the machine running YCast.
 
 ## Caveats
 
