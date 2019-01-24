@@ -37,18 +37,16 @@ class YCastServer(BaseHTTPRequestHandler):
         get_stations()
         self.address = 'http://' + self.headers['Host']
         if 'loginXML.asp?token=0' in self.path:
-            self.send_xml_header()
-            self.wfile.write(bytes('<EncryptedToken>stub</EncryptedToken>', 'utf-8'))
+            self.send_xml('<EncryptedToken>0000000000000000</EncryptedToken>')
         elif self.path == '/' \
                 or self.path == '/' + YCAST_LOCATION \
                 or self.path == '/' + YCAST_LOCATION + '/'\
                 or self.path.startswith('/setupapp'):
-            self.send_xml_header()
             xml = self.create_root()
             for category in sorted(stations, key=str.lower):
                 self.add_dir(xml, category,
                              self.address + '/' + YCAST_LOCATION + '/' + text_to_url(category))
-            self.wfile.write(bytes(etree.tostring(xml).decode('utf-8'), 'utf-8'))
+            self.send_xml(etree.tostring(xml).decode('utf-8'))
         elif self.path.startswith('/' + YCAST_LOCATION + '/'):
             category = url_to_text(self.path[len(YCAST_LOCATION) + 2:].partition('?')[0])
             if category not in stations:
@@ -57,16 +55,18 @@ class YCastServer(BaseHTTPRequestHandler):
             xml = self.create_root()
             for station in sorted(stations[category], key=str.lower):
                 self.add_station(xml, station, stations[category][station])
-            self.send_xml_header()
-            self.wfile.write(bytes(etree.tostring(xml).decode('utf-8'), 'utf-8'))
+            self.send_xml(etree.tostring(xml).decode('utf-8'))
         else:
             self.send_error(404)
 
-    def send_xml_header(self):
+    def send_xml(self, content):
+        xml_data = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'
+        xml_data += content
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
+        self.send_header('Content-length', len(xml_data))
         self.end_headers()
-        self.wfile.write(bytes('<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>', 'utf-8'))
+        self.wfile.write(bytes(xml_data, 'utf-8'))
 
     def create_root(self):
         return etree.Element('ListOfItems')
