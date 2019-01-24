@@ -8,7 +8,6 @@ import xml.etree.cElementTree as etree
 
 import yaml
 
-VTUNER_INITURL = '/setupapp/Yamaha/asp/BrowseXML/loginXML.asp'
 YCAST_LOCATION = 'ycast'
 
 stations = {}
@@ -37,13 +36,13 @@ class YCastServer(BaseHTTPRequestHandler):
     def do_GET(self):
         get_stations()
         self.address = 'http://' + self.headers['Host']
-        if self.path.startswith(VTUNER_INITURL + '?token='):
+        if 'loginXML.asp?token=0' in self.path:
             self.send_xml_header()
             self.wfile.write(bytes('<EncryptedToken>stub</EncryptedToken>', 'utf-8'))
         elif self.path == '/' \
                 or self.path == '/' + YCAST_LOCATION \
                 or self.path == '/' + YCAST_LOCATION + '/'\
-                or self.path.startswith(VTUNER_INITURL):
+                or self.path.startswith('/setupapp'):
             self.send_xml_header()
             xml = self.create_root()
             for category in sorted(stations, key=str.lower):
