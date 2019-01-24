@@ -1,6 +1,6 @@
 server {
         listen 80;
-        server_name radioyamaha.vtuner.com;
+        server_name *.vtuner.com;
 
         access_log /var/log/nginx/ycast_access.log;
         error_log /var/log/nginx/ycast_error.log;
