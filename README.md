@@ -21,6 +21,7 @@ Go ahead and test it with yours, and kindly report the result back :)
  * Yamaha RX-Vx73 series (RX-V373, RX-V473, RX-V573, RX-V673, RX-V773)
  * Yamaha R-N500
  * Onkyo TX-NR414
+ * Marantz Melody Media M-CR610
 
 ### Unconfirmed/Experimental
 
@@ -52,6 +53,7 @@ itself gets handled by the AVR directly, i.e. you can run it on a low-spec RISC 
 
   * Yamaha AVRs: `radioyamaha.vtuner.com` (and optionally `radioyamaha2.vtuner.com`)
   * Onkyo AVRs: `onkyo.vtuner.com` (and optionally `onkyo2.vtuner.com`)
+  * Denon/Marantz AVRs: `denon.vtuner.com` (and optionally `denon2.vtuner.com`)
 
 3) Run `ycast.py`.
 
