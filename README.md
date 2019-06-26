@@ -49,7 +49,7 @@ YCast really does not need much computing power nor bandwidth. It just serves th
 itself gets handled by the AVR directly, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi.
 
 1) Create your initial `stations.yml` and put it in the same directory as `ycast.py`. The config follows a basic YAML structure (see below).
-2) Create a manual entry in your DNS server (read 'Router' for most home users) pointing to the IP/Hostname of the machine YCast is running on for each vendor you want to use:
+2) Create a manual entry in your DNS server (read 'Router' for most home users). `vtuner.com` should point to the machine YCast is running on. Alternatively, in case you only want to forward specific vendors, the following entries may be configured:
 
   * Yamaha AVRs: `radioyamaha.vtuner.com` (and optionally `radioyamaha2.vtuner.com`)
   * Onkyo AVRs: `onkyo.vtuner.com` (and optionally `onkyo2.vtuner.com`)
