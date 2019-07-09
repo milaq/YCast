@@ -3,7 +3,7 @@
 # YCast
 
 YCast is a self hosted replacement for the vTuner internet radio service which many AVRs use.
-It emulates a vTuner backend to provide your AVR with the necessary information to play self defined categorized internet radio stations.
+It emulates a vTuner backend to provide your AVR with the necessary information to play self defined categorized internet radio stations and listen to Radio stations listed in the [Community Radio Browser index](http://www.radio-browser.info).
 
 YCast is for you if:
  * You do not want to use a proprietary streaming service
@@ -41,6 +41,7 @@ Go ahead and test it with yours, and kindly report the result back :)
 Python version: `3`
 
 Python packages:
+ * `flask`
  * `PyYAML`
  
 ## Usage
@@ -48,14 +49,13 @@ Python packages:
 YCast really does not need much computing power nor bandwidth. It just serves the information to the AVR. The streaming
 itself gets handled by the AVR directly, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi.
 
-1) Create your initial `stations.yml` and put it in the same directory as `ycast.py`. The config follows a basic YAML structure (see below).
-2) Create a manual entry in your DNS server (read 'Router' for most home users). `vtuner.com` should point to the machine YCast is running on. Alternatively, in case you only want to forward specific vendors, the following entries may be configured:
+You need to create a manual entry in your DNS server (read 'Router' for most home users). `vtuner.com` should point to the machine YCast is running on. Alternatively, in case you only want to forward specific vendors, the following entries may be configured:
 
   * Yamaha AVRs: `radioyamaha.vtuner.com` (and optionally `radioyamaha2.vtuner.com`)
   * Onkyo AVRs: `onkyo.vtuner.com` (and optionally `onkyo2.vtuner.com`)
   * Denon/Marantz AVRs: `denon.vtuner.com` (and optionally `denon2.vtuner.com`)
 
-3) Run `ycast.py`.
+If you want to use the 'My Stations' feature besides the global radio index, create a `stations.yml` and run YCast with the `-c` switch to specify the path to it. The config follows a basic YAML structure (see below).
 
 ### stations.yml
 ```
@@ -67,6 +67,14 @@ Category two name:
   Third awesome station name: third.awesome/station/URL
   Fourth awesome station name: fourth.awesome/station/URL
 ```   
+
+### Running
+
+You can run YCast by using the built-in development server of Flask (not recommended for production use, but should(tm) be enough for your private home use): Just run the package: `python -m ycast`
+
+Alternatively you can also setup a proper WSGI server.
+
+ -- TODO: WSGI stuff
 
 You can also have a look at the provided [example](examples/stations.yml.example) to better understand the configuration.
 
