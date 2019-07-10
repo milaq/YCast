@@ -44,7 +44,8 @@ def get_station_by_id(uid):
 
 def search(name):
     stations = []
-    stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' + MINIMUM_BITRATE + '&name=' + str(name))
+    stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' +
+                            str(MINIMUM_BITRATE) + '&name=' + str(name))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations
@@ -54,7 +55,8 @@ def get_countries():
     countries = []
     countries_raw = request('countries')
     for country_raw in countries_raw:
-        if get_json_attr(country_raw, 'name') and get_json_attr(country_raw, 'stationcount') and int(get_json_attr(country_raw, 'stationcount')) > MINIMUM_COUNT_COUNTRY:
+        if get_json_attr(country_raw, 'name') and get_json_attr(country_raw, 'stationcount') and \
+                int(get_json_attr(country_raw, 'stationcount')) > MINIMUM_COUNT_COUNTRY:
             countries.append(get_json_attr(country_raw, 'name'))
     return countries
 
@@ -63,14 +65,17 @@ def get_genres():
     genres = []
     genres_raw = request('tags?hidebroken=true')
     for genre_raw in genres_raw:
-        if get_json_attr(genre_raw, 'name') and get_json_attr(genre_raw, 'stationcount') and int(get_json_attr(genre_raw, 'stationcount')) > MINIMUM_COUNT_GENRE:
+        if get_json_attr(genre_raw, 'name') and get_json_attr(genre_raw, 'stationcount') and \
+                int(get_json_attr(genre_raw, 'stationcount')) > MINIMUM_COUNT_GENRE:
             genres.append(get_json_attr(genre_raw, 'name'))
     return genres
 
 
 def get_stations_by_country(country, limit=STATION_LIMIT_DEFAULT):
     stations = []
-    stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' + MINIMUM_BITRATE + '&limit=' + str(limit) + '&countryExact=true&country=' + str(country))
+    stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' +
+                            str(MINIMUM_BITRATE) + '&limit=' + str(limit) +
+                            '&countryExact=true&country=' + str(country))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations
@@ -78,7 +83,8 @@ def get_stations_by_country(country, limit=STATION_LIMIT_DEFAULT):
 
 def get_stations_by_genre(genre, limit=STATION_LIMIT_DEFAULT):
     stations = []
-    stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' + MINIMUM_BITRATE + '&limit=' + str(limit) + '&tagExact=true&tag=' + str(genre))
+    stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' +
+                            str(MINIMUM_BITRATE) + '&limit=' + str(limit) + '&tagExact=true&tag=' + str(genre))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations

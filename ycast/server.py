@@ -66,7 +66,8 @@ def custom_stations_landing():
         page.add(vtuner.Display("No stations found"))
     else:
         for category in sorted(my_stations, key=str.lower):
-            directory = vtuner.Directory(category, url_for('custom_stations_category', _external=True, category=category))
+            directory = vtuner.Directory(category, url_for('custom_stations_category',
+                                                           _external=True, category=category))
             page.add(directory)
     return page.to_string()
 
@@ -79,7 +80,8 @@ def custom_stations_category(category):
         page.add(vtuner.Display("Category '" + category + "' not found"))
     else:
         for station in sorted(my_stations[category], key=str.lower):
-            station = vtuner.Station(None, station, None, my_stations[category][station], None, None, None, None, None, None)
+            station = vtuner.Station(None, station, None, my_stations[category][station],
+                                     None, None, None, None, None, None)
             page.add(station)
     return page.to_string()
 
@@ -114,7 +116,8 @@ def radiobrowser_country_stations(country):
         page.add(vtuner.Display("No stations found for country '" + country + "'"))
     else:
         for station in stations:
-            page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon, station.tags[0], station.country, station.codec, station.bitrate, None))
+            page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
+                                    station.tags[0], station.country, station.codec, station.bitrate, None))
     return page.to_string()
 
 
@@ -137,7 +140,8 @@ def radiobrowser_genre_stations(genre):
         page.add(vtuner.Display("No stations found for genre '" + genre + "'"))
     else:
         for station in stations:
-            page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon, station.tags[0], station.country, station.codec, station.bitrate, None))
+            page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
+                                    station.tags[0], station.country, station.codec, station.bitrate, None))
     return page.to_string()
 
 
@@ -147,7 +151,8 @@ def radiobrowser_popular():
     page = vtuner.Page()
     page.add(vtuner.Previous(url_for('radiobrowser_landing', _external=True)))
     for station in stations:
-        page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon, station.tags[0], station.country, station.codec, station.bitrate, None))
+        page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
+                                station.tags[0], station.country, station.codec, station.bitrate, None))
     return page.to_string()
 
 
@@ -170,5 +175,6 @@ def radiobrowser_search(path):
             page.add(vtuner.Display("No results for '" + query + "'"))
         else:
             for station in stations:
-                page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon, station.tags[0], station.country, station.codec, station.bitrate, None))
+                page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
+                                        station.tags[0], station.country, station.codec, station.bitrate, None))
     return page.to_string()
