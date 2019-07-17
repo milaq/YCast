@@ -1,9 +1,11 @@
 import requests
 
+import ycast.vtuner as vtuner
+
 MINIMUM_COUNT_GENRE = 5
 MINIMUM_COUNT_COUNTRY = 5
 MINIMUM_BITRATE = 64
-STATION_LIMIT_DEFAULT = 99
+STATION_LIMIT = 1000
 ID_PREFIX = "RB_"
 
 
@@ -27,6 +29,10 @@ class Station:
         self.codec = get_json_attr(station_json, 'codec')
         self.bitrate = get_json_attr(station_json, 'bitrate')
 
+    def to_vtuner(self):
+        return vtuner.Station(self.id, self.name, ', '.join(self.tags), self.url, self.icon,
+                              self.tags[0], self.country, self.codec, self.bitrate, None)
+
 
 def request(url):
     headers = {'content-type': 'application/json', 'User-Agent': 'YCast'}
@@ -42,10 +48,10 @@ def get_station_by_id(uid):
     return Station(station_json[0])
 
 
-def search(name):
+def search(name, limit=STATION_LIMIT):
     stations = []
     stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' +
-                            str(MINIMUM_BITRATE) + '&name=' + str(name))
+                            str(MINIMUM_BITRATE) + '&limit=' + str(limit) + '&name=' + str(name))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations
@@ -71,7 +77,7 @@ def get_genres():
     return genres
 
 
-def get_stations_by_country(country, limit=STATION_LIMIT_DEFAULT):
+def get_stations_by_country(country, limit=STATION_LIMIT):
     stations = []
     stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' +
                             str(MINIMUM_BITRATE) + '&limit=' + str(limit) +
@@ -81,7 +87,7 @@ def get_stations_by_country(country, limit=STATION_LIMIT_DEFAULT):
     return stations
 
 
-def get_stations_by_genre(genre, limit=STATION_LIMIT_DEFAULT):
+def get_stations_by_genre(genre, limit=STATION_LIMIT):
     stations = []
     stations_json = request('stations/search?order=votes&reverse=true&bitrateMin=' +
                             str(MINIMUM_BITRATE) + '&limit=' + str(limit) + '&tagExact=true&tag=' + str(genre))
@@ -90,7 +96,7 @@ def get_stations_by_genre(genre, limit=STATION_LIMIT_DEFAULT):
     return stations
 
 
-def get_stations_by_votes(limit=STATION_LIMIT_DEFAULT):
+def get_stations_by_votes(limit=STATION_LIMIT):
     stations = []
     stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
     for station_json in stations_json:

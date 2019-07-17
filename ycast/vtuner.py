@@ -10,13 +10,17 @@ def get_init_token():
 class Page:
     def __init__(self):
         self.items = []
+        self.count = -1
 
     def add(self, item):
         self.items.append(item)
 
+    def set_count(self, count):
+        self.count = count
+
     def to_xml(self):
         xml = etree.Element('ListOfItems')
-        etree.SubElement(xml, 'ItemCount').text = str(len(self.items))
+        etree.SubElement(xml, 'ItemCount').text = str(self.count)
         for item in self.items:
             item.append_to_xml(xml)
         return xml

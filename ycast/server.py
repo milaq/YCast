@@ -43,6 +43,48 @@ def get_stations(config):
         return
 
 
+def get_directories_page(subdir, directories, startitems, enditems):
+    page = vtuner.Page()
+    if len(directories) == 0:
+        page.add(vtuner.Display("No entries found."))
+        return page
+    page.set_count(len(directories))
+    offset = 0
+    limit = len(directories)
+    if startitems and enditems:
+        offset = int(startitems) - 1
+        limit = int(enditems)
+        if offset > len(directories):
+            offset = len(directories)
+        if limit > len(directories):
+            limit = len(directories)
+    for directory_num in range(offset, limit):
+        directory = directories[directory_num]
+        page.add(vtuner.Directory(directory, url_for(subdir, _external=True, directory=directory)))
+    return page
+
+
+def get_stations_page(stations, startitems, enditems):
+    page = vtuner.Page()
+    if len(stations) == 0:
+        page.add(vtuner.Display("No stations found."))
+        return page
+    page.set_count(len(stations))
+    offset = 0
+    limit = len(stations)
+    if startitems and enditems:
+        offset = int(startitems) - 1
+        limit = int(enditems)
+        if offset > len(stations):
+            offset = len(stations)
+        if limit > len(stations):
+            limit = len(stations)
+    for station_num in range(offset, limit):
+        station = stations[station_num]
+        page.add(station.to_vtuner())
+    return page
+
+
 # TODO: vtuner doesn't do https (e.g. for logos). make an icon cache
 
 
@@ -99,68 +141,39 @@ def radiobrowser_landing():
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/')
 def radiobrowser_countries():
-    countries = radiobrowser.get_countries()
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('radiobrowser_landing', _external=True)))
-    for country in countries:
-        page.add(vtuner.Directory(country, url_for('radiobrowser_country_stations', _external=True, country=country)))
-    return page.to_string()
+    directories = radiobrowser.get_countries()
+    return get_directories_page('radiobrowser_country_stations', directories,
+                                request.args.get('startitems'), request.args.get('enditems')).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<country>')
-def radiobrowser_country_stations(country):
-    stations = radiobrowser.get_stations_by_country(country)
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('radiobrowser_countries', _external=True)))
-    if len(stations) == 0:
-        page.add(vtuner.Display("No stations found for country '" + country + "'"))
-    else:
-        for station in stations:
-            page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
-                                    station.tags[0], station.country, station.codec, station.bitrate, None))
-    return page.to_string()
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>')
+def radiobrowser_country_stations(directory):
+    stations = radiobrowser.get_stations_by_country(directory)
+    return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/')
 def radiobrowser_genres():
-    genres = radiobrowser.get_genres()
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('radiobrowser_landing', _external=True)))
-    for genre in genres:
-        page.add(vtuner.Directory(genre, url_for('radiobrowser_genre_stations', _external=True, genre=genre)))
-    return page.to_string()
+    directories = radiobrowser.get_genres()
+    return get_directories_page('radiobrowser_genre_stations', directories,
+                                request.args.get('startitems'), request.args.get('enditems')).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<genre>')
-def radiobrowser_genre_stations(genre):
-    stations = radiobrowser.get_stations_by_genre(genre)
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('radiobrowser_genres', _external=True)))
-    if len(stations) == 0:
-        page.add(vtuner.Display("No stations found for genre '" + genre + "'"))
-    else:
-        for station in stations:
-            page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
-                                    station.tags[0], station.country, station.codec, station.bitrate, None))
-    return page.to_string()
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>')
+def radiobrowser_genre_stations(directory):
+    stations = radiobrowser.get_stations_by_genre(directory)
+    return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_POPULAR + '/')
 def radiobrowser_popular():
     stations = radiobrowser.get_stations_by_votes()
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('radiobrowser_landing', _external=True)))
-    for station in stations:
-        page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
-                                station.tags[0], station.country, station.codec, station.bitrate, None))
-    return page.to_string()
+    return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_SEARCH, defaults={'path': ''})
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_SEARCH + '<path:path>')
 def radiobrowser_search(path):
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('radiobrowser_landing', _external=True)))
     # vtuner does totally weird stuff here: TWO request arguments are passed to the search URI
     # thus, we need to parse the search query as path
     query = None
@@ -168,13 +181,10 @@ def radiobrowser_search(path):
         path_search = path[path.find('search'):]
         query = path_search.partition('=')[2]
     if not query or len(query) < 3:
+        page = vtuner.Page()
+        page.add(vtuner.Previous(url_for('landing', _external=True)))
         page.add(vtuner.Display("Search query too short."))
+        return page.to_string()
     else:
         stations = radiobrowser.search(query)
-        if len(stations) == 0:
-            page.add(vtuner.Display("No results for '" + query + "'"))
-        else:
-            for station in stations:
-                page.add(vtuner.Station(station.id, station.name, ', '.join(station.tags), station.url, station.icon,
-                                        station.tags[0], station.country, station.codec, station.bitrate, None))
-    return page.to_string()
+        return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
