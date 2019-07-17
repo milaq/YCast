@@ -35,6 +35,6 @@ setup(
         'onkyo',
         'denon'
     ],
-    install_requires=['flask', 'PyYAML'],
+    install_requires=['requests', 'flask', 'PyYAML'],
     packages=find_packages(exclude=['contrib', 'docs', 'tests'])
 )

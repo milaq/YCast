@@ -41,6 +41,7 @@ Go ahead and test it with yours, and kindly report the result back :)
 Python version: `3`
 
 Python packages:
+ * `requests`
  * `flask`
  * `PyYAML`
  
