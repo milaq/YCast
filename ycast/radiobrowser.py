@@ -50,7 +50,7 @@ def get_station_by_id(uid):
 
 def search(name):
     stations = []
-    stations_json = request('stations/search?order=name&reverse=true&bitrateMin=' +
+    stations_json = request('stations/search?order=name&reverse=false&bitrateMin=' +
                             str(MINIMUM_BITRATE) + '&name=' + str(name))
     for station_json in stations_json:
         stations.append(Station(station_json))
@@ -79,7 +79,7 @@ def get_genres():
 
 def get_stations_by_country(country):
     stations = []
-    stations_json = request('stations/search?order=name&reverse=true&bitrateMin=' +
+    stations_json = request('stations/search?order=name&reverse=false&bitrateMin=' +
                             str(MINIMUM_BITRATE) + '&countryExact=true&country=' + str(country))
     for station_json in stations_json:
         stations.append(Station(station_json))
@@ -88,7 +88,7 @@ def get_stations_by_country(country):
 
 def get_stations_by_genre(genre):
     stations = []
-    stations_json = request('stations/search?order=name&reverse=true&bitrateMin=' +
+    stations_json = request('stations/search?order=name&reverse=false&bitrateMin=' +
                             str(MINIMUM_BITRATE) + '&tagExact=true&tag=' + str(genre))
     for station_json in stations_json:
         stations.append(Station(station_json))
