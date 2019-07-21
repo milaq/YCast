@@ -7,6 +7,12 @@ def get_init_token():
     return XML_HEADER + '<EncryptedToken>0000000000000000</EncryptedToken>'
 
 
+def strip_https(url):
+    if url.startswith('https://'):
+        url = 'http://' + url[8:]
+    return url
+
+
 class Page:
     def __init__(self):
         self.items = []
@@ -88,7 +94,7 @@ class Station:
         self.uid = uid
         self.name = name
         self.description = description
-        self.url = url
+        self.url = strip_https(url)
         self.logo = logo
         self.genre = genre
         self.location = location
