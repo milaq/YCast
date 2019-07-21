@@ -5,7 +5,7 @@ import ycast.vtuner as vtuner
 MINIMUM_COUNT_GENRE = 5
 MINIMUM_COUNT_COUNTRY = 5
 MINIMUM_BITRATE = 64
-STATION_LIMIT = 1000
+DEFAULT_STATION_LIMIT = 1000
 ID_PREFIX = "RB_"
 
 
@@ -48,10 +48,10 @@ def get_station_by_id(uid):
     return Station(station_json[0])
 
 
-def search(name, limit=STATION_LIMIT):
+def search(name):
     stations = []
     stations_json = request('stations/search?order=name&reverse=true&bitrateMin=' +
-                            str(MINIMUM_BITRATE) + '&limit=' + str(limit) + '&name=' + str(name))
+                            str(MINIMUM_BITRATE) + '&name=' + str(name))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations
@@ -77,26 +77,25 @@ def get_genres():
     return genres
 
 
-def get_stations_by_country(country, limit=STATION_LIMIT):
+def get_stations_by_country(country):
     stations = []
     stations_json = request('stations/search?order=name&reverse=true&bitrateMin=' +
-                            str(MINIMUM_BITRATE) + '&limit=' + str(limit) +
-                            '&countryExact=true&country=' + str(country))
+                            str(MINIMUM_BITRATE) + '&countryExact=true&country=' + str(country))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations
 
 
-def get_stations_by_genre(genre, limit=STATION_LIMIT):
+def get_stations_by_genre(genre):
     stations = []
     stations_json = request('stations/search?order=name&reverse=true&bitrateMin=' +
-                            str(MINIMUM_BITRATE) + '&limit=' + str(limit) + '&tagExact=true&tag=' + str(genre))
+                            str(MINIMUM_BITRATE) + '&tagExact=true&tag=' + str(genre))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations
 
 
-def get_stations_by_votes(limit=STATION_LIMIT):
+def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
     stations = []
     stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
     for station_json in stations_json:
