@@ -48,7 +48,6 @@ def get_directories_page(subdir, directories, startitems, enditems):
     if len(directories) == 0:
         page.add(vtuner.Display("No entries found."))
         return page
-    page.set_count(len(directories))
     offset = 0
     limit = len(directories)
     if startitems and enditems:
@@ -69,7 +68,6 @@ def get_stations_page(stations, startitems, enditems):
     if len(stations) == 0:
         page.add(vtuner.Display("No stations found."))
         return page
-    page.set_count(len(stations))
     offset = 0
     limit = len(stations)
     if startitems and enditems:

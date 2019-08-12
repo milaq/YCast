@@ -16,13 +16,11 @@ def strip_https(url):
 class Page:
     def __init__(self):
         self.items = []
-        self.count = -1
+        self.count = 0
 
     def add(self, item):
         self.items.append(item)
-
-    def set_count(self, count):
-        self.count = count
+        self.count = len(self.items)
 
     def to_xml(self):
         xml = etree.Element('ListOfItems')
