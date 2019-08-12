@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import sys
 
 from ycast import server
 
@@ -19,4 +20,8 @@ def launch_server():
 
 
 if __name__ == "__main__":
+    if sys.version_info[0] < 3:
+        logging.error("Unsupported Python version (Python %s). Minimum required version is Python 3.",
+                      sys.version_info[0])
+        sys.exit(1)
     launch_server()
