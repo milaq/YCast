@@ -43,16 +43,16 @@ def get_stations(config):
         return
 
 
-def get_directories_page(subdir, directories, startitems, enditems):
+def get_directories_page(subdir, directories, requestargs):
     page = vtuner.Page()
     if len(directories) == 0:
         page.add(vtuner.Display("No entries found."))
         return page
     offset = 0
     limit = len(directories)
-    if startitems and enditems:
-        offset = int(startitems) - 1
-        limit = int(enditems)
+    if get_element_offset(requestargs) is not None and get_element_limit(requestargs) is not None:
+        offset = get_element_offset(requestargs)
+        limit = get_element_limit(requestargs)
         if offset > len(directories):
             offset = len(directories)
         if limit > len(directories):
@@ -63,16 +63,16 @@ def get_directories_page(subdir, directories, startitems, enditems):
     return page
 
 
-def get_stations_page(stations, startitems, enditems):
+def get_stations_page(stations, requestargs):
     page = vtuner.Page()
     if len(stations) == 0:
         page.add(vtuner.Display("No stations found."))
         return page
     offset = 0
     limit = len(stations)
-    if startitems and enditems:
-        offset = int(startitems) - 1
-        limit = int(enditems)
+    if get_element_offset(requestargs) is not None and get_element_limit(requestargs) is not None:
+        offset = get_element_offset(requestargs)
+        limit = get_element_limit(requestargs)
         if offset > len(stations):
             offset = len(stations)
         if limit > len(stations):
@@ -81,6 +81,24 @@ def get_stations_page(stations, startitems, enditems):
         station = stations[station_num]
         page.add(station.to_vtuner())
     return page
+
+
+def get_element_offset(requestargs):
+    if requestargs.get('startitems'):
+        return int(requestargs.get('startitems')) - 1
+    elif requestargs.get('start'):
+        return int(requestargs.get('start')) - 1
+    else:
+        return None
+
+
+def get_element_limit(requestargs):
+    if requestargs.get('enditems'):
+        return int(requestargs.get('enditems'))
+    elif requestargs.get('start') and requestargs.get('howmany'):
+        return int(requestargs.get('start')) - 1 + int(requestargs.get('howmany'))
+    else:
+        return None
 
 
 # TODO: vtuner doesn't do https (e.g. for logos). make an icon cache
@@ -140,33 +158,31 @@ def radiobrowser_landing():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/')
 def radiobrowser_countries():
     directories = radiobrowser.get_countries()
-    return get_directories_page('radiobrowser_country_stations', directories,
-                                request.args.get('startitems'), request.args.get('enditems')).to_string()
+    return get_directories_page('radiobrowser_country_stations', directories, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>')
 def radiobrowser_country_stations(directory):
     stations = radiobrowser.get_stations_by_country(directory)
-    return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
+    return get_stations_page(stations, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/')
 def radiobrowser_genres():
     directories = radiobrowser.get_genres()
-    return get_directories_page('radiobrowser_genre_stations', directories,
-                                request.args.get('startitems'), request.args.get('enditems')).to_string()
+    return get_directories_page('radiobrowser_genre_stations', directories, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>')
 def radiobrowser_genre_stations(directory):
     stations = radiobrowser.get_stations_by_genre(directory)
-    return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
+    return get_stations_page(stations, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_POPULAR + '/')
 def radiobrowser_popular():
     stations = radiobrowser.get_stations_by_votes()
-    return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
+    return get_stations_page(stations, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_SEARCH, defaults={'path': ''})
@@ -185,4 +201,4 @@ def radiobrowser_search(path):
         return page.to_string()
     else:
         stations = radiobrowser.search(query)
-        return get_stations_page(stations, request.args.get('startitems'), request.args.get('enditems')).to_string()
+        return get_stations_page(stations, request.args).to_string()
