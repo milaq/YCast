@@ -20,6 +20,8 @@ Go ahead and test it with yours, and kindly report the result back :)
 
  * Yamaha RX-Vx73 series (RX-V373, RX-V473, RX-V573, RX-V673, RX-V773)
  * Yamaha R-N500
+ * Yamaha RX-A820
+ * Yamaha RX-A830
  * Onkyo TX-NR414
  * Marantz Melody Media M-CR610
 
