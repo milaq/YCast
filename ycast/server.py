@@ -188,12 +188,7 @@ def radiobrowser_popular():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_SEARCH, defaults={'path': ''})
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_SEARCH + '<path:path>')
 def radiobrowser_search(path):
-    # vtuner does totally weird stuff here: TWO request arguments are passed to the search URI
-    # thus, we need to parse the search query as path
-    query = None
-    if 'search' in path:
-        path_search = path[path.find('search'):]
-        query = path_search.partition('=')[2]
+    query = request.args.get('search')
     if not query or len(query) < 3:
         page = vtuner.Page()
         page.add(vtuner.Previous(url_for('landing', _external=True)))

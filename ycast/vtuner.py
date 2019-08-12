@@ -13,6 +13,16 @@ def strip_https(url):
     return url
 
 
+def add_bogus_parameter(url):
+    """
+    We need this bogus parameter because some (if not all) AVRs blindly append additional request parameters
+    with an ampersand. E.g.: '&mac=<REDACTED>&dlang=eng&fver=1.2&startitems=1&enditems=100'.
+    The original vTuner API hacks around that by adding a specific parameter or a bogus parameter like '?empty=' to
+    the target URL.
+    """
+    return url + '?vtuner=true'
+
+
 class Page:
     def __init__(self):
         self.items = []
@@ -40,8 +50,8 @@ class Previous:
     def append_to_xml(self, xml):
         item = etree.SubElement(xml, 'Item')
         etree.SubElement(item, 'ItemType').text = 'Previous'
-        etree.SubElement(item, 'UrlPrevious').text = self.url
-        etree.SubElement(item, 'UrlPreviousBackUp').text = self.url
+        etree.SubElement(item, 'UrlPrevious').text = add_bogus_parameter(self.url)
+        etree.SubElement(item, 'UrlPreviousBackUp').text = add_bogus_parameter(self.url)
         return item
 
 
@@ -64,8 +74,8 @@ class Search:
     def append_to_xml(self, xml):
         item = etree.SubElement(xml, 'Item')
         etree.SubElement(item, 'ItemType').text = 'Search'
-        etree.SubElement(item, 'SearchURL').text = self.url
-        etree.SubElement(item, 'SearchURLBackUp').text = self.url
+        etree.SubElement(item, 'SearchURL').text = add_bogus_parameter(self.url)
+        etree.SubElement(item, 'SearchURLBackUp').text = add_bogus_parameter(self.url)
         etree.SubElement(item, 'SearchCaption').text = self.caption
         etree.SubElement(item, 'SearchTextbox').text = None
         etree.SubElement(item, 'SearchButtonGo').text = "Search"
@@ -82,8 +92,8 @@ class Directory:
         item = etree.SubElement(xml, 'Item')
         etree.SubElement(item, 'ItemType').text = 'Dir'
         etree.SubElement(item, 'Title').text = self.title
-        etree.SubElement(item, 'UrlDir').text = self.destination
-        etree.SubElement(item, 'UrlDirBackUp').text = self.destination
+        etree.SubElement(item, 'UrlDir').text = add_bogus_parameter(self.destination)
+        etree.SubElement(item, 'UrlDirBackUp').text = add_bogus_parameter(self.destination)
         return item
 
 
