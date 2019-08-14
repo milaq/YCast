@@ -5,42 +5,32 @@ from flask import Flask, request, url_for
 
 import ycast.vtuner as vtuner
 import ycast.radiobrowser as radiobrowser
+import ycast.my_stations as my_stations
 
 
 PATH_ROOT = 'ycast'
-PATH_CUSTOM_STATIONS = 'my_stations'
+PATH_MY_STATIONS = 'my_stations'
 PATH_RADIOBROWSER = 'radiobrowser'
 PATH_RADIOBROWSER_COUNTRY = 'country'
 PATH_RADIOBROWSER_GENRE = 'genre'
 PATH_RADIOBROWSER_POPULAR = 'popular'
 PATH_RADIOBROWSER_SEARCH = 'search'
 
-my_stations = {}
+my_stations_enabled = False
 app = Flask(__name__)
 
 
 def run(config, address='0.0.0.0', port=8010):
     try:
-        get_stations(config)
+        check_my_stations_feature(config)
         app.run(host=address, port=port)
     except PermissionError:
         logging.error("No permission to create socket. Are you trying to use ports below 1024 without elevated rights?")
 
 
-def get_stations(config):
-    global my_stations
-    if not config:
-        logging.warning("If you want to use the 'My Stations' feature, please supply a valid station configuration")
-        return
-    try:
-        with open(config, 'r') as f:
-            my_stations = yaml.safe_load(f)
-    except FileNotFoundError:
-        logging.error("Station configuration '%s' not found", config)
-        return
-    except yaml.YAMLError as e:
-        logging.error("Config error: %s", e)
-        return
+def check_my_stations_feature(config):
+    global my_stations_enabled
+    my_stations_enabled = my_stations.set_config(config)
 
 
 def get_directories_page(subdir, directories, requestargs):
@@ -112,36 +102,25 @@ def landing(path):
         return vtuner.get_init_token()
     page = vtuner.Page()
     page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True)))
-    page.add(vtuner.Directory('My Stations', url_for('custom_stations_landing', _external=True)))
+    if my_stations_enabled:
+        page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True)))
+    else:
+        page.add(vtuner.Display("'My Stations' feature not configured."))
     return page.to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_CUSTOM_STATIONS + '/')
-def custom_stations_landing():
+@app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/')
+def my_stations_landing():
     page = vtuner.Page()
     page.add(vtuner.Previous(url_for("landing", _external=True)))
-    if not my_stations:
-        page.add(vtuner.Display("No stations found"))
-    else:
-        for category in sorted(my_stations, key=str.lower):
-            directory = vtuner.Directory(category, url_for('custom_stations_category',
-                                                           _external=True, category=category))
-            page.add(directory)
-    return page.to_string()
+    directories = my_stations.get_categories()
+    return get_directories_page('my_stations_category', directories, request.args).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_CUSTOM_STATIONS + '/<category>')
-def custom_stations_category(category):
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('custom_stations_landing', _external=True)))
-    if category not in my_stations:
-        page.add(vtuner.Display("Category '" + category + "' not found"))
-    else:
-        for station in sorted(my_stations[category], key=str.lower):
-            station = vtuner.Station(None, station, None, my_stations[category][station],
-                                     None, None, None, None, None, None)
-            page.add(station)
-    return page.to_string()
+@app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/<directory>')
+def my_stations_category(directory):
+    stations = my_stations.get_stations_by_category(directory)
+    return get_stations_page(stations, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/')
