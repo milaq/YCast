@@ -1,6 +1,5 @@
 import logging
 
-import yaml
 from flask import Flask, request, url_for
 
 import ycast.vtuner as vtuner
