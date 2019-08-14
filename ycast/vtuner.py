@@ -4,7 +4,7 @@ XML_HEADER = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'
 
 
 def get_init_token():
-    return XML_HEADER + '<EncryptedToken>0000000000000000</EncryptedToken>'
+    return '<EncryptedToken>0000000000000000</EncryptedToken>'
 
 
 def strip_https(url):
