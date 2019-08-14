@@ -120,7 +120,8 @@ class Station:
         etree.SubElement(item, 'Logo').text = self.logo
         etree.SubElement(item, 'StationFormat').text = self.genre
         etree.SubElement(item, 'StationLocation').text = self.location
-        etree.SubElement(item, 'StationBandwidth').text = self.bitrate
+        etree.SubElement(item, 'StationBandWidth').text = self.bitrate
         etree.SubElement(item, 'StationMime').text = self.mime
-        etree.SubElement(item, 'StationBookmark').text = self.bookmark
+        etree.SubElement(item, 'Relia').text = '3'
+        etree.SubElement(item, 'Bookmark').text = self.bookmark
         return item
