@@ -74,9 +74,6 @@ def get_paged_elements(items, requestargs):
     return items[offset:limit]
 
 
-# TODO: vtuner doesn't do https (e.g. for logos). make an icon cache
-
-
 @app.route('/', defaults={'path': ''})
 @app.route('/setupapp/<path:path>')
 @app.route('/' + PATH_ROOT + '/', defaults={'path': ''})
