@@ -37,17 +37,7 @@ def get_directories_page(subdir, directories, requestargs):
     if len(directories) == 0:
         page.add(vtuner.Display("No entries found."))
         return page
-    offset = 0
-    limit = len(directories)
-    if get_element_offset(requestargs) is not None and get_element_limit(requestargs) is not None:
-        offset = get_element_offset(requestargs)
-        limit = get_element_limit(requestargs)
-        if offset > len(directories):
-            offset = len(directories)
-        if limit > len(directories):
-            limit = len(directories)
-    for directory_num in range(offset, limit):
-        directory = directories[directory_num]
+    for directory in get_paged_elements(directories, requestargs):
         page.add(vtuner.Directory(directory, url_for(subdir, _external=True, directory=directory)))
     return page
 
@@ -57,37 +47,31 @@ def get_stations_page(stations, requestargs):
     if len(stations) == 0:
         page.add(vtuner.Display("No stations found."))
         return page
-    offset = 0
-    limit = len(stations)
-    if get_element_offset(requestargs) is not None and get_element_limit(requestargs) is not None:
-        offset = get_element_offset(requestargs)
-        limit = get_element_limit(requestargs)
-        if offset > len(stations):
-            offset = len(stations)
-        if limit > len(stations):
-            limit = len(stations)
-    for station_num in range(offset, limit):
-        station = stations[station_num]
+    for station in get_paged_elements(stations, requestargs):
         page.add(station.to_vtuner())
     return page
 
 
-def get_element_offset(requestargs):
+def get_paged_elements(items, requestargs):
     if requestargs.get('startitems'):
-        return int(requestargs.get('startitems')) - 1
+        offset = int(requestargs.get('startitems')) - 1
     elif requestargs.get('start'):
-        return int(requestargs.get('start')) - 1
+        offset = int(requestargs.get('start')) - 1
     else:
-        return None
-
-
-def get_element_limit(requestargs):
+        offset = 0
     if requestargs.get('enditems'):
-        return int(requestargs.get('enditems'))
+        limit = int(requestargs.get('enditems'))
     elif requestargs.get('start') and requestargs.get('howmany'):
-        return int(requestargs.get('start')) - 1 + int(requestargs.get('howmany'))
+        limit = int(requestargs.get('start')) - 1 + int(requestargs.get('howmany'))
     else:
-        return None
+        limit = len(items)
+    if offset > len(items):
+        offset = len(items)
+    if limit > len(items):
+        limit = len(items)
+    if limit < offset:
+        limit = offset
+    return items[offset:limit]
 
 
 # TODO: vtuner doesn't do https (e.g. for logos). make an icon cache
