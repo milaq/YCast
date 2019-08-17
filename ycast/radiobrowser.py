@@ -49,10 +49,10 @@ def get_station_by_id(uid):
     return Station(station_json[0])
 
 
-def search(name):
+def search(name, limit=DEFAULT_STATION_LIMIT):
     stations = []
     stations_json = request('stations/search?order=name&reverse=false&bitrateMin=' +
-                            str(MINIMUM_BITRATE) + '&name=' + str(name))
+                            str(MINIMUM_BITRATE) + '&limit=' + str(limit) + '&name=' + str(name))
     for station_json in stations_json:
         stations.append(Station(station_json))
     return stations
