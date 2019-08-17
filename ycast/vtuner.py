@@ -86,9 +86,10 @@ class Search:
 
 
 class Directory:
-    def __init__(self, title, destination):
+    def __init__(self, title, destination, item_count=-1):
         self.title = title
         self.destination = destination
+        self.item_count = item_count
 
     def append_to_xml(self, xml):
         item = etree.SubElement(xml, 'Item')
@@ -96,7 +97,11 @@ class Directory:
         etree.SubElement(item, 'Title').text = self.title
         etree.SubElement(item, 'UrlDir').text = add_bogus_parameter(self.destination)
         etree.SubElement(item, 'UrlDirBackUp').text = add_bogus_parameter(self.destination)
+        etree.SubElement(item, 'DirCount').text = str(self.item_count)
         return item
+
+    def set_item_count(self, item_count):
+        self.item_count = item_count
 
 
 class Station:
