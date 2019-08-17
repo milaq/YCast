@@ -26,11 +26,13 @@ def add_bogus_parameter(url):
 class Page:
     def __init__(self):
         self.items = []
-        self.count = 0
+        self.count = -1
 
     def add(self, item):
         self.items.append(item)
-        self.count = len(self.items)
+
+    def set_count(self, count):
+        self.count = count
 
     def to_xml(self):
         xml = etree.Element('ListOfItems')

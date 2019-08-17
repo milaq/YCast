@@ -39,6 +39,7 @@ def get_directories_page(subdir, directories, requestargs):
         return page
     for directory in get_paged_elements(directories, requestargs):
         page.add(vtuner.Directory(directory, url_for(subdir, _external=True, directory=directory)))
+    page.set_count(len(directories))
     return page
 
 
@@ -49,6 +50,7 @@ def get_stations_page(stations, requestargs):
         return page
     for station in get_paged_elements(stations, requestargs):
         page.add(station.to_vtuner())
+    page.set_count(len(stations))
     return page
 
 
