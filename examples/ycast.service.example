@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=ycast
 Group=ycast
-ExecStart=/opt/ycast/ycast.py -l 127.0.0.1 -p 8010
+ExecStart=/usr/bin/python3 -m ycast -l 127.0.0.1 -p 8010
 
 [Install]
 WantedBy=multi-user.target

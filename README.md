@@ -52,37 +52,20 @@ Python packages:
 YCast really does not need much computing power nor bandwidth. It just serves the information to the AVR. The streaming
 itself gets handled by the AVR directly, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi.
 
+### DNS entries
+
 You need to create a manual entry in your DNS server (read 'Router' for most home users). `vtuner.com` should point to the machine YCast is running on. Alternatively, in case you only want to forward specific vendors, the following entries may be configured:
 
   * Yamaha AVRs: `radioyamaha.vtuner.com` (and optionally `radioyamaha2.vtuner.com`)
   * Onkyo AVRs: `onkyo.vtuner.com` (and optionally `onkyo2.vtuner.com`)
   * Denon/Marantz AVRs: `denon.vtuner.com` (and optionally `denon2.vtuner.com`)
 
-If you want to use the 'My Stations' feature besides the global radio index, create a `stations.yml` and run YCast with the `-c` switch to specify the path to it. The config follows a basic YAML structure (see below).
 
-### stations.yml
-```
-Category one name:
-  First awesome station name: first.awesome/station/URL
-  Second awesome station name: second.awesome/station/URL
+### Running the server
 
-Category two name:
-  Third awesome station name: third.awesome/station/URL
-  Fourth awesome station name: fourth.awesome/station/URL
-```   
-
-### Running
+#### With built-in webserver
 
 You can run YCast by using the built-in development server of Flask (not recommended for production use, but should(tm) be enough for your private home use): Just run the package: `python -m ycast`
-
-Alternatively you can also setup a proper WSGI server.
-
- -- TODO: WSGI stuff
-
-You can also have a look at the provided [example](examples/stations.yml.example) to better understand the configuration.
-
-
-## Web server configuration
 
 While you can simply run YCast with root permissions listening on all interfaces on port 80, this may not be desired for various reasons.
 
@@ -96,21 +79,40 @@ You can redirect all traffic destined for the original request URL (e.g. `radioy
  * `/setupapp`
  * `/ycast`
 
-__Attention__: Do not rewrite the request transparently. YCast expects the complete URL (i.e. including `/ycast` or `/setupapp`). It also need an intact `Host` header; so if you're proxying YCast you need to pass the original header on. For Nginx, this can be accomplished with `proxy_set_header Host $host;`.
+__Attention__: Do not rewrite the requests transparently. YCast expects the complete URL (i.e. including `/ycast` or `/setupapp`). It also need an intact `Host` header; so if you're proxying YCast you need to pass the original header on. For Nginx, this can be accomplished with `proxy_set_header Host $host;`.
 
 In case you are using (or plan on using) Nginx to proxy requests, have a look at [this example](examples/nginx-ycast.conf.example).
 This can be used together with [this systemd service example](examples/ycast.service.example) for a fully functional deployment.
 
+#### With WSGI
+
+You can also setup a proper WSGI server. See the [official Flask documentation](https://flask.palletsprojects.com/en/1.1.x/deploying/).
+
+### Custom stations
+
+If you want to use the 'My Stations' feature besides the global radio index, create a `stations.yml` and run YCast with the `-c` switch to specify the path to it. The config follows a basic YAML structure (see below).
+
+```
+Category one name:
+  First awesome station name: first.awesome/station/URL
+  Second awesome station name: second.awesome/station/URL
+
+Category two name:
+  Third awesome station name: third.awesome/station/URL
+  Fourth awesome station name: fourth.awesome/station/URL
+```
+
+You can also have a look at the provided [example](examples/stations.yml.example) to better understand the configuration.
+
 ## Firewall rules
 
- * The server running YCast does __not__ need internet access.
  * Your AVR needs access to the internet (i.e. to the station URLs you defined).
  * Your AVR needs to reach port `80` of the machine running YCast.
+ * If you want to use Radiobrowser stations, the machine running YCast needs internet access.
 
 ## Caveats
 
-YCast was a quick and dirty project to lay the foundation for having a self hosted vTuner emulation.
-
-It is a barebone service at the moment. It provides your AVR with the basic info it needs to play internet radio stations. 
-Maybe this will change in the future, maybe not.
-For now just station names and URLs; no web-based management interface, no coverart, no cute kittens, no fancy stuff.
+ * vTuner compatible AVRs don't do HTTPS. As such, YCast blindly rewrites every HTTPS station URL to HTTP. Most station
+providers which utilize HTTPS for their stations also provide an HTTP stream. Thus, must HTTPS stations should work.
+ * Some station logos are not compatible with the vTuner frontend.
+ * The built-in bookmark function does not work at the moment. You need to manually add your favourite stations for now.
