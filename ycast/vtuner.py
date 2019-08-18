@@ -1,4 +1,4 @@
-import xml.etree.cElementTree as etree
+import xml.etree.ElementTree as ET
 
 XML_HEADER = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'
 
@@ -35,14 +35,14 @@ class Page:
         self.count = count
 
     def to_xml(self):
-        xml = etree.Element('ListOfItems')
-        etree.SubElement(xml, 'ItemCount').text = str(self.count)
+        xml = ET.Element('ListOfItems')
+        ET.SubElement(xml, 'ItemCount').text = str(self.count)
         for item in self.items:
             item.append_to_xml(xml)
         return xml
 
     def to_string(self):
-        return XML_HEADER + etree.tostring(self.to_xml()).decode('utf-8')
+        return XML_HEADER + ET.tostring(self.to_xml()).decode('utf-8')
 
 
 class Previous:
@@ -50,10 +50,10 @@ class Previous:
         self.url = url
 
     def append_to_xml(self, xml):
-        item = etree.SubElement(xml, 'Item')
-        etree.SubElement(item, 'ItemType').text = 'Previous'
-        etree.SubElement(item, 'UrlPrevious').text = add_bogus_parameter(self.url)
-        etree.SubElement(item, 'UrlPreviousBackUp').text = add_bogus_parameter(self.url)
+        item = ET.SubElement(xml, 'Item')
+        ET.SubElement(item, 'ItemType').text = 'Previous'
+        ET.SubElement(item, 'UrlPrevious').text = add_bogus_parameter(self.url)
+        ET.SubElement(item, 'UrlPreviousBackUp').text = add_bogus_parameter(self.url)
         return item
 
 
@@ -62,9 +62,9 @@ class Display:
         self.text = text
 
     def append_to_xml(self, xml):
-        item = etree.SubElement(xml, 'Item')
-        etree.SubElement(item, 'ItemType').text = 'Display'
-        etree.SubElement(item, 'Display').text = self.text
+        item = ET.SubElement(xml, 'Item')
+        ET.SubElement(item, 'ItemType').text = 'Display'
+        ET.SubElement(item, 'Display').text = self.text
         return item
 
 
@@ -74,14 +74,14 @@ class Search:
         self.url = url
 
     def append_to_xml(self, xml):
-        item = etree.SubElement(xml, 'Item')
-        etree.SubElement(item, 'ItemType').text = 'Search'
-        etree.SubElement(item, 'SearchURL').text = add_bogus_parameter(self.url)
-        etree.SubElement(item, 'SearchURLBackUp').text = add_bogus_parameter(self.url)
-        etree.SubElement(item, 'SearchCaption').text = self.caption
-        etree.SubElement(item, 'SearchTextbox').text = None
-        etree.SubElement(item, 'SearchButtonGo').text = "Search"
-        etree.SubElement(item, 'SearchButtonCancel').text = "Cancel"
+        item = ET.SubElement(xml, 'Item')
+        ET.SubElement(item, 'ItemType').text = 'Search'
+        ET.SubElement(item, 'SearchURL').text = add_bogus_parameter(self.url)
+        ET.SubElement(item, 'SearchURLBackUp').text = add_bogus_parameter(self.url)
+        ET.SubElement(item, 'SearchCaption').text = self.caption
+        ET.SubElement(item, 'SearchTextbox').text = None
+        ET.SubElement(item, 'SearchButtonGo').text = "Search"
+        ET.SubElement(item, 'SearchButtonCancel').text = "Cancel"
         return item
 
 
@@ -92,12 +92,12 @@ class Directory:
         self.item_count = item_count
 
     def append_to_xml(self, xml):
-        item = etree.SubElement(xml, 'Item')
-        etree.SubElement(item, 'ItemType').text = 'Dir'
-        etree.SubElement(item, 'Title').text = self.title
-        etree.SubElement(item, 'UrlDir').text = add_bogus_parameter(self.destination)
-        etree.SubElement(item, 'UrlDirBackUp').text = add_bogus_parameter(self.destination)
-        etree.SubElement(item, 'DirCount').text = str(self.item_count)
+        item = ET.SubElement(xml, 'Item')
+        ET.SubElement(item, 'ItemType').text = 'Dir'
+        ET.SubElement(item, 'Title').text = self.title
+        ET.SubElement(item, 'UrlDir').text = add_bogus_parameter(self.destination)
+        ET.SubElement(item, 'UrlDirBackUp').text = add_bogus_parameter(self.destination)
+        ET.SubElement(item, 'DirCount').text = str(self.item_count)
         return item
 
     def set_item_count(self, item_count):
@@ -118,17 +118,17 @@ class Station:
         self.bookmark = bookmark
 
     def append_to_xml(self, xml):
-        item = etree.SubElement(xml, 'Item')
-        etree.SubElement(item, 'ItemType').text = 'Station'
-        etree.SubElement(item, 'StationId').text = self.uid
-        etree.SubElement(item, 'StationName').text = self.name
-        etree.SubElement(item, 'StationUrl').text = self.url
-        etree.SubElement(item, 'StationDesc').text = self.description
-        etree.SubElement(item, 'Logo').text = self.logo
-        etree.SubElement(item, 'StationFormat').text = self.genre
-        etree.SubElement(item, 'StationLocation').text = self.location
-        etree.SubElement(item, 'StationBandWidth').text = self.bitrate
-        etree.SubElement(item, 'StationMime').text = self.mime
-        etree.SubElement(item, 'Relia').text = '3'
-        etree.SubElement(item, 'Bookmark').text = self.bookmark
+        item = ET.SubElement(xml, 'Item')
+        ET.SubElement(item, 'ItemType').text = 'Station'
+        ET.SubElement(item, 'StationId').text = self.uid
+        ET.SubElement(item, 'StationName').text = self.name
+        ET.SubElement(item, 'StationUrl').text = self.url
+        ET.SubElement(item, 'StationDesc').text = self.description
+        ET.SubElement(item, 'Logo').text = self.logo
+        ET.SubElement(item, 'StationFormat').text = self.genre
+        ET.SubElement(item, 'StationLocation').text = self.location
+        ET.SubElement(item, 'StationBandWidth').text = self.bitrate
+        ET.SubElement(item, 'StationMime').text = self.mime
+        ET.SubElement(item, 'Relia').text = '3'
+        ET.SubElement(item, 'Bookmark').text = self.bookmark
         return item
