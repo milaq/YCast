@@ -3,6 +3,7 @@ import logging
 import yaml
 
 import ycast.vtuner as vtuner
+import ycast.generic as generic
 
 ID_PREFIX = "MY_"
 
@@ -24,13 +25,13 @@ def set_config(config):
     global config_file
     if config:
         config_file = config
-    if get_stations():
+    if get_stations_yaml():
         return True
     else:
         return False
 
 
-def get_stations():
+def get_stations_yaml():
     try:
         with open(config_file, 'r') as f:
             my_stations = yaml.safe_load(f)
@@ -43,17 +44,17 @@ def get_stations():
     return my_stations
 
 
-def get_categories():
-    my_stations_yaml = get_stations()
+def get_category_directories():
+    my_stations_yaml = get_stations_yaml()
     categories = []
     if my_stations_yaml:
         for category in my_stations_yaml:
-            categories.append(category)
+            categories.append(generic.Directory(category, len(get_stations_by_category(category))))
     return categories
 
 
 def get_stations_by_category(category):
-    my_stations_yaml = get_stations()
+    my_stations_yaml = get_stations_yaml()
     stations = []
     if my_stations_yaml and category in my_stations_yaml:
         for station_name in my_stations_yaml[category]:

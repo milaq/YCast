@@ -32,20 +32,14 @@ def check_my_stations_feature(config):
     my_stations_enabled = my_stations.set_config(config)
 
 
-def get_directories_page(subdir, directories, requestargs, item_count_function=None):
+def get_directories_page(subdir, directories, requestargs):
     page = vtuner.Page()
     if len(directories) == 0:
         page.add(vtuner.Display("No entries found."))
         return page
     for directory in get_paged_elements(directories, requestargs):
-        vtuner_directory = vtuner.Directory(directory, url_for(subdir, _external=True, directory=directory))
-        if item_count_function:
-            try:
-                item_count = len(item_count_function(directory))
-                vtuner_directory.set_item_count(item_count)
-            except TypeError:
-                logging.error("Could not get item count of directory '%s'", directory)
-                pass
+        vtuner_directory = vtuner.Directory(directory.name, url_for(subdir, _external=True, directory=directory.name),
+                                            directory.item_count)
         page.add(vtuner_directory)
     page.set_count(len(directories))
     return page
@@ -96,7 +90,7 @@ def landing(path):
     page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
     if my_stations_enabled:
         page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
-                                  len(my_stations.get_categories())))
+                                  len(my_stations.get_category_directories())))
     else:
         page.add(vtuner.Display("'My Stations' feature not configured."))
     return page.to_string()
@@ -106,9 +100,8 @@ def landing(path):
 def my_stations_landing():
     page = vtuner.Page()
     page.add(vtuner.Previous(url_for("landing", _external=True)))
-    directories = my_stations.get_categories()
-    return get_directories_page('my_stations_category', directories, request.args,
-                                my_stations.get_stations_by_category).to_string()
+    directories = my_stations.get_category_directories()
+    return get_directories_page('my_stations_category', directories, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/<directory>')
@@ -122,9 +115,9 @@ def radiobrowser_landing():
     page = vtuner.Page()
     page.add(vtuner.Previous(url_for('landing', _external=True)))
     page.add(vtuner.Directory('Genres', url_for('radiobrowser_genres', _external=True),
-                              len(radiobrowser.get_genres())))
+                              len(radiobrowser.get_genre_directories())))
     page.add(vtuner.Directory('Countries', url_for('radiobrowser_countries', _external=True),
-                              len(radiobrowser.get_countries())))
+                              len(radiobrowser.get_country_directories())))
     page.add(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
                               len(radiobrowser.get_stations_by_votes())))
     page.add(vtuner.Search('Search', url_for('radiobrowser_search', _external=True, path='')))
@@ -133,9 +126,8 @@ def radiobrowser_landing():
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/')
 def radiobrowser_countries():
-    directories = radiobrowser.get_countries()
-    return get_directories_page('radiobrowser_country_stations', directories, request.args,
-                                radiobrowser.get_stations_by_country).to_string()
+    directories = radiobrowser.get_country_directories()
+    return get_directories_page('radiobrowser_country_stations', directories, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>')
@@ -146,9 +138,8 @@ def radiobrowser_country_stations(directory):
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/')
 def radiobrowser_genres():
-    directories = radiobrowser.get_genres()
-    return get_directories_page('radiobrowser_genre_stations', directories, request.args,
-                                radiobrowser.get_stations_by_genre).to_string()
+    directories = radiobrowser.get_genre_directories()
+    return get_directories_page('radiobrowser_genre_stations', directories, request.args).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>')
