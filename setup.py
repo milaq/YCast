@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 setup(
     name='ycast',
     version=ycast.__version__,
-    author='Micha LaQua',
+    author='milaq',
     author_email='micha.laqua@gmail.com',
     description='Self hosted vTuner internet radio service emulation',
     long_description=long_description,
@@ -28,8 +28,11 @@ setup(
     ],
     keywords=[
         'ycast',
+        'streaming',
         'vtuner',
         'internet radio',
+        'music',
+        'radio',
         'shoutcast',
         'avr',
         'emulation',
