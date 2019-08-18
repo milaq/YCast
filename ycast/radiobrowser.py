@@ -1,6 +1,7 @@
 import requests
 import logging
 
+from ycast import __version__
 import ycast.vtuner as vtuner
 import ycast.generic as generic
 
@@ -38,7 +39,7 @@ class Station:
 
 def request(url):
     logging.debug("Radiobrowser API request: %s", url)
-    headers = {'content-type': 'application/json', 'User-Agent': 'YCast'}
+    headers = {'content-type': 'application/json', 'User-Agent': generic.USER_AGENT + '/' + __version__}
     response = requests.get('http://www.radio-browser.info/webservice/json/' + url, headers=headers)
     if response.status_code != 200:
         logging.error("Could not fetch data from Radiobrowser (%s)", response.status_code)

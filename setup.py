@@ -1,11 +1,13 @@
 from setuptools import setup, find_packages
 
+import ycast
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='ycast',
-    version='0.9.8',
+    version=ycast.__version__,
     author='Micha LaQua',
     author_email='micha.laqua@gmail.com',
     description='Self hosted vTuner internet radio service emulation',

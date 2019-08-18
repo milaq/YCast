@@ -4,6 +4,7 @@ import argparse
 import logging
 import sys
 
+from ycast import __version__
 from ycast import server
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
@@ -16,10 +17,10 @@ def launch_server():
     parser.add_argument('-p', action='store', dest='port', type=int, help='Listen port', default=80)
     parser.add_argument('-d', action='store_true', dest='debug', help='Enable debug logging')
     arguments = parser.parse_args()
+    logging.info("YCast (%s) server starting", __version__)
     if arguments.debug:
         logging.getLogger().setLevel(logging.DEBUG)
         logging.debug("Debug logging enabled")
-    logging.info("YCast server starting on %s:%s" % (arguments.address, arguments.port))
     server.run(arguments.config, arguments.address, arguments.port)
 
 
