@@ -9,7 +9,7 @@ MINIMUM_COUNT_GENRE = 5
 MINIMUM_COUNT_COUNTRY = 5
 DEFAULT_STATION_LIMIT = 200
 SHOW_BROKEN_STATIONS = False
-ID_PREFIX = "RB_"
+ID_PREFIX = "RB"
 
 
 def get_json_attr(json, attr):
@@ -21,7 +21,7 @@ def get_json_attr(json, attr):
 
 class Station:
     def __init__(self, station_json):
-        self.id = ID_PREFIX + get_json_attr(station_json, 'id')
+        self.id = generic.generate_stationid_with_prefix(get_json_attr(station_json, 'id'), ID_PREFIX)
         self.name = get_json_attr(station_json, 'name')
         self.url = get_json_attr(station_json, 'url')
         self.icon = get_json_attr(station_json, 'favicon')
@@ -49,7 +49,10 @@ def request(url):
 
 def get_station_by_id(uid):
     station_json = request('stations/byid/' + str(uid))
-    return Station(station_json[0])
+    if station_json and len(station_json):
+        return Station(station_json[0])
+    else:
+        return None
 
 
 def search(name, limit=DEFAULT_STATION_LIMIT):

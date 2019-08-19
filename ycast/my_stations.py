@@ -5,14 +5,14 @@ import yaml
 import ycast.vtuner as vtuner
 import ycast.generic as generic
 
-ID_PREFIX = "MY_"
+ID_PREFIX = "MY"
 
 config_file = 'my_stations.yml'
 
 
 class Station:
     def __init__(self, name, url, category):
-        self.id = ID_PREFIX + '000000'  # TODO: generate meaningful ID
+        self.id = generic.generate_stationid_with_prefix('000000', ID_PREFIX)  # TODO: generate meaningful ID
         self.name = name
         self.url = url
         self.tag = category
@@ -29,6 +29,10 @@ def set_config(config):
         return True
     else:
         return False
+
+
+def get_station_by_id(uid):
+    return None  # TODO: return correct station when custom station id generation is implemented
 
 
 def get_stations_yaml():
