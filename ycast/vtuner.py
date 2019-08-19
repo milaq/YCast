@@ -38,7 +38,7 @@ class Page:
         xml = ET.Element('ListOfItems')
         ET.SubElement(xml, 'ItemCount').text = str(self.count)
         for item in self.items:
-            item.append_to_xml(xml)
+            xml.append(item.to_xml())
         return xml
 
     def to_string(self):
@@ -49,8 +49,8 @@ class Previous:
     def __init__(self, url):
         self.url = url
 
-    def append_to_xml(self, xml):
-        item = ET.SubElement(xml, 'Item')
+    def to_xml(self):
+        item = ET.Element('Item')
         ET.SubElement(item, 'ItemType').text = 'Previous'
         ET.SubElement(item, 'UrlPrevious').text = add_bogus_parameter(self.url)
         ET.SubElement(item, 'UrlPreviousBackUp').text = add_bogus_parameter(self.url)
@@ -61,8 +61,8 @@ class Display:
     def __init__(self, text):
         self.text = text
 
-    def append_to_xml(self, xml):
-        item = ET.SubElement(xml, 'Item')
+    def to_xml(self):
+        item = ET.Element('Item')
         ET.SubElement(item, 'ItemType').text = 'Display'
         ET.SubElement(item, 'Display').text = self.text
         return item
@@ -73,8 +73,8 @@ class Search:
         self.caption = caption
         self.url = url
 
-    def append_to_xml(self, xml):
-        item = ET.SubElement(xml, 'Item')
+    def to_xml(self):
+        item = ET.Element('Item')
         ET.SubElement(item, 'ItemType').text = 'Search'
         ET.SubElement(item, 'SearchURL').text = add_bogus_parameter(self.url)
         ET.SubElement(item, 'SearchURLBackUp').text = add_bogus_parameter(self.url)
@@ -91,8 +91,8 @@ class Directory:
         self.destination = destination
         self.item_count = item_count
 
-    def append_to_xml(self, xml):
-        item = ET.SubElement(xml, 'Item')
+    def to_xml(self):
+        item = ET.Element('Item')
         ET.SubElement(item, 'ItemType').text = 'Dir'
         ET.SubElement(item, 'Title').text = self.title
         ET.SubElement(item, 'UrlDir').text = add_bogus_parameter(self.destination)
@@ -117,8 +117,8 @@ class Station:
         self.bitrate = bitrate
         self.bookmark = bookmark
 
-    def append_to_xml(self, xml):
-        item = ET.SubElement(xml, 'Item')
+    def to_xml(self):
+        item = ET.Element('Item')
         ET.SubElement(item, 'ItemType').text = 'Station'
         ET.SubElement(item, 'StationId').text = self.uid
         ET.SubElement(item, 'StationName').text = self.name
