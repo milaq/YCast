@@ -7,6 +7,7 @@ import ycast.generic as generic
 
 MINIMUM_COUNT_GENRE = 5
 MINIMUM_COUNT_COUNTRY = 5
+MINIMUM_COUNT_LANGUAGE = 5
 DEFAULT_STATION_LIMIT = 200
 SHOW_BROKEN_STATIONS = False
 ID_PREFIX = "RB"
@@ -78,6 +79,20 @@ def get_country_directories():
     return country_directories
 
 
+def get_language_directories():
+    language_directories = []
+    apicall = 'languages'
+    if not SHOW_BROKEN_STATIONS:
+        apicall += '?hidebroken=true'
+    languages_raw = request(apicall)
+    for language_raw in languages_raw:
+        if get_json_attr(language_raw, 'name') and get_json_attr(language_raw, 'stationcount') and \
+                int(get_json_attr(language_raw, 'stationcount')) > MINIMUM_COUNT_LANGUAGE:
+            language_directories.append(generic.Directory(get_json_attr(language_raw, 'name'),
+                                                          get_json_attr(language_raw, 'stationcount')))
+    return language_directories
+
+
 def get_genre_directories():
     genre_directories = []
     apicall = 'tags'
@@ -95,6 +110,15 @@ def get_genre_directories():
 def get_stations_by_country(country):
     stations = []
     stations_json = request('stations/search?order=name&reverse=false&countryExact=true&country=' + str(country))
+    for station_json in stations_json:
+        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == '1':
+            stations.append(Station(station_json))
+    return stations
+
+
+def get_stations_by_language(language):
+    stations = []
+    stations_json = request('stations/search?order=name&reverse=false&languageExact=true&language=' + str(language))
     for station_json in stations_json:
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == '1':
             stations.append(Station(station_json))

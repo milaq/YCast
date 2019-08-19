@@ -11,6 +11,7 @@ PATH_ROOT = 'ycast'
 PATH_MY_STATIONS = 'my_stations'
 PATH_RADIOBROWSER = 'radiobrowser'
 PATH_RADIOBROWSER_COUNTRY = 'country'
+PATH_RADIOBROWSER_LANGUAGE = 'language'
 PATH_RADIOBROWSER_GENRE = 'genre'
 PATH_RADIOBROWSER_POPULAR = 'popular'
 PATH_RADIOBROWSER_SEARCH = 'search'
@@ -87,7 +88,7 @@ def landing(path):
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
     page = vtuner.Page()
-    page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
+    page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 5))
     if my_stations_enabled:
         page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
                                   len(my_stations.get_category_directories())))
@@ -118,6 +119,8 @@ def radiobrowser_landing():
                               len(radiobrowser.get_genre_directories())))
     page.add(vtuner.Directory('Countries', url_for('radiobrowser_countries', _external=True),
                               len(radiobrowser.get_country_directories())))
+    page.add(vtuner.Directory('Languages', url_for('radiobrowser_languages', _external=True),
+                              len(radiobrowser.get_language_directories())))
     page.add(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
                               len(radiobrowser.get_stations_by_votes())))
     page.add(vtuner.Search('Search', url_for('radiobrowser_search', _external=True, path='')))
@@ -133,6 +136,18 @@ def radiobrowser_countries():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>')
 def radiobrowser_country_stations(directory):
     stations = radiobrowser.get_stations_by_country(directory)
+    return get_stations_page(stations, request.args).to_string()
+
+
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/')
+def radiobrowser_languages():
+    directories = radiobrowser.get_language_directories()
+    return get_directories_page('radiobrowser_language_stations', directories, request.args).to_string()
+
+
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/<directory>')
+def radiobrowser_language_stations(directory):
+    stations = radiobrowser.get_stations_by_language(directory)
     return get_stations_page(stations, request.args).to_string()
 
 
