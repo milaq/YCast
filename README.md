@@ -19,6 +19,7 @@ Go ahead and test it with yours, and kindly report the result back :)
 ### Confirmed working
 
  * Yamaha RX-Vx73 series (RX-V373, RX-V473, RX-V573, RX-V673, RX-V773)
+ * Yamaha RX-Vx75 series (RX-V375, RX-V475, RX-V575, RX-V675, RX-V775)
  * Yamaha R-N500
  * Yamaha RX-A820
  * Yamaha RX-A830
@@ -27,7 +28,6 @@ Go ahead and test it with yours, and kindly report the result back :)
 
 ### Unconfirmed/Experimental
 
- * Yamaha RX-Vx75 series (RX-V375, RX-V475, RX-V575, RX-V675, RX-V775)
  * Yamaha RX-Vx77 series (RX-V377, RX-V477, RX-V577, RX-V677, RX-V777)
  * Yamaha RX-Vx79 series (RX-V379, RX-V479, RX-V579, RX-V679, RX-V779)
  * Yamaha RX-Vx81 series (RX-V381, RX-V481, RX-V581, RX-V681, RX-V781)
