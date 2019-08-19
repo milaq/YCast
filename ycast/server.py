@@ -83,11 +83,15 @@ def get_paged_elements(items, requestargs):
 
 def get_station_by_id(stationid):
     station_id_prefix = generic.get_stationid_prefix(stationid)
+    station = None
     if station_id_prefix == my_stations.ID_PREFIX:
-        return my_stations.get_station_by_id(generic.get_stationid_without_prefix(stationid)).to_vtuner()
+        station = my_stations.get_station_by_id(generic.get_stationid_without_prefix(stationid))
     elif station_id_prefix == radiobrowser.ID_PREFIX:
-        return radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid)).to_vtuner()
-    return None
+        station = radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid))
+    if station:
+        return station.to_vtuner()
+    else:
+        return None
 
 
 @app.route('/', defaults={'path': ''})
