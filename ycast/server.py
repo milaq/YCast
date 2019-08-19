@@ -1,10 +1,11 @@
 import logging
 
-from flask import Flask, request, url_for
+from flask import Flask, request, url_for, abort
 
 import ycast.vtuner as vtuner
 import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
+import ycast.generic as generic
 
 
 PATH_ROOT = 'ycast'
@@ -80,12 +81,28 @@ def get_paged_elements(items, requestargs):
     return items[offset:limit]
 
 
+def get_station_by_id(stationid):
+    station_id_prefix = generic.get_stationid_prefix(stationid)
+    if station_id_prefix == my_stations.ID_PREFIX:
+        return my_stations.get_station_by_id(generic.get_stationid_without_prefix(stationid)).to_vtuner()
+    elif station_id_prefix == radiobrowser.ID_PREFIX:
+        return radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid)).to_vtuner()
+    return None
+
+
 @app.route('/', defaults={'path': ''})
 @app.route('/setupapp/<path:path>')
 @app.route('/' + PATH_ROOT + '/', defaults={'path': ''})
 def landing(path):
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
+    if 'statxml.asp' in path and request.args.get('id'):
+        station = get_station_by_id(request.args.get('id'))
+        if station:
+            return station.to_string()
+        else:
+            logging.error("Could not get station with id '%s'", request.args.get('id'))
+            abort(404)
     page = vtuner.Page()
     page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
     if my_stations_enabled:

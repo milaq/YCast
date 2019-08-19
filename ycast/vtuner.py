@@ -132,3 +132,6 @@ class Station:
         ET.SubElement(item, 'Relia').text = '3'
         ET.SubElement(item, 'Bookmark').text = self.bookmark
         return item
+
+    def to_string(self):
+        return XML_HEADER + ET.tostring(self.to_xml()).decode('utf-8')
