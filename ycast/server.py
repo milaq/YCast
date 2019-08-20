@@ -89,7 +89,10 @@ def get_station_by_id(stationid):
     elif station_id_prefix == radiobrowser.ID_PREFIX:
         station = radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid))
     if station:
-        return station.to_vtuner()
+        page = vtuner.Page()
+        page.add(station.to_vtuner())
+        page.set_count(1)
+        return page
     else:
         return None
 
