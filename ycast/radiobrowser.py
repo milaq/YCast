@@ -41,9 +41,13 @@ class Station:
 def request(url):
     logging.debug("Radiobrowser API request: %s", url)
     headers = {'content-type': 'application/json', 'User-Agent': generic.USER_AGENT + '/' + __version__}
-    response = requests.get('http://www.radio-browser.info/webservice/json/' + url, headers=headers)
+    try:
+        response = requests.get('http://www.radio-browser.info/webservice/json/' + url, headers=headers)
+    except requests.exceptions.ConnectionError as err:
+        logging.error("Connection to Radiobrowser API failed (%s)", err)
+        return {}
     if response.status_code != 200:
-        logging.error("Could not fetch data from Radiobrowser (%s)", response.status_code)
+        logging.error("Could not fetch data from Radiobrowser API (HTML status %s)", response.status_code)
         return {}
     return response.json()
 
