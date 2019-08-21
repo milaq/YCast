@@ -1,6 +1,6 @@
 import logging
 
-from flask import Flask, request, url_for
+from flask import Flask, request, url_for, redirect, abort
 
 import ycast.vtuner as vtuner
 import ycast.radiobrowser as radiobrowser
@@ -81,14 +81,21 @@ def get_paged_elements(items, requestargs):
     return items[offset:limit]
 
 
-@app.route('/', defaults={'path': ''})
 @app.route('/setupapp/<path:path>')
-@app.route('/' + PATH_ROOT + '/', defaults={'path': ''})
-def landing(path):
+def upstream(path):
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
     if request.args.get('search'):
         return station_search()
+    if 'loginXML.asp' in path:
+        return redirect(url_for('landing', _external=True), code=302)
+    logging.error("Unhandled upstream query (/setupapp/%s)", path)
+    abort(404)
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/' + PATH_ROOT + '/', defaults={'path': ''})
+def landing(path):
     page = vtuner.Page()
     page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
     if my_stations_enabled:
