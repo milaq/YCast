@@ -2,6 +2,14 @@
 
 # YCast
 
+[![PyPI latest version](https://img.shields.io/pypi/v/ycast?color=success)](https://pypi.org/project/ycast/) [![GitHub latest version](https://img.shields.io/github/v/release/milaq/YCast?color=success&label=github&sort=semver)](https://github.com/milaq/YCast/releases) [![Python version](https://img.shields.io/pypi/pyversions/ycast)](https://www.python.org/downloads/) [![License](https://img.shields.io/pypi/l/ycast)](https://www.gnu.org/licenses/gpl-3.0.en.html) [![GitHub issues](https://img.shields.io/github/issues/milaq/ycast)](https://github.com/milaq/YCast/issues)
+
+[Get it via PyPI](https://pypi.org/project/ycast/)
+
+[Download from GitHub](https://github.com/milaq/YCast/releases)
+
+[Issue tracker](https://github.com/milaq/YCast/issues)
+
 YCast is a self hosted replacement for the vTuner internet radio service which many AVRs use.
 It emulates a vTuner backend to provide your AVR with the necessary information to play self defined categorized internet radio stations and listen to Radio stations listed in the [Community Radio Browser index](http://www.radio-browser.info).
 
