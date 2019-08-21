@@ -8,13 +8,13 @@ import ycast.my_stations as my_stations
 
 
 PATH_ROOT = 'ycast'
+PATH_SEARCH = 'search'
 PATH_MY_STATIONS = 'my_stations'
 PATH_RADIOBROWSER = 'radiobrowser'
 PATH_RADIOBROWSER_COUNTRY = 'country'
 PATH_RADIOBROWSER_LANGUAGE = 'language'
 PATH_RADIOBROWSER_GENRE = 'genre'
 PATH_RADIOBROWSER_POPULAR = 'popular'
-PATH_RADIOBROWSER_SEARCH = 'search'
 
 my_stations_enabled = False
 app = Flask(__name__)
@@ -87,8 +87,10 @@ def get_paged_elements(items, requestargs):
 def landing(path):
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
+    if request.args.get('search'):
+        return station_search()
     page = vtuner.Page()
-    page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 5))
+    page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
     if my_stations_enabled:
         page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
                                   len(my_stations.get_category_directories())))
@@ -123,7 +125,6 @@ def radiobrowser_landing():
                               len(radiobrowser.get_language_directories())))
     page.add(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
                               len(radiobrowser.get_stations_by_votes())))
-    page.add(vtuner.Search('Search', url_for('radiobrowser_search', _external=True, path='')))
     return page.to_string()
 
 
@@ -169,15 +170,16 @@ def radiobrowser_popular():
     return get_stations_page(stations, request.args).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_SEARCH, defaults={'path': ''})
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_SEARCH + '<path:path>')
-def radiobrowser_search(path):
+@app.route('/' + PATH_ROOT + '/' + PATH_SEARCH + '/')
+def station_search():
     query = request.args.get('search')
     if not query or len(query) < 3:
         page = vtuner.Page()
         page.add(vtuner.Previous(url_for('landing', _external=True)))
         page.add(vtuner.Display("Search query too short."))
+        page.set_count(1)
         return page.to_string()
     else:
+        # TODO: we also need to include 'my station' elements
         stations = radiobrowser.search(query)
         return get_stations_page(stations, request.args).to_string()
