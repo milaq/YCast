@@ -1,4 +1,5 @@
 import logging
+import hashlib
 
 import yaml
 
@@ -11,8 +12,8 @@ config_file = 'my_stations.yml'
 
 
 class Station:
-    def __init__(self, name, url, category):
-        self.id = generic.generate_stationid_with_prefix('000000', ID_PREFIX)  # TODO: generate meaningful ID
+    def __init__(self, uid, name, url, category):
+        self.id = generic.generate_stationid_with_prefix(uid, ID_PREFIX)
         self.name = name
         self.url = url
         self.tag = category
@@ -32,7 +33,13 @@ def set_config(config):
 
 
 def get_station_by_id(uid):
-    return None  # TODO: return correct station when custom station id generation is implemented
+    my_stations_yaml = get_stations_yaml()
+    if my_stations_yaml:
+        for category in my_stations_yaml:
+            for station in get_stations_by_category(category):
+                if uid == generic.get_stationid_without_prefix(station.id):
+                    return station
+    return None
 
 
 def get_stations_yaml():
@@ -62,5 +69,13 @@ def get_stations_by_category(category):
     stations = []
     if my_stations_yaml and category in my_stations_yaml:
         for station_name in my_stations_yaml[category]:
-            stations.append(Station(station_name, my_stations_yaml[category][station_name], category))
+            station_url = my_stations_yaml[category][station_name]
+            station_id = str(get_checksum(station_name + station_url)).upper()
+            stations.append(Station(station_id, station_name, station_url, category))
     return stations
+
+
+def get_checksum(feed):
+    hash_feed = feed.encode()
+    hash_object = hashlib.sha256(hash_feed)
+    return hash_object.hexdigest()
