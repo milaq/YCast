@@ -32,7 +32,8 @@ def set_config(config):
 
 
 def get_station_by_id(uid):
-    return None  # TODO: return correct station when custom station id generation is implemented
+    # TODO: return correct station when custom station id generation is implemented, for now just return the very first one for testing
+    return get_stations_by_category(get_category_directories()[0].name)[0]
 
 
 def get_stations_yaml():
