@@ -10,6 +10,7 @@ import ycast.generic as generic
 
 PATH_ROOT = 'ycast'
 PATH_PLAY = 'play'
+PATH_STATION = 'station'
 PATH_SEARCH = 'search'
 PATH_MY_STATIONS = 'my_stations'
 PATH_RADIOBROWSER = 'radiobrowser'
@@ -101,6 +102,8 @@ def upstream(path):
         return vtuner.get_init_token()
     if request.args.get('search'):
         return station_search()
+    if 'statxml.asp' in path and request.args.get('id'):
+        return get_station_info()
     if 'loginXML.asp' in path:
         return redirect(url_for('landing', _external=True), code=302)
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
@@ -219,3 +222,19 @@ def get_stream_url():
         abort(404)
     logging.debug("Station with ID '%s' requested", station.id)
     return redirect(station.url, code=302)
+
+
+@app.route('/' + PATH_ROOT + '/' + PATH_STATION)
+def get_station_info():
+    stationid = request.args.get('id')
+    if not stationid:
+        logging.error("Station info without station ID requested")
+        abort(400)
+    station = get_station_by_id(stationid)
+    if not station:
+        logging.error("Could not get station with id '%s'", stationid)
+        abort(404)
+    page = vtuner.Page()
+    page.add(station.to_vtuner())
+    page.set_count(1)
+    return page.to_string()
