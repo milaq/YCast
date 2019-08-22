@@ -111,7 +111,7 @@ def landing(path):
             logging.error("Could not get station with id '%s'", request.args.get('id'))
             abort(404)
     page = vtuner.Page()
-    page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
+    page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 3))
     if my_stations_enabled:
         page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
                                   len(my_stations.get_category_directories())))
@@ -144,7 +144,6 @@ def radiobrowser_landing():
                               len(radiobrowser.get_country_directories())))
     page.add(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
                               len(radiobrowser.get_stations_by_votes())))
-    page.add(vtuner.Search('Search', url_for('radiobrowser_search', _external=True, path='')))
     return page.to_string()
 
 
