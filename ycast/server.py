@@ -144,6 +144,7 @@ def radiobrowser_landing():
                               len(radiobrowser.get_country_directories())))
     page.add(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
                               len(radiobrowser.get_stations_by_votes())))
+    page.set_count(3)
     return page.to_string()
 
 
