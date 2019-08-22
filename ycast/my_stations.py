@@ -8,7 +8,7 @@ import ycast.generic as generic
 
 ID_PREFIX = "MY"
 
-config_file = 'my_stations.yml'
+config_file = 'stations.yml'
 
 
 class Station:
