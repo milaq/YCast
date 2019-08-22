@@ -110,6 +110,7 @@ class Station:
         self.name = name
         self.description = description
         self.url = strip_https(url)
+        self.trackurl = None
         self.logo = logo
         self.genre = genre
         self.location = location
@@ -117,12 +118,18 @@ class Station:
         self.bitrate = bitrate
         self.bookmark = bookmark
 
+    def set_trackurl(self, url):
+        self.trackurl = url
+
     def to_xml(self):
         item = ET.Element('Item')
         ET.SubElement(item, 'ItemType').text = 'Station'
         ET.SubElement(item, 'StationId').text = self.uid
         ET.SubElement(item, 'StationName').text = self.name
-        ET.SubElement(item, 'StationUrl').text = self.url
+        if self.trackurl:
+            ET.SubElement(item, 'StationUrl').text = self.trackurl
+        else:
+            ET.SubElement(item, 'StationUrl').text = self.url
         ET.SubElement(item, 'StationDesc').text = self.description
         ET.SubElement(item, 'Logo').text = self.logo
         ET.SubElement(item, 'StationFormat').text = self.genre

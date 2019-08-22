@@ -5,9 +5,11 @@ from flask import Flask, request, url_for, redirect, abort
 import ycast.vtuner as vtuner
 import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
+import ycast.generic as generic
 
 
 PATH_ROOT = 'ycast'
+PATH_PLAY = 'play'
 PATH_SEARCH = 'search'
 PATH_MY_STATIONS = 'my_stations'
 PATH_RADIOBROWSER = 'radiobrowser'
@@ -33,12 +35,12 @@ def check_my_stations_feature(config):
     my_stations_enabled = my_stations.set_config(config)
 
 
-def get_directories_page(subdir, directories, requestargs):
+def get_directories_page(subdir, directories, request):
     page = vtuner.Page()
     if len(directories) == 0:
         page.add(vtuner.Display("No entries found."))
         return page
-    for directory in get_paged_elements(directories, requestargs):
+    for directory in get_paged_elements(directories, request.args):
         vtuner_directory = vtuner.Directory(directory.name, url_for(subdir, _external=True, directory=directory.name),
                                             directory.item_count)
         page.add(vtuner_directory)
@@ -46,13 +48,16 @@ def get_directories_page(subdir, directories, requestargs):
     return page
 
 
-def get_stations_page(stations, requestargs):
+def get_stations_page(stations, request, tracked=True):
     page = vtuner.Page()
     if len(stations) == 0:
         page.add(vtuner.Display("No stations found."))
         return page
-    for station in get_paged_elements(stations, requestargs):
-        page.add(station.to_vtuner())
+    for station in get_paged_elements(stations, request.args):
+        vtuner_station = station.to_vtuner()
+        if tracked:
+            vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
+        page.add(vtuner_station)
     page.set_count(len(stations))
     return page
 
@@ -79,6 +84,15 @@ def get_paged_elements(items, requestargs):
     if limit > len(items):
         limit = len(items)
     return items[offset:limit]
+
+
+def get_station_by_id(stationid):
+    station_id_prefix = generic.get_stationid_prefix(stationid)
+    if station_id_prefix == my_stations.ID_PREFIX:
+        return my_stations.get_station_by_id(generic.get_stationid_without_prefix(stationid))
+    elif station_id_prefix == radiobrowser.ID_PREFIX:
+        return radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid))
+    return None
 
 
 @app.route('/setupapp/<path:path>')
@@ -111,13 +125,13 @@ def my_stations_landing():
     page = vtuner.Page()
     page.add(vtuner.Previous(url_for("landing", _external=True)))
     directories = my_stations.get_category_directories()
-    return get_directories_page('my_stations_category', directories, request.args).to_string()
+    return get_directories_page('my_stations_category', directories, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/<directory>')
 def my_stations_category(directory):
     stations = my_stations.get_stations_by_category(directory)
-    return get_stations_page(stations, request.args).to_string()
+    return get_stations_page(stations, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/')
@@ -138,43 +152,43 @@ def radiobrowser_landing():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/')
 def radiobrowser_countries():
     directories = radiobrowser.get_country_directories()
-    return get_directories_page('radiobrowser_country_stations', directories, request.args).to_string()
+    return get_directories_page('radiobrowser_country_stations', directories, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>')
 def radiobrowser_country_stations(directory):
     stations = radiobrowser.get_stations_by_country(directory)
-    return get_stations_page(stations, request.args).to_string()
+    return get_stations_page(stations, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/')
 def radiobrowser_languages():
     directories = radiobrowser.get_language_directories()
-    return get_directories_page('radiobrowser_language_stations', directories, request.args).to_string()
+    return get_directories_page('radiobrowser_language_stations', directories, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/<directory>')
 def radiobrowser_language_stations(directory):
     stations = radiobrowser.get_stations_by_language(directory)
-    return get_stations_page(stations, request.args).to_string()
+    return get_stations_page(stations, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/')
 def radiobrowser_genres():
     directories = radiobrowser.get_genre_directories()
-    return get_directories_page('radiobrowser_genre_stations', directories, request.args).to_string()
+    return get_directories_page('radiobrowser_genre_stations', directories, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>')
 def radiobrowser_genre_stations(directory):
     stations = radiobrowser.get_stations_by_genre(directory)
-    return get_stations_page(stations, request.args).to_string()
+    return get_stations_page(stations, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_POPULAR + '/')
 def radiobrowser_popular():
     stations = radiobrowser.get_stations_by_votes()
-    return get_stations_page(stations, request.args).to_string()
+    return get_stations_page(stations, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_SEARCH + '/')
@@ -189,4 +203,18 @@ def station_search():
     else:
         # TODO: we also need to include 'my station' elements
         stations = radiobrowser.search(query)
-        return get_stations_page(stations, request.args).to_string()
+        return get_stations_page(stations, request).to_string()
+
+
+@app.route('/' + PATH_ROOT + '/' + PATH_PLAY)
+def get_stream_url():
+    stationid = request.args.get('id')
+    if not stationid:
+        logging.error("Stream URL without station ID requested")
+        abort(400)
+    station = get_station_by_id(stationid)
+    if not station:
+        logging.error("Could not get station with id '%s'", stationid)
+        abort(404)
+    logging.debug("Station with ID '%s' requested", station.id)
+    return redirect(station.url, code=302)
