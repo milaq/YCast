@@ -24,7 +24,11 @@ def get_icon_from_url(iconurl):
     try:
         image = Image.open(io.BytesIO(response.content))
         image = image.convert("RGB")
-        image = image.resize((MAX_SIZE, MAX_SIZE), Image.ANTIALIAS)  # TODO: keep aspect ratio
+        if image.size[0] > image.size[1]:
+            ratio = MAX_SIZE / image.size[0]
+        else:
+            ratio = MAX_SIZE / image.size[1]
+        image = image.resize((int(image.size[0] * ratio), int(image.size[1] * ratio)), Image.ANTIALIAS)
         with io.BytesIO() as output_img:
             image.save(output_img, format="JPEG")
             image_conv = output_img.getvalue()
