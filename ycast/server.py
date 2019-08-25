@@ -125,8 +125,6 @@ def landing(path):
 
 @app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/')
 def my_stations_landing():
-    page = vtuner.Page()
-    page.add(vtuner.Previous(url_for("landing", _external=True)))
     directories = my_stations.get_category_directories()
     return get_directories_page('my_stations_category', directories, request).to_string()
 
@@ -140,7 +138,6 @@ def my_stations_category(directory):
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/')
 def radiobrowser_landing():
     page = vtuner.Page()
-    page.add(vtuner.Previous(url_for('landing', _external=True)))
     page.add(vtuner.Directory('Genres', url_for('radiobrowser_genres', _external=True),
                               len(radiobrowser.get_genre_directories())))
     page.add(vtuner.Directory('Countries', url_for('radiobrowser_countries', _external=True),
@@ -200,7 +197,6 @@ def station_search():
     query = request.args.get('search')
     if not query or len(query) < 3:
         page = vtuner.Page()
-        page.add(vtuner.Previous(url_for('landing', _external=True)))
         page.add(vtuner.Display("Search query too short."))
         page.set_count(1)
         return page.to_string()
