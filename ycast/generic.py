@@ -1,6 +1,9 @@
 import logging
+import os
 
 USER_AGENT = 'YCast'
+VAR_PATH = os.path.expanduser("~") + '/.ycast'
+CACHE_PATH = VAR_PATH + '/cache'
 
 
 class Directory:
@@ -31,3 +34,15 @@ def get_stationid_without_prefix(uid):
         logging.error("Could not extract stationid (Invalid station id length)")
         return None
     return uid[3:]
+
+
+def get_cache_path(cache_name):
+    cache_path = CACHE_PATH + '/' + cache_name
+    try:
+        os.makedirs(cache_path)
+    except FileExistsError:
+        pass
+    except PermissionError:
+        logging.error("Could not create cache folders (%s) because of access permissions", cache_path)
+        return None
+    return cache_path
