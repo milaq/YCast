@@ -39,7 +39,8 @@ def check_my_stations_feature(config):
 def get_directories_page(subdir, directories, request):
     page = vtuner.Page()
     if len(directories) == 0:
-        page.add(vtuner.Display("No entries found."))
+        page.add(vtuner.Display("No entries found"))
+        page.set_count(1)
         return page
     for directory in get_paged_elements(directories, request.args):
         vtuner_directory = vtuner.Directory(directory.name, url_for(subdir, _external=True, directory=directory.name),
@@ -52,7 +53,8 @@ def get_directories_page(subdir, directories, request):
 def get_stations_page(stations, request, tracked=True):
     page = vtuner.Page()
     if len(stations) == 0:
-        page.add(vtuner.Display("No stations found."))
+        page.add(vtuner.Display("No stations found"))
+        page.set_count(1)
         return page
     for station in get_paged_elements(stations, request.args):
         vtuner_station = station.to_vtuner()
@@ -120,6 +122,7 @@ def landing(path):
                                   len(my_stations.get_category_directories())))
     else:
         page.add(vtuner.Display("'My Stations' feature not configured."))
+        page.set_count(1)
     return page.to_string()
 
 
@@ -197,7 +200,7 @@ def station_search():
     query = request.args.get('search')
     if not query or len(query) < 3:
         page = vtuner.Page()
-        page.add(vtuner.Display("Search query too short."))
+        page.add(vtuner.Display("Search query too short"))
         page.set_count(1)
         return page.to_string()
     else:
@@ -229,7 +232,10 @@ def get_station_info():
     station = get_station_by_id(stationid)
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
-        abort(404)
+        page = vtuner.Page()
+        page.add(vtuner.Display("Station not found"))
+        page.set_count(1)
+        return page.to_string()
     page = vtuner.Page()
     page.add(station.to_vtuner())
     page.set_count(1)
