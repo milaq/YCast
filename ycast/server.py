@@ -224,7 +224,7 @@ def get_stream_url():
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_STATION)
-def get_station_info():
+def get_station_info(tracked=True):
     stationid = request.args.get('id')
     if not stationid:
         logging.error("Station info without station ID requested")
@@ -236,7 +236,10 @@ def get_station_info():
         page.add(vtuner.Display("Station not found"))
         page.set_count(1)
         return page.to_string()
+    vtuner_station = station.to_vtuner()
+    if tracked:
+        vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
     page = vtuner.Page()
-    page.add(station.to_vtuner())
+    page.add(vtuner_station)
     page.set_count(1)
     return page.to_string()
