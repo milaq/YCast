@@ -60,6 +60,7 @@ Python packages:
  * `requests`
  * `flask`
  * `PyYAML`
+ * `Pillow`
  
 ## Usage
 
@@ -126,5 +127,4 @@ You can also have a look at the provided [example](examples/stations.yml.example
 
  * vTuner compatible AVRs don't do HTTPS. As such, YCast blindly rewrites every HTTPS station URL to HTTP. Most station
 providers which utilize HTTPS for their stations also provide an HTTP stream. Thus, most HTTPS stations should work.
- * Some station logos are not compatible with the vTuner frontend.
  * The built-in bookmark function does not work at the moment. You need to manually add your favourite stations for now.

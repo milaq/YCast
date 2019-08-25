@@ -108,13 +108,13 @@ class Directory:
 
 
 class Station:
-    def __init__(self, uid, name, description, url, logo, genre, location, mime, bitrate, bookmark):
+    def __init__(self, uid, name, description, url, icon, genre, location, mime, bitrate, bookmark):
         self.uid = uid
         self.name = name
         self.description = description
         self.url = strip_https(url)
         self.trackurl = None
-        self.logo = logo
+        self.icon = icon
         self.genre = genre
         self.location = location
         self.mime = mime
@@ -134,7 +134,7 @@ class Station:
         else:
             ET.SubElement(item, 'StationUrl').text = self.url
         ET.SubElement(item, 'StationDesc').text = self.description
-        ET.SubElement(item, 'Logo').text = self.logo
+        ET.SubElement(item, 'Logo').text = self.icon
         ET.SubElement(item, 'StationFormat').text = self.genre
         ET.SubElement(item, 'StationLocation').text = self.location
         ET.SubElement(item, 'StationBandWidth').text = self.bitrate

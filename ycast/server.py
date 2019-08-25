@@ -1,17 +1,19 @@
 import logging
 
-from flask import Flask, request, url_for, redirect, abort
+from flask import Flask, request, url_for, redirect, abort, make_response
 
 import ycast.vtuner as vtuner
 import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
 import ycast.generic as generic
+import ycast.station_icons as station_icons
 
 
 PATH_ROOT = 'ycast'
 PATH_PLAY = 'play'
 PATH_STATION = 'station'
 PATH_SEARCH = 'search'
+PATH_ICON = 'icon'
 PATH_MY_STATIONS = 'my_stations'
 PATH_RADIOBROWSER = 'radiobrowser'
 PATH_RADIOBROWSER_COUNTRY = 'country'
@@ -60,6 +62,7 @@ def get_stations_page(stations, request, tracked=True):
         vtuner_station = station.to_vtuner()
         if tracked:
             vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
+        vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
         page.add(vtuner_station)
     page.set_count(len(stations))
     return page
@@ -239,7 +242,30 @@ def get_station_info(tracked=True):
     vtuner_station = station.to_vtuner()
     if tracked:
         vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
+    vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
     page = vtuner.Page()
     page.add(vtuner_station)
     page.set_count(1)
     return page.to_string()
+
+
+@app.route('/' + PATH_ROOT + '/' + PATH_ICON)
+def get_station_icon():
+    stationid = request.args.get('id')
+    if not stationid:
+        logging.error("Station icon without station ID requested")
+        abort(400)
+    station = get_station_by_id(stationid)
+    if not station:
+        logging.error("Could not get station with id '%s'", stationid)
+        abort(404)
+    if not hasattr(station, 'icon') or not station.icon:
+        logging.warning("No icon information found for station with id '%s'", stationid)
+        abort(404)
+    station_icon = station_icons.get_icon_from_url(station.icon)
+    if not station_icon:
+        logging.error("Could not convert station icon for station with id '%s'", stationid)
+        abort(404)
+    response = make_response(station_icon)
+    response.headers.set('Content-Type', 'image/jpeg')
+    return response

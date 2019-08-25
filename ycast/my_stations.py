@@ -17,9 +17,10 @@ class Station:
         self.name = name
         self.url = url
         self.tag = category
+        self.icon = None
 
     def to_vtuner(self):
-        return vtuner.Station(self.id, self.name, self.tag, self.url, None, self.tag, None, None, None, None)
+        return vtuner.Station(self.id, self.name, self.tag, self.url, self.icon, self.tag, None, None, None, None)
 
 
 def set_config(config):
