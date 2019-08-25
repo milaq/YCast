@@ -27,6 +27,7 @@ class Page:
     def __init__(self):
         self.items = []
         self.count = -1
+        self.dontcache = False
 
     def add(self, item):
         self.items.append(item)
@@ -37,6 +38,8 @@ class Page:
     def to_xml(self):
         xml = ET.Element('ListOfItems')
         ET.SubElement(xml, 'ItemCount').text = str(self.count)
+        if self.dontcache:
+            ET.SubElement(xml, 'NoDataCache').text = 'Yes'
         for item in self.items:
             xml.append(item.to_xml())
         return xml
