@@ -92,13 +92,14 @@ def get_paged_elements(items, requestargs):
     return items[offset:limit]
 
 
-def get_station_by_id(stationid):
+def get_station_by_id(stationid, additional_info=False):
     station_id_prefix = generic.get_stationid_prefix(stationid)
     if station_id_prefix == my_stations.ID_PREFIX:
         return my_stations.get_station_by_id(generic.get_stationid_without_prefix(stationid))
     elif station_id_prefix == radiobrowser.ID_PREFIX:
         station = radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid))
-        station.get_playable_url()
+        if additional_info:
+            station.get_playable_url()
         return station
     return None
 
@@ -220,7 +221,7 @@ def get_stream_url():
     if not stationid:
         logging.error("Stream URL without station ID requested")
         abort(400)
-    station = get_station_by_id(stationid)
+    station = get_station_by_id(stationid, additional_info=True)
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)
@@ -234,7 +235,7 @@ def get_station_info(tracked=True):
     if not stationid:
         logging.error("Station info without station ID requested")
         abort(400)
-    station = get_station_by_id(stationid)
+    station = get_station_by_id(stationid, additional_info=not tracked)
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
         page = vtuner.Page()
