@@ -113,14 +113,14 @@ def upstream(path):
     if 'statxml.asp' in path and request.args.get('id'):
         return get_station_info()
     if 'loginXML.asp' in path:
-        return redirect(url_for('landing', _external=True), code=302)
+        return landing()
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
     abort(404)
 
 
 @app.route('/', defaults={'path': ''})
 @app.route('/' + PATH_ROOT + '/', defaults={'path': ''})
-def landing(path):
+def landing(path=''):
     page = vtuner.Page()
     page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
     if my_stations_enabled:
