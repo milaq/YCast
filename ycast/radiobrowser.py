@@ -37,6 +37,13 @@ class Station:
         return vtuner.Station(self.id, self.name, ', '.join(self.tags), self.url, self.icon,
                               self.tags[0], self.country, self.codec, self.bitrate, None)
 
+    def get_playable_url(self):
+        try:
+            playable_url_json = request('url/' + generic.get_stationid_without_prefix(self.id))[0]
+            self.url = playable_url_json['url']
+        except (IndexError, KeyError):
+            logging.error("Could not retrieve first playlist item for station with id '%s'", self.id)
+
 
 def request(url):
     logging.debug("Radiobrowser API request: %s", url)
