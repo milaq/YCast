@@ -21,6 +21,7 @@ PATH_RADIOBROWSER_LANGUAGE = 'language'
 PATH_RADIOBROWSER_GENRE = 'genre'
 PATH_RADIOBROWSER_POPULAR = 'popular'
 
+station_tracking = False
 my_stations_enabled = False
 app = Flask(__name__)
 
@@ -52,7 +53,7 @@ def get_directories_page(subdir, directories, request):
     return page
 
 
-def get_stations_page(stations, request, tracked=True):
+def get_stations_page(stations, request):
     page = vtuner.Page()
     if len(stations) == 0:
         page.add(vtuner.Display("No stations found"))
@@ -60,7 +61,7 @@ def get_stations_page(stations, request, tracked=True):
         return page
     for station in get_paged_elements(stations, request.args):
         vtuner_station = station.to_vtuner()
-        if tracked:
+        if station_tracking:
             vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
         vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
         page.add(vtuner_station)
@@ -230,12 +231,12 @@ def get_stream_url():
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_STATION)
-def get_station_info(tracked=True):
+def get_station_info():
     stationid = request.args.get('id')
     if not stationid:
         logging.error("Station info without station ID requested")
         abort(400)
-    station = get_station_by_id(stationid, additional_info=not tracked)
+    station = get_station_by_id(stationid, additional_info=(not station_tracking))
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
         page = vtuner.Page()
@@ -243,7 +244,7 @@ def get_station_info(tracked=True):
         page.set_count(1)
         return page.to_string()
     vtuner_station = station.to_vtuner()
-    if tracked:
+    if station_tracking:
         vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
     vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
     page = vtuner.Page()
