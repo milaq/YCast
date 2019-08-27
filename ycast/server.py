@@ -113,7 +113,7 @@ def upstream(path):
     if 'statxml.asp' in path and request.args.get('id'):
         return get_station_info()
     if 'loginXML.asp' in path:
-        return landing()
+        return vtuner_redirect(url_for('landing', _external=True))
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
     abort(404)
 
@@ -226,7 +226,7 @@ def get_stream_url():
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)
     logging.debug("Station with ID '%s' requested", station.id)
-    return redirect(station.url, code=302)
+    return vtuner_redirect(station.url)
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_STATION)
@@ -271,4 +271,19 @@ def get_station_icon():
         abort(404)
     response = make_response(station_icon)
     response.headers.set('Content-Type', 'image/jpeg')
+    return response
+
+
+def vtuner_redirect(url):
+    response = redirect(url, code='302 Object moved')
+    headers = dict(response.headers)
+    headers.update({'Content-Type': 'text/html',
+                    'Connection': 'close',
+                    'X-Powered-By': 'ASP.NET',
+                    'Server': 'Microsoft-IIS/7.5',
+                    'Cache-Control': 'private'})
+    response.headers = headers
+    response.data = "<head><title>Object moved</title></head>\n" \
+                    "<body><h1>Object Moved</h1>This object may be found " \
+                    "<a HREF=\"%s\">here</a>.</body>\n" % url
     return response
