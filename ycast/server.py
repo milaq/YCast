@@ -113,7 +113,7 @@ def upstream(path):
     if 'statxml.asp' in path and request.args.get('id'):
         return get_station_info()
     if 'loginXML.asp' in path:
-        return vtuner_redirect(url_for('landing', _external=True))
+        return landing()
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
     abort(404)
 
@@ -275,6 +275,7 @@ def get_station_icon():
 
 
 def vtuner_redirect(url):
+    url = 'http://radioyamaha.vtuner.com/setupapp/yamaha/mp3/YradioSample.mp3'
     response = redirect(url, code='302 Object moved')
     headers = dict(response.headers)
     headers.update({'Content-Type': 'text/html',
