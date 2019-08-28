@@ -275,16 +275,5 @@ def get_station_icon():
 
 
 def vtuner_redirect(url):
-    url = 'http://radioyamaha.vtuner.com/setupapp/yamaha/mp3/YradioSample.mp3'
-    response = redirect(url, code='302 Object moved')
-    headers = dict(response.headers)
-    headers.update({'Content-Type': 'text/html',
-                    'Connection': 'close',
-                    'X-Powered-By': 'ASP.NET',
-                    'Server': 'Microsoft-IIS/7.5',
-                    'Cache-Control': 'private'})
-    response.headers = headers
-    response.data = "<head><title>Object moved</title></head>\n" \
-                    "<body><h1>Object Moved</h1>This object may be found " \
-                    "<a HREF=\"%s\">here</a>.</body>\n" % url
-    return response
+    url = 'http://radioyamaha.vtuner.com/foo.mp3'
+    return redirect(url, code=302)
