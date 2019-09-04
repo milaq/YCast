@@ -1,4 +1,5 @@
 import logging
+import re
 
 from flask import Flask, request, url_for, redirect, abort, make_response
 
@@ -103,6 +104,13 @@ def get_station_by_id(stationid, additional_info=False):
             station.get_playable_url()
         return station
     return None
+
+
+def vtuner_redirect(url):
+    if request and request.host and not re.search("^[A-Za-z0-9]+\.vtuner\.com$", request.host):
+        logging.warning("You are not accessing a YCast redirect with a whitelisted host url (*.vtuner.com). "
+                        "Some AVRs have problems with this. The requested host was: %s", request.host)
+    return redirect(url, code=302)
 
 
 @app.route('/setupapp/<path:path>')
@@ -227,7 +235,7 @@ def get_stream_url():
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)
     logging.debug("Station with ID '%s' requested", station.id)
-    return redirect(station.url, code=302)
+    return vtuner_redirect(station.url)
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_STATION)
