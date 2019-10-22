@@ -37,6 +37,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Yamaha RX-A830
  * Onkyo TX-NR414
  * Marantz Melody Media M-CR610
+ * Yamaha NP-S2000
 
 ### Unconfirmed/Experimental
 
