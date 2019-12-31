@@ -35,6 +35,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Yamaha R-N500
  * Yamaha RX-A820
  * Yamaha RX-A830
+ * Yamaha RX-V500D
  * Onkyo TX-NR414
  * Marantz Melody Media M-CR610
 
@@ -64,7 +65,7 @@ Python packages:
  
 ## Usage
 
-YCast really does not need much computing power nor bandwidth, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi.
+YCast really does not need much computing power nor bandwidth, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi or router with DD-WRT/OpenWrt.
 
 ### DNS entries
 
