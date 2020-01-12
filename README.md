@@ -29,19 +29,22 @@ Any reported device helps the community to see which AVRs work properly and whic
 
 ### Confirmed working
 
- * Yamaha RX-Vx73 series (RX-V373, RX-V473, RX-V573, RX-V673, RX-V773)
- * Yamaha RX-Vx75 series (RX-V375, RX-V475, RX-V575, RX-V675, RX-V775)
- * Yamaha RX-Vx77 series (RX-V377, RX-V477, RX-V577, RX-V677, RX-V777)
+ * Yamaha RX-V_71 series with network connectivity (RX-V671, RX-V771)
+ * Yamaha RX-V_73 series with network connectivity (RX-V473, RX-V573, RX-V673, RX-V773)
+ * Yamaha RX-V_75 series (RX-V375, RX-V475, RX-V575, RX-V675, RX-V775)
+ * Yamaha RX-V_77 series (RX-V377, RX-V477, RX-V577, RX-V677, RX-V777)
  * Yamaha R-N500
  * Yamaha RX-A820
  * Yamaha RX-A830
  * Onkyo TX-NR414
+ * Onkyo TX-NR616
+ * Denon AVR-X_000 series (AVR-X1000, AVR-2000, AVR-X3000, AVR-X4000)
  * Marantz Melody Media M-CR610
 
 ### Unconfirmed/Experimental
 
- * Yamaha RX-Vx79 series (RX-V379, RX-V479, RX-V579, RX-V679, RX-V779)
- * Yamaha RX-Vx81 series (RX-V381, RX-V481, RX-V581, RX-V681, RX-V781)
+ * Yamaha RX-V_79 series (RX-V379, RX-V479, RX-V579, RX-V679, RX-V779)
+ * Yamaha RX-V_81 series (RX-V381, RX-V481, RX-V581, RX-V681, RX-V781)
  * Yamaha RX-S600D
  * Yamaha RX-S601D
  * Yamaha WX-030
@@ -49,9 +52,8 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Yamaha RX-V2700
  * Yamaha RX-V3800
  * Yamaha CX-A5000
- * Denon AVR-Xx000 series (AVR-X1000, AVR-2000, AVR-X3000, AVR-X4000)
- * Denon AVR-Xx100W series (AVR-X1100W, AVR-2100W, AVR-X3100W, AVR-X4100W)
- * Denon AVR-Xx300W series (AVR-X1300W, AVR-2300W, AVR-X3300W)
+ * Denon AVR-X_100W series (AVR-X1100W, AVR-2100W, AVR-X3100W, AVR-X4100W)
+ * Denon AVR-X_300W series (AVR-X1300W, AVR-2300W, AVR-X3300W)
 
 ## Dependencies:
 Python version: `3`
