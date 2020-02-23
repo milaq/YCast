@@ -39,6 +39,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Onkyo TX-NR414
  * Onkyo TX-NR616
  * Denon AVR-X_000 series (AVR-X1000, AVR-2000, AVR-X3000, AVR-X4000)
+ * Denon DRA-100
  * Marantz Melody Media M-CR610
 
 ### Unconfirmed/Experimental
