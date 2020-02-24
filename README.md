@@ -81,8 +81,8 @@ You need to create a manual entry in your DNS server (read 'Router' for most hom
 #### Using Dnsmasq resolver
 
 Retrieve the Dnsmasq settings in your router :
-- **Tomato** : Go to *Advanced > DHCP/DNS >* Use Internal DNS
-- **DD-WRT** : Go to *Services > Services > DNSMasq/DNS >* Enable AND Local DNS (both checked)
+- **Tomato** : Go to *Advanced > DHCP/DNS >* **Use Internal DNS**
+- **DD-WRT** : Go to *Services > Services > DNSMasq/DNS >* **Enable AND Local DNS** (both checked)
 
 Then add this custom dnsmasq configuration to locally resolv `*.vtuner.com` : 
 ```
