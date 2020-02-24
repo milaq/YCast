@@ -78,6 +78,18 @@ You need to create a manual entry in your DNS server (read 'Router' for most hom
   * Onkyo AVRs: `onkyo.vtuner.com` (and optionally `onkyo2.vtuner.com`)
   * Denon/Marantz AVRs: `denon.vtuner.com` (and optionally `denon2.vtuner.com`)
 
+#### Using Dnsmasq resolver
+
+Retrieve the Dnsmasq settings in your router :
+- **Tomato** : Go to *Advanced > DHCP/DNS > Use Internal DNS*
+- **DD-WRT** : Go to *Services > Services > DNSMasq/DNS >* Enable AND Local DNS (both checked)
+
+Then add this custom dnsmasq configuration to locally resolv `*.vtuner.com` : 
+```
+address=/.vtuner.com/192.168.0.10
+```
+*Note : 192.168.0.10 is the machine running YCast*
+
 
 ### Running the server
 
