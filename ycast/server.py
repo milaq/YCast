@@ -73,6 +73,8 @@ def get_stations_page(stations, request):
 def get_paged_elements(items, requestargs):
     if requestargs.get('startitems'):
         offset = int(requestargs.get('startitems')) - 1
+    elif requestargs.get('startItems'):
+        offset = int(requestargs.get('startItems')) - 1
     elif requestargs.get('start'):
         offset = int(requestargs.get('start')) - 1
     else:
@@ -82,6 +84,8 @@ def get_paged_elements(items, requestargs):
         return []
     if requestargs.get('enditems'):
         limit = int(requestargs.get('enditems'))
+    elif requestargs.get('endItems'):
+        limit = int(requestargs.get('endItems'))
     elif requestargs.get('start') and requestargs.get('howmany'):
         limit = int(requestargs.get('start')) - 1 + int(requestargs.get('howmany'))
     else:
