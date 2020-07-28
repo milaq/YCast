@@ -142,7 +142,7 @@ class Station:
         if self.location:
             ET.SubElement(item, 'StationLocation').text = self.location
         if self.bitrate:
-            ET.SubElement(item, 'StationBandWidth').text = self.bitrate
+            ET.SubElement(item, 'StationBandWidth').text = str(self.bitrate)
         if self.mime:
             ET.SubElement(item, 'StationMime').text = self.mime
         ET.SubElement(item, 'Relia').text = '3'

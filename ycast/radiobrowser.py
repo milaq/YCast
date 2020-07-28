@@ -22,7 +22,7 @@ def get_json_attr(json, attr):
 
 class Station:
     def __init__(self, station_json):
-        self.id = generic.generate_stationid_with_prefix(get_json_attr(station_json, 'id'), ID_PREFIX)
+        self.id = generic.generate_stationid_with_prefix(get_json_attr(station_json, 'stationuuid'), ID_PREFIX)
         self.name = get_json_attr(station_json, 'name')
         self.url = get_json_attr(station_json, 'url')
         self.icon = get_json_attr(station_json, 'favicon')
@@ -49,7 +49,7 @@ def request(url):
     logging.debug("Radiobrowser API request: %s", url)
     headers = {'content-type': 'application/json', 'User-Agent': generic.USER_AGENT + '/' + __version__}
     try:
-        response = requests.get('http://www.radio-browser.info/webservice/json/' + url, headers=headers)
+        response = requests.get('https://de1.api.radio-browser.info/json/' + url, headers=headers)
     except requests.exceptions.ConnectionError as err:
         logging.error("Connection to Radiobrowser API failed (%s)", err)
         return {}
@@ -58,9 +58,8 @@ def request(url):
         return {}
     return response.json()
 
-
 def get_station_by_id(uid):
-    station_json = request('stations/byid/' + str(uid))
+    station_json = request('stations/byuuid?uuids=' + str(uid))
     if station_json and len(station_json):
         return Station(station_json[0])
     else:
@@ -71,7 +70,7 @@ def search(name, limit=DEFAULT_STATION_LIMIT):
     stations = []
     stations_json = request('stations/search?order=name&reverse=false&limit=' + str(limit) + '&name=' + str(name))
     for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == '1':
+        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
 
@@ -120,27 +119,27 @@ def get_genre_directories():
 
 def get_stations_by_country(country):
     stations = []
-    stations_json = request('stations/search?order=name&reverse=false&countryExact=true&country=' + str(country))
+    stations_json = request('stations/bycountryexact/' + str(country) +'?order=name&reverse=false')
     for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == '1':
+        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
 
 
 def get_stations_by_language(language):
     stations = []
-    stations_json = request('stations/search?order=name&reverse=false&languageExact=true&language=' + str(language))
+    stations_json = request('stations/bylanguageexact/' + str(language) + '?order=name&reverse=false')
     for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == '1':
+        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
 
 
 def get_stations_by_genre(genre):
     stations = []
-    stations_json = request('stations/search?order=name&reverse=false&tagExact=true&tag=' + str(genre))
+    stations_json = request('stations/bytagexact/' + str(genre) + '?order=name&reverse=false')
     for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == '1':
+        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
 
@@ -149,6 +148,6 @@ def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
     stations = []
     stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
     for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == '1':
+        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
