@@ -104,7 +104,7 @@ def get_station_by_id(stationid, additional_info=False):
         return my_stations.get_station_by_id(generic.get_stationid_without_prefix(stationid))
     elif station_id_prefix == radiobrowser.ID_PREFIX:
         station = radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid))
-        if additional_info:
+        if station and additional_info:
             station.get_playable_url()
         return station
     return None
@@ -121,7 +121,7 @@ def vtuner_redirect(url):
 def upstream(path):
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
-    if request.args.get('search'):
+    if request.args.get('search') or request.args.get('Search'):
         return station_search()
     if 'statxml.asp' in path and request.args.get('id'):
         return get_station_info()
@@ -221,15 +221,19 @@ def radiobrowser_popular():
 @app.route('/' + PATH_ROOT + '/' + PATH_SEARCH + '/')
 def station_search():
     query = request.args.get('search')
+    if not query:
+        query = request.args.get('Search')
     if not query or len(query) < 3:
         page = vtuner.Page()
         page.add(vtuner.Display("Search query too short"))
         page.set_count(1)
         return page.to_string()
+    station = get_station_by_id(query, additional_info=(not station_tracking))
+    if station:
+        stations = [station]
     else:
-        # TODO: we also need to include 'my station' elements
         stations = radiobrowser.search(query)
-        return get_stations_page(stations, request).to_string()
+    return get_stations_page(stations, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_PLAY)
