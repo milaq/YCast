@@ -125,6 +125,10 @@ def upstream(path):
         return station_search()
     if 'statxml.asp' in path and request.args.get('id'):
         return get_station_info()
+    if 'navXML.asp' in path:
+        return radiobrowser_landing()
+    if 'FavXML.asp' in path:
+        return my_stations_landing()
     if 'loginXML.asp' in path:
         return landing()
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
