@@ -1,0 +1,17 @@
+#!/opt/bin/python
+
+# Path to cloned YCast repository
+PATH_YCAST = '/jffs/srv/YCast'
+
+# Path to my stations file
+PATH_MY_STATIONS = '/jffs/www/stations.yml'
+
+import sys
+sys.path.insert(0, PATH_YCAST)
+
+from flup.server.fcgi import WSGIServer
+from ycast import server
+
+if __name__ == '__main__':
+    server.check_my_stations_feature(PATH_MY_STATIONS)
+    WSGIServer(server.app).run()

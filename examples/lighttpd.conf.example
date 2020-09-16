@@ -1,0 +1,11 @@
+$HTTP["host"] =~ ".(radiosetup|vtuner).com" {
+fastcgi.server = (
+    "/" =>
+    ((  "socket" => "/tmp/ycast-fcgi.sock",
+        "bin-path" => "/jffs/srv/ycast.fcgi",
+        "check-local" => "disable",
+        "max-procs" => 1,
+        "fix-root-scriptname" => "enable",
+    ))
+)
+}

@@ -123,6 +123,10 @@ This can be used together with [this systemd service example](examples/ycast.ser
 
 You can also setup a proper WSGI server. See the [official Flask documentation](https://flask.palletsprojects.com/en/1.1.x/deploying/).
 
+For example deployment on embedded device have a look at:
+ * [ycast.fcgi](examples/ycast.fcgi.example) - FastCGI server file using [flup](https://www.saddi.com/software/flup/).
+ * [lighttpd configuration stub](examples/lighttpd.conf.example) for YCast FastCGI server.
+
 ### Custom stations
 
 If you want to use the 'My Stations' feature, create a `stations.yml` and run YCast with the `-c` switch to specify the path to it. The config follows a basic YAML structure (see below).
