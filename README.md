@@ -34,6 +34,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Denon AVR-X2200W
  * Denon CEOL piccolo N5
  * Denon CEOL N9
+ * Denon DNP-720AE
  * Denon DNP-730AE
  * Denon DRA-100
  * Marantz Melody Media M-CR610
