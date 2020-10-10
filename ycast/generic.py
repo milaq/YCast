@@ -7,9 +7,13 @@ CACHE_PATH = VAR_PATH + '/cache'
 
 
 class Directory:
-    def __init__(self, name, item_count):
+    def __init__(self, name, item_count, displayname=None):
         self.name = name
         self.item_count = item_count
+        if displayname:
+            self.displayname = displayname
+        else:
+            self.displayname = name
 
 
 def generate_stationid_with_prefix(uid, prefix):

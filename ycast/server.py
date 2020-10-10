@@ -47,7 +47,8 @@ def get_directories_page(subdir, directories, request):
         page.set_count(1)
         return page
     for directory in get_paged_elements(directories, request.args):
-        vtuner_directory = vtuner.Directory(directory.name, url_for(subdir, _external=True, directory=directory.name),
+        vtuner_directory = vtuner.Directory(directory.displayname,
+                                            url_for(subdir, _external=True, directory=directory.name),
                                             directory.item_count)
         page.add(vtuner_directory)
     page.set_count(len(directories))

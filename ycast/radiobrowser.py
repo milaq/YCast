@@ -101,7 +101,8 @@ def get_language_directories():
         if get_json_attr(language_raw, 'name') and get_json_attr(language_raw, 'stationcount') and \
                 int(get_json_attr(language_raw, 'stationcount')) > MINIMUM_COUNT_LANGUAGE:
             language_directories.append(generic.Directory(get_json_attr(language_raw, 'name'),
-                                                          get_json_attr(language_raw, 'stationcount')))
+                                                          get_json_attr(language_raw, 'stationcount'),
+                                                          get_json_attr(language_raw, 'name').title()))
     return language_directories
 
 
@@ -115,7 +116,8 @@ def get_genre_directories():
         if get_json_attr(genre_raw, 'name') and get_json_attr(genre_raw, 'stationcount') and \
                 int(get_json_attr(genre_raw, 'stationcount')) > MINIMUM_COUNT_GENRE:
             genre_directories.append(generic.Directory(get_json_attr(genre_raw, 'name'),
-                                                       get_json_attr(genre_raw, 'stationcount')))
+                                                       get_json_attr(genre_raw, 'stationcount'),
+                                                       get_json_attr(genre_raw, 'name').capitalize()))
     return genre_directories
 
 
