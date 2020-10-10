@@ -48,6 +48,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Yamaha RX-A810
  * Yamaha RX-A820
  * Yamaha RX-A830
+ * Yamaha CRX-N560/MCR-N560
  * Yamaha RX-V_71 series with network connectivity (RX-V671, RX-V771)
  * Yamaha RX-V_73 series with network connectivity (RX-V473, RX-V573, RX-V673, RX-V773)
  * Yamaha RX-V_75 series (RX-V375, RX-V475, RX-V575, RX-V675, RX-V775)
