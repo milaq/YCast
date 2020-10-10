@@ -35,6 +35,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Denon CEOL piccolo N5
  * Denon CEOL N9
  * Denon DNP-720AE
+ * Denon DNP-730AE
  * Denon DRA-100
  * Marantz Melody Media M-CR610
  * Marantz NR1506
@@ -49,6 +50,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Yamaha RX-A810
  * Yamaha RX-A820
  * Yamaha RX-A830
+ * Yamaha CRX-N560/MCR-N560
  * Yamaha RX-V_71 series with network connectivity (RX-V671, RX-V771)
  * Yamaha RX-V_73 series with network connectivity (RX-V473, RX-V573, RX-V673, RX-V773)
  * Yamaha RX-V_75 series (RX-V375, RX-V475, RX-V575, RX-V675, RX-V775)
@@ -85,11 +87,13 @@ YCast really does not need much computing power nor bandwidth, i.e. you can run 
 
 ### DNS entries
 
-You need to create a manual entry in your DNS server (read 'Router' for most home users). `vtuner.com` (more specifically `*.vtuner.com`) should point to the machine YCast is running on. Alternatively, in case you only want to forward specific vendors, the following entries may be configured:
+You need to create a manual entry in your DNS server (read 'Router' for most home users). The `*.vtuner.com` domain should point to the machine YCast is running on.
+Specifically the following entries may be configured instead of a wildcard entry:
 
   * Yamaha AVRs: `radioyamaha.vtuner.com` (and optionally `radioyamaha2.vtuner.com`)
   * Onkyo AVRs: `onkyo.vtuner.com` (and optionally `onkyo2.vtuner.com`)
   * Denon/Marantz AVRs: `denon.vtuner.com` (and optionally `denon2.vtuner.com`)
+  * Grundig radios: `grundig.vtuner.com`, `grundig.radiosetup.com` (and optionally `grundig2.vtuner.com` and `grundig2.radiosetup.com`)
 
 
 ### Running the server

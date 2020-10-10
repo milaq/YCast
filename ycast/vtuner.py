@@ -137,7 +137,7 @@ class Station:
         ET.SubElement(item, 'Logo').text = self.icon
         ET.SubElement(item, 'StationFormat').text = self.genre
         ET.SubElement(item, 'StationLocation').text = self.location
-        ET.SubElement(item, 'StationBandWidth').text = self.bitrate
+        ET.SubElement(item, 'StationBandWidth').text = str(self.bitrate)
         ET.SubElement(item, 'StationMime').text = self.mime
         ET.SubElement(item, 'Relia').text = '3'
         ET.SubElement(item, 'Bookmark').text = self.bookmark

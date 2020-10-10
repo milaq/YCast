@@ -73,6 +73,8 @@ def get_stations_page(stations, request):
 def get_paged_elements(items, requestargs):
     if requestargs.get('startitems'):
         offset = int(requestargs.get('startitems')) - 1
+    elif requestargs.get('startItems'):
+        offset = int(requestargs.get('startItems')) - 1
     elif requestargs.get('start'):
         offset = int(requestargs.get('start')) - 1
     else:
@@ -82,6 +84,8 @@ def get_paged_elements(items, requestargs):
         return []
     if requestargs.get('enditems'):
         limit = int(requestargs.get('enditems'))
+    elif requestargs.get('endItems'):
+        limit = int(requestargs.get('endItems'))
     elif requestargs.get('start') and requestargs.get('howmany'):
         limit = int(requestargs.get('start')) - 1 + int(requestargs.get('howmany'))
     else:
@@ -113,7 +117,8 @@ def vtuner_redirect(url):
     return redirect(url, code=302)
 
 
-@app.route('/setupapp/<path:path>')
+@app.route('/setupapp/<path:path>',
+           methods=['GET', 'POST'])
 def upstream(path):
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
@@ -121,14 +126,22 @@ def upstream(path):
         return station_search()
     if 'statxml.asp' in path and request.args.get('id'):
         return get_station_info()
+    if 'navXML.asp' in path:
+        return radiobrowser_landing()
+    if 'FavXML.asp' in path:
+        return my_stations_landing()
     if 'loginXML.asp' in path:
         return landing()
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
     abort(404)
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/' + PATH_ROOT + '/', defaults={'path': ''})
+@app.route('/',
+           defaults={'path': ''},
+           methods=['GET', 'POST'])
+@app.route('/' + PATH_ROOT + '/',
+           defaults={'path': ''},
+           methods=['GET', 'POST'])
 def landing(path=''):
     page = vtuner.Page()
     page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
@@ -141,19 +154,22 @@ def landing(path=''):
     return page.to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/')
+@app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/',
+           methods=['GET', 'POST'])
 def my_stations_landing():
     directories = my_stations.get_category_directories()
     return get_directories_page('my_stations_category', directories, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/<directory>')
+@app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/<directory>',
+           methods=['GET', 'POST'])
 def my_stations_category(directory):
     stations = my_stations.get_stations_by_category(directory)
     return get_stations_page(stations, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/',
+           methods=['GET', 'POST'])
 def radiobrowser_landing():
     page = vtuner.Page()
     page.add(vtuner.Directory('Genres', url_for('radiobrowser_genres', _external=True),
@@ -168,49 +184,57 @@ def radiobrowser_landing():
     return page.to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/',
+           methods=['GET', 'POST'])
 def radiobrowser_countries():
     directories = radiobrowser.get_country_directories()
     return get_directories_page('radiobrowser_country_stations', directories, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>',
+           methods=['GET', 'POST'])
 def radiobrowser_country_stations(directory):
     stations = radiobrowser.get_stations_by_country(directory)
     return get_stations_page(stations, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/',
+           methods=['GET', 'POST'])
 def radiobrowser_languages():
     directories = radiobrowser.get_language_directories()
     return get_directories_page('radiobrowser_language_stations', directories, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/<directory>')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/<directory>',
+           methods=['GET', 'POST'])
 def radiobrowser_language_stations(directory):
     stations = radiobrowser.get_stations_by_language(directory)
     return get_stations_page(stations, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/',
+           methods=['GET', 'POST'])
 def radiobrowser_genres():
     directories = radiobrowser.get_genre_directories()
     return get_directories_page('radiobrowser_genre_stations', directories, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>',
+           methods=['GET', 'POST'])
 def radiobrowser_genre_stations(directory):
     stations = radiobrowser.get_stations_by_genre(directory)
     return get_stations_page(stations, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_POPULAR + '/')
+@app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_POPULAR + '/',
+           methods=['GET', 'POST'])
 def radiobrowser_popular():
     stations = radiobrowser.get_stations_by_votes()
     return get_stations_page(stations, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_SEARCH + '/')
+@app.route('/' + PATH_ROOT + '/' + PATH_SEARCH + '/',
+           methods=['GET', 'POST'])
 def station_search():
     query = request.args.get('search')
     if not query or len(query) < 3:
@@ -224,7 +248,8 @@ def station_search():
         return get_stations_page(stations, request).to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_PLAY)
+@app.route('/' + PATH_ROOT + '/' + PATH_PLAY,
+           methods=['GET', 'POST'])
 def get_stream_url():
     stationid = request.args.get('id')
     if not stationid:
@@ -238,7 +263,8 @@ def get_stream_url():
     return vtuner_redirect(station.url)
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_STATION)
+@app.route('/' + PATH_ROOT + '/' + PATH_STATION,
+           methods=['GET', 'POST'])
 def get_station_info():
     stationid = request.args.get('id')
     if not stationid:
@@ -261,7 +287,8 @@ def get_station_info():
     return page.to_string()
 
 
-@app.route('/' + PATH_ROOT + '/' + PATH_ICON)
+@app.route('/' + PATH_ROOT + '/' + PATH_ICON,
+           methods=['GET', 'POST'])
 def get_station_icon():
     stationid = request.args.get('id')
     if not stationid:
