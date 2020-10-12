@@ -123,7 +123,7 @@ def vtuner_redirect(url):
 def upstream(path):
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
-    if request.args.get('search'):
+    if request.args.get('search') or request.args.get('Search'):
         return station_search()
     if 'statxml.asp' in path and request.args.get('id'):
         return get_station_info()
@@ -238,6 +238,8 @@ def radiobrowser_popular():
            methods=['GET', 'POST'])
 def station_search():
     query = request.args.get('search')
+    if not query:
+        query = request.args.get('Search')
     if not query or len(query) < 3:
         page = vtuner.Page()
         page.add(vtuner.Display("Search query too short"))
