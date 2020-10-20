@@ -42,6 +42,7 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Marantz NR1605
  * Marantz NA6005
  * Marantz NA8005
+ * Marantz SR5009
  * Onkyo TX-NR414
  * Onkyo TX-NR5009
  * Onkyo TX-NR616
