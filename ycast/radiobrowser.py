@@ -61,7 +61,7 @@ def request(url):
 
 
 def get_station_by_id(uid):
-    station_json = request('stations/byid/' + str(uid))
+    station_json = request('stations/byuuid/' + str(uid))
     if station_json and len(station_json):
         return Station(station_json[0])
     else:
