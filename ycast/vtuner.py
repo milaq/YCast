@@ -131,14 +131,21 @@ class Station:
         ET.SubElement(item, 'StationName').text = self.name
         if self.trackurl:
             ET.SubElement(item, 'StationUrl').text = self.trackurl
-        else:
+        elif self.url:
             ET.SubElement(item, 'StationUrl').text = self.url
-        ET.SubElement(item, 'StationDesc').text = self.description
-        ET.SubElement(item, 'Logo').text = self.icon
-        ET.SubElement(item, 'StationFormat').text = self.genre
-        ET.SubElement(item, 'StationLocation').text = self.location
-        ET.SubElement(item, 'StationBandWidth').text = str(self.bitrate)
-        ET.SubElement(item, 'StationMime').text = self.mime
+        if self.description:
+            ET.SubElement(item, 'StationDesc').text = self.description
+        if self.icon:
+            ET.SubElement(item, 'Logo').text = self.icon
+        if self.genre:
+            ET.SubElement(item, 'StationFormat').text = self.genre
+        if self.location:
+            ET.SubElement(item, 'StationLocation').text = self.location
+        if self.bitrate:
+            ET.SubElement(item, 'StationBandWidth').text = str(self.bitrate)
+        if self.mime:
+            ET.SubElement(item, 'StationMime').text = self.mime
         ET.SubElement(item, 'Relia').text = '3'
-        ET.SubElement(item, 'Bookmark').text = self.bookmark
+        if self.bookmark:
+            ET.SubElement(item, 'Bookmark').text = self.bookmark
         return item
