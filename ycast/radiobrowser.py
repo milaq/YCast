@@ -152,7 +152,6 @@ def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
     stations = []
     stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
     for station_json in stations_json:
-        print(station_json)
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
