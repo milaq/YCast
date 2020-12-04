@@ -37,7 +37,7 @@ class Station:
 
     def to_vtuner(self):
         tid = generic.get_checksum(self.id)
-        id_registry[tid] = self.id;
+        id_registry[tid] = self.id
         return vtuner.Station(generic.generate_stationid_with_prefix(tid, ID_PREFIX), self.name, ', '.join(self.tags), self.url, self.icon,
                               self.tags[0], self.countrycode, self.codec, self.bitrate, None)
 
@@ -64,10 +64,13 @@ def request(url):
 
 
 def get_station_by_id(uid):
-    station_json = request('stations/byuuid/' + str(id_registry[uid]))
-    if station_json and len(station_json):
-        return Station(station_json[0])
-    else:
+    try:
+        station_json = request('stations/byuuid/' + str(id_registry[uid]))
+        if station_json and len(station_json):
+            return Station(station_json[0])
+        else:
+            return None
+    except KeyError:
         return None
 
 
@@ -163,7 +166,6 @@ def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
     stations = []
     stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
     for station_json in stations_json:
-        print(station_json)
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
