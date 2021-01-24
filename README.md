@@ -31,26 +31,31 @@ Any reported device helps the community to see which AVRs work properly and whic
 
  * Denon AVR-X_000 series (AVR-X1000, AVR-2000, AVR-X3000, AVR-X4000)
  * Denon AVR-1912
+ * Denon AVR-X2100W
  * Denon AVR-X2200W
  * Denon CEOL piccolo N5
  * Denon CEOL N9
  * Denon DNP-720AE
  * Denon DNP-730AE
  * Denon DRA-100
+ * Denon M-CR611
  * Marantz Melody Media M-CR610
  * Marantz NR1506
  * Marantz NR1605
+ * Marantz NR1606
  * Marantz NA6005
  * Marantz NA8005
  * Marantz SR5009
  * Onkyo TX-NR414
  * Onkyo TX-NR5009
  * Onkyo TX-NR616
+ * Onkyo TX-NR1008
  * Yamaha R-N301
  * Yamaha R-N500
  * Yamaha RX-A810
  * Yamaha RX-A820
  * Yamaha RX-A830
+ * Yamaha CX-A5000
  * Yamaha CRX-N560/MCR-N560
  * Yamaha RX-V_71 series with network connectivity (RX-V671, RX-V771)
  * Yamaha RX-V_73 series with network connectivity (RX-V473, RX-V573, RX-V673, RX-V773)
@@ -64,7 +69,6 @@ Any reported device helps the community to see which AVRs work properly and whic
  * Denon AVR-X_100W series (AVR-X1100W, AVR-2100W, AVR-X3100W, AVR-X4100W)
  * Denon AVR-X_300W series (AVR-X1300W, AVR-2300W, AVR-X3300W)
  * Yamaha RX-A1060
- * Yamaha CX-A5000
  * Yamaha RX-S600D
  * Yamaha RX-S601D
  * Yamaha RX-V2700
@@ -81,7 +85,7 @@ Python packages:
  * `flask`
  * `PyYAML`
  * `Pillow`
- 
+
 ## Usage
 
 YCast really does not need much computing power nor bandwidth, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi or a home router.
