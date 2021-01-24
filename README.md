@@ -81,7 +81,7 @@ Python packages:
  * `flask`
  * `PyYAML`
  * `Pillow`
- 
+
 ## Usage
 
 YCast really does not need much computing power nor bandwidth, i.e. you can run it on a low-spec RISC machine like a Raspberry Pi or a home router.
@@ -122,6 +122,19 @@ This can be used together with [this systemd service example](examples/ycast.ser
 #### With WSGI
 
 You can also setup a proper WSGI server. See the [official Flask documentation](https://flask.palletsprojects.com/en/1.1.x/deploying/).
+
+#### With Docker
+
+To run with Docker, you're required to preinstall docker on your host machine: [Download Docker](https://www.docker.com/products/docker-desktop)
+Docker image can be built with:
+```
+docker build -t <name_of_docker_image> .
+```
+
+After that, it can be started with:
+```
+docker run -d -p 8010:8010 <name_of_docker_image>
+```
 
 ### Custom stations
 
