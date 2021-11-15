@@ -4,6 +4,7 @@ import argparse
 import logging
 import sys
 
+from generic import clear_cache
 from ycast import __version__
 from ycast import server
 
@@ -23,6 +24,8 @@ def launch_server():
         logging.debug("Debug logging enabled")
     else:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
+    # TODO Should cleaning cache be optional?
+    clear_cache()
     server.run(arguments.config, arguments.address, arguments.port)
 
 
