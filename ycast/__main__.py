@@ -3,8 +3,8 @@
 import argparse
 import logging
 import sys
+import ycast.generic as generic
 
-from generic import clear_cache
 from ycast import __version__
 from ycast import server
 
@@ -25,7 +25,7 @@ def launch_server():
     else:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
     # TODO Should cleaning cache be optional?
-    clear_cache()
+    generic.clear_cache()
     server.run(arguments.config, arguments.address, arguments.port)
 
 
