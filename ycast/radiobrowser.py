@@ -6,9 +6,6 @@ import ycast.vtuner as vtuner
 import ycast.generic as generic
 
 API_ENDPOINT = "http://all.api.radio-browser.info"
-MINIMUM_COUNT_GENRE = 5
-MINIMUM_COUNT_COUNTRY = 5
-MINIMUM_COUNT_LANGUAGE = 5
 DEFAULT_STATION_LIMIT = 200
 SHOW_BROKEN_STATIONS = False
 ID_PREFIX = "RB"
@@ -19,6 +16,31 @@ def get_json_attr(json, attr):
         return json[attr]
     except:
         return None
+
+
+def format_displayname(displayname, apiparam):
+    if apiparam == 'languages':
+        displayname = displayname.title()
+    elif apiparam == 'tags':
+        displayname = displayname.capitalize()
+    else:
+        displayname = None
+    return displayname
+
+
+def request_station_builder(paramtype, param, limit):
+    prefix = 'stations/search?order='
+    order = 'name&reverse=false'
+    lim = '&limit=' + str(limit)
+    req = '&' + str(paramtype) + 'Exact=true&' + str(paramtype) + '=' + str(param)
+    hidebroken = '&hidebroken=true'
+    if SHOW_BROKEN_STATIONS:
+        hidebroken = '&hidebroken=false'
+    if paramtype == 'votes':
+        order = 'votes&reverse=true'
+    if paramtype == 'search':
+        req = '&name=' + str(param)
+    return prefix + order + lim + req + hidebroken
 
 
 class Station:
@@ -68,90 +90,29 @@ def get_station_by_id(uid):
         return None
 
 
-def search(name, limit=DEFAULT_STATION_LIMIT):
+def get_stations(paramtype, param='', limit=DEFAULT_STATION_LIMIT):
+    """
+    Generic Function for getting Stations. paramtype must be one
+    of search, country, language, tag(getting genres),votes. See
+    request_station_builder(paramtype, param, limit) to expand functionality
+    """
     stations = []
-    stations_json = request('stations/search?order=name&reverse=false&limit=' + str(limit) + '&name=' + str(name))
+    stations_json = request(request_station_builder(paramtype, param, limit))
     for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
+        stations.append(Station(station_json))
     return stations
 
 
-def get_country_directories():
-    country_directories = []
-    apicall = 'countries'
+def get_directories(apiparam, minimumcount=5):
+    apicall = apiparam
+    directories = []
     if not SHOW_BROKEN_STATIONS:
         apicall += '?hidebroken=true'
-    countries_raw = request(apicall)
-    for country_raw in countries_raw:
-        if get_json_attr(country_raw, 'name') and get_json_attr(country_raw, 'stationcount') and \
-                int(get_json_attr(country_raw, 'stationcount')) > MINIMUM_COUNT_COUNTRY:
-            country_directories.append(generic.Directory(get_json_attr(country_raw, 'name'),
-                                                         get_json_attr(country_raw, 'stationcount')))
-    return country_directories
-
-
-def get_language_directories():
-    language_directories = []
-    apicall = 'languages'
-    if not SHOW_BROKEN_STATIONS:
-        apicall += '?hidebroken=true'
-    languages_raw = request(apicall)
-    for language_raw in languages_raw:
-        if get_json_attr(language_raw, 'name') and get_json_attr(language_raw, 'stationcount') and \
-                int(get_json_attr(language_raw, 'stationcount')) > MINIMUM_COUNT_LANGUAGE:
-            language_directories.append(generic.Directory(get_json_attr(language_raw, 'name'),
-                                                          get_json_attr(language_raw, 'stationcount'),
-                                                          get_json_attr(language_raw, 'name').title()))
-    return language_directories
-
-
-def get_genre_directories():
-    genre_directories = []
-    apicall = 'tags'
-    if not SHOW_BROKEN_STATIONS:
-        apicall += '?hidebroken=true'
-    genres_raw = request(apicall)
-    for genre_raw in genres_raw:
-        if get_json_attr(genre_raw, 'name') and get_json_attr(genre_raw, 'stationcount') and \
-                int(get_json_attr(genre_raw, 'stationcount')) > MINIMUM_COUNT_GENRE:
-            genre_directories.append(generic.Directory(get_json_attr(genre_raw, 'name'),
-                                                       get_json_attr(genre_raw, 'stationcount'),
-                                                       get_json_attr(genre_raw, 'name').capitalize()))
-    return genre_directories
-
-
-def get_stations_by_country(country):
-    stations = []
-    stations_json = request('stations/search?order=name&reverse=false&countryExact=true&country=' + str(country))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
-    return stations
-
-
-def get_stations_by_language(language):
-    stations = []
-    stations_json = request('stations/search?order=name&reverse=false&languageExact=true&language=' + str(language))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
-    return stations
-
-
-def get_stations_by_genre(genre):
-    stations = []
-    stations_json = request('stations/search?order=name&reverse=false&tagExact=true&tag=' + str(genre))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
-    return stations
-
-
-def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
-    stations = []
-    stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
-    return stations
+    raw_directories = request(apicall)
+    for raw_directory in raw_directories:
+        if get_json_attr(raw_directory, 'name') and get_json_attr(raw_directory, 'stationcount') and \
+                int(get_json_attr(raw_directory, 'stationcount')) > minimumcount:
+            directories.append(generic.Directory(get_json_attr(raw_directory, 'name'),
+                                                 get_json_attr(raw_directory, 'stationcount'),
+                                                 format_displayname(get_json_attr(raw_directory, 'name'), apiparam)))
+    return directories
