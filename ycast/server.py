@@ -184,7 +184,7 @@ def radiobrowser_landing():
     page.add(vtuner.Directory('Languages', url_for('radiobrowser_languages', _external=True),
                               len(radiobrowser.get_directories('languages', MINIMUM_COUNT_LANGUAGE))))
     page.add(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
-                              len(radiobrowser.get_station('votes'))))
+                              len(radiobrowser.get_stations('votes'))))
     page.set_count(4)
     return page.to_string()
 
@@ -199,7 +199,7 @@ def radiobrowser_countries():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>',
            methods=['GET', 'POST'])
 def radiobrowser_country_stations(directory):
-    stations = radiobrowser.get_station('country', directory)
+    stations = radiobrowser.get_stations('country', directory)
     return get_stations_page(stations, request).to_string()
 
 
@@ -213,7 +213,7 @@ def radiobrowser_languages():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/<directory>',
            methods=['GET', 'POST'])
 def radiobrowser_language_stations(directory):
-    stations = radiobrowser.get_station('language', directory)
+    stations = radiobrowser.get_stations('language', directory)
     return get_stations_page(stations, request).to_string()
 
 
@@ -227,14 +227,14 @@ def radiobrowser_genres():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>',
            methods=['GET', 'POST'])
 def radiobrowser_genre_stations(directory):
-    stations = radiobrowser.get_station('tag', directory)
+    stations = radiobrowser.get_stations('tag', directory)
     return get_stations_page(stations, request).to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_POPULAR + '/',
            methods=['GET', 'POST'])
 def radiobrowser_popular():
-    stations = radiobrowser.get_station('votes')
+    stations = radiobrowser.get_stations('votes')
     return get_stations_page(stations, request).to_string()
 
 
@@ -249,7 +249,7 @@ def station_search():
         return page.to_string()
     else:
         # TODO: we also need to include 'my station' elements
-        stations = radiobrowser.get_station('search', query)
+        stations = radiobrowser.get_stations('search', query)
         return get_stations_page(stations, request).to_string()
 
 

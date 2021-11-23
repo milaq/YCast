@@ -90,7 +90,7 @@ def get_station_by_id(uid):
         return None
 
 
-def get_station(paramtype, param='', limit=DEFAULT_STATION_LIMIT):
+def get_stations(paramtype, param='', limit=DEFAULT_STATION_LIMIT):
     """
     Generic Function for getting Stations. paramtype must be one
     of search, country, language, tag(getting genres),votes. See
