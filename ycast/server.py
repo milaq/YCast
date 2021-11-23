@@ -24,6 +24,7 @@ PATH_RADIOBROWSER_POPULAR = 'popular'
 
 station_tracking = False
 my_stations_enabled = False
+enable_clickvote = False
 app = Flask(__name__)
 
 
@@ -111,10 +112,12 @@ def get_station_by_id(stationid, additional_info=False):
     return None
 
 
-def vtuner_redirect(url):
+def vtuner_redirect(url, stationid):
     if request and request.host and not re.search("^[A-Za-z0-9]+\.vtuner\.com$", request.host):
         logging.warning("You are not accessing a YCast redirect with a whitelisted host url (*.vtuner.com). "
                         "Some AVRs have problems with this. The requested host was: %s", request.host)
+        if enable_clickvote:
+            radiobrowser.click_vote(generic.get_stationid_without_prefix(stationid))
     return redirect(url, code=302)
 
 
@@ -261,7 +264,7 @@ def get_stream_url():
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)
     logging.debug("Station with ID '%s' requested", station.id)
-    return vtuner_redirect(station.url)
+    return vtuner_redirect(station.url, station.id)
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_STATION,
