@@ -106,8 +106,11 @@ def get_station_by_id(stationid, additional_info=False):
     elif station_id_prefix == radiobrowser.ID_PREFIX:
         station = radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid))
         if additional_info:
-            station.get_playable_url()
-        return station
+            try:
+                station.get_playable_url()
+                return station
+            except AttributeError:
+                return None
     return None
 
 
