@@ -112,12 +112,10 @@ def get_station_by_id(stationid, additional_info=False):
     return None
 
 
-def vtuner_redirect(url, stationid):
+def vtuner_redirect(url):
     if request and request.host and not re.search("^[A-Za-z0-9]+\.vtuner\.com$", request.host):
         logging.warning("You are not accessing a YCast redirect with a whitelisted host url (*.vtuner.com). "
                         "Some AVRs have problems with this. The requested host was: %s", request.host)
-        if enable_clickvote:
-            radiobrowser.click_vote(generic.get_stationid_without_prefix(stationid))
     return redirect(url, code=302)
 
 
@@ -264,7 +262,7 @@ def get_stream_url():
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)
     logging.debug("Station with ID '%s' requested", station.id)
-    return vtuner_redirect(station.url, station.id)
+    return vtuner_redirect(station.url)
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_STATION,
@@ -285,6 +283,8 @@ def get_station_info():
     if station_tracking:
         vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
     vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
+    if enable_clickvote:
+        radiobrowser.click_vote(generic.get_stationid_without_prefix(station.id))
     page = vtuner.Page()
     page.add(vtuner_station)
     page.set_count(1)
