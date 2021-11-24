@@ -42,7 +42,7 @@ class Station:
         try:
             playable_url_json = request('url/' + generic.get_stationid_without_prefix(self.id))[0]
             self.url = playable_url_json['url']
-        except (IndexError, KeyError):
+        except (IndexError, KeyError,AttributeError):
             logging.error("Could not retrieve first playlist item for station with id '%s'", self.id)
 
 
