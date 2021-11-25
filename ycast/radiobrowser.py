@@ -155,3 +155,11 @@ def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
             stations.append(Station(station_json))
     return stations
+
+
+def click_vote(uid):
+    clickvote_json = request('url/' + str(uid))
+    if clickvote_json:
+        logging.debug("radio-browser replied: %s", get_json_attr(clickvote_json, 'message'))
+    else:
+        logging.error('clickvote did not work')
