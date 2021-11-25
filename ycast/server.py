@@ -283,7 +283,7 @@ def get_station_info():
     if station_tracking:
         vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
     vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
-    if enable_clickvote:
+    if enable_clickvote and generic.get_stationid_prefix(station.id) == 'RB':
         radiobrowser.click_vote(generic.get_stationid_without_prefix(station.id))
     page = vtuner.Page()
     page.add(vtuner_station)
