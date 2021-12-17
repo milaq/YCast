@@ -133,6 +133,8 @@ def upstream(path):
         return my_stations_landing()
     if 'loginXML.asp' in path:
         return landing()
+    if 'LoginXML.asp' in path:
+        return landing()
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
     abort(404)
 
