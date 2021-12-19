@@ -1,7 +1,7 @@
 import logging
 import hashlib
 
-import yaml
+import oyaml as yaml
 
 import ycast.vtuner as vtuner
 import ycast.generic as generic
