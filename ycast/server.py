@@ -8,7 +8,7 @@ import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
 import ycast.generic as generic
 import ycast.station_icons as station_icons
-
+from ycast.my_lastheard import signalStationSelected
 
 PATH_ROOT = 'ycast'
 PATH_PLAY = 'play'
@@ -296,6 +296,7 @@ def get_station_icon():
         logging.error("Station icon without station ID requested")
         abort(400)
     station = get_station_by_id(stationid)
+    signalStationSelected(station.name,station.url,station.icon)
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)

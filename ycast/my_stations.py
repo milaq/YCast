@@ -44,17 +44,24 @@ def get_station_by_id(uid):
 
 
 def get_stations_yaml():
+    from ycast.my_lastheard import get_last_stations_yaml
+    my_last_station = get_last_stations_yaml()
+    my_stations = None
     try:
         with open(config_file, 'r') as f:
             my_stations = yaml.safe_load(f)
     except FileNotFoundError:
         logging.error("Station configuration '%s' not found", config_file)
-        return None
+
     except yaml.YAMLError as e:
         logging.error("Station configuration format error: %s", e)
-        return None
-    return my_stations
 
+    if my_stations:
+        if my_last_station:
+            my_stations.append(my_last_station)
+    else:
+        return my_last_station
+    return my_stations
 
 def get_category_directories():
     my_stations_yaml = get_stations_yaml()
