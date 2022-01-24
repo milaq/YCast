@@ -1,7 +1,5 @@
 import logging
-import hashlib
-
-import yaml
+import oyaml as yaml
 
 import ycast.vtuner as vtuner
 import ycast.generic as generic
@@ -63,6 +61,7 @@ def get_stations_yaml():
         return my_recently_station
     return my_stations
 
+
 def get_category_directories():
     my_stations_yaml = get_stations_yaml()
     categories = []
@@ -83,17 +82,6 @@ def get_stations_by_category(category):
             station_icon = None
             if len(url_list) > 1:
                 station_icon = url_list[1]
-            station_id = str(get_checksum(station_name + station_url)).upper()
+            station_id = str(generic.get_checksum(station_name + station_url)).upper()
             stations.append(Station(station_id, station_name, station_url, category, station_icon))
     return stations
-
-
-def get_checksum(feed, charlimit=12):
-    hash_feed = feed.encode()
-    hash_object = hashlib.md5(hash_feed)
-    digest = hash_object.digest()
-    xor_fold = bytearray(digest[:8])
-    for i, b in enumerate(digest[8:]):
-        xor_fold[i] ^= b
-    digest_xor_fold = ''.join(format(x, '02x') for x in bytes(xor_fold))
-    return digest_xor_fold[:charlimit]

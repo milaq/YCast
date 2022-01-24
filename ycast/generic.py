@@ -1,5 +1,6 @@
 import logging
 import os
+import hashlib
 
 USER_AGENT = 'YCast'
 VAR_PATH = os.path.expanduser("~") + '/.ycast'
@@ -50,3 +51,13 @@ def get_cache_path(cache_name):
         logging.error("Could not create cache folders (%s) because of access permissions", cache_path)
         return None
     return cache_path
+
+def get_checksum(feed, charlimit=12):
+    hash_feed = feed.encode()
+    hash_object = hashlib.md5(hash_feed)
+    digest = hash_object.digest()
+    xor_fold = bytearray(digest[:8])
+    for i, b in enumerate(digest[8:]):
+        xor_fold[i] ^= b
+    digest_xor_fold = ''.join(format(x, '02x') for x in bytes(xor_fold))
+    return digest_xor_fold[:charlimit]

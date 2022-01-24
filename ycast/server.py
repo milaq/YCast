@@ -305,7 +305,7 @@ def get_station_icon():
         abort(404)
     station_icon = station_icons.get_icon(station)
     if not station_icon:
-        logging.error("Could not get station icon for station with id '%s'", stationid)
+        logging.warning("Could not get station icon for station with id '%s'", stationid)
         abort(404)
     response = make_response(station_icon)
     response.headers.set('Content-Type', 'image/jpeg')

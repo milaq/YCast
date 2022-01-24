@@ -2,5 +2,6 @@ build
 dist
 *.egg-info
 .idea
+.vscode
 *.iml
 *.pyc
