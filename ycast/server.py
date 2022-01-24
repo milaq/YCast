@@ -8,7 +8,7 @@ import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
 import ycast.generic as generic
 import ycast.station_icons as station_icons
-from ycast.my_lastheard import signalStationSelected
+from ycast.my_recentlystation import signalStationSelected
 
 PATH_ROOT = 'ycast'
 PATH_PLAY = 'play'

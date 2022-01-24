@@ -4,8 +4,9 @@ import os
 import yaml
 
 VAR_PATH = os.path.expanduser("~") + '/.ycast'
+MAX_ENTRIES = 15
 
-config_file = VAR_PATH + '/lastheared.yml'
+config_file = VAR_PATH + '/recently.yml'
 
 def signalStationSelected(name,url,icon):
     logging.debug("  %s:%s|%s",name,url,icon)
@@ -23,8 +24,8 @@ def signalStationSelected(name,url,icon):
         piped_icon = '|' + icon
 
     list_heared_stations.insert(1,'  '+name+': '+url+piped_icon+'\n')
-    if len(list_heared_stations) > 11:
-        # remove last
+    if len(list_heared_stations) > MAX_ENTRIES+1:
+        # remove last (oldest) entry
         list_heared_stations.pop()
 
     set_stations_yaml(list_heared_stations)
@@ -58,7 +59,7 @@ def get_stations_list():
         return []
     return heared_stations
 
-def get_last_stations_yaml():
+def get_recently_stations_yaml():
     try:
         with open(config_file, 'r') as f:
             my_stations = yaml.safe_load(f)
