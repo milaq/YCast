@@ -58,7 +58,7 @@ def get_stations_yaml():
 
     if my_stations:
         if my_recently_station:
-            my_stations.append(my_recently_station)
+            my_stations.update(my_recently_station)
     else:
         return my_recently_station
     return my_stations
