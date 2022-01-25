@@ -5,7 +5,7 @@ import hashlib
 USER_AGENT = 'YCast'
 VAR_PATH = os.path.expanduser("~") + '/.ycast'
 CACHE_PATH = VAR_PATH + '/cache'
-
+FILTER_PATH = VAR_PATH + '/filter'
 
 class Directory:
     def __init__(self, name, item_count, displayname=None):
@@ -35,7 +35,9 @@ def get_stationid_prefix(uid):
 
 
 def get_cache_path(cache_name):
-    cache_path = CACHE_PATH + '/' + cache_name
+    cache_path = CACHE_PATH
+    if cache_name:
+        cache_path = CACHE_PATH + '/' + cache_name
     try:
         os.makedirs(cache_path)
     except FileExistsError:
@@ -45,6 +47,25 @@ def get_cache_path(cache_name):
         return None
     return cache_path
 
+def get_filter_path():
+    try:
+        os.makedirs(FILTER_PATH)
+    except FileExistsError:
+        pass
+    except PermissionError:
+        logging.error("Could not create cache folders (%s) because of access permissions", cache_path)
+        return None
+    return FILTER_PATH
+
+def get_var_path():
+    try:
+        os.makedirs(VAR_PATH)
+    except FileExistsError:
+        pass
+    except PermissionError:
+        logging.error("Could not create cache folders (%s) because of access permissions", cache_path)
+        return None
+    return VAR_PATH
 
 def get_checksum(feed, charlimit=12):
     hash_feed = feed.encode()

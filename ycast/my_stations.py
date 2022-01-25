@@ -6,7 +6,7 @@ import ycast.generic as generic
 
 ID_PREFIX = "MY"
 
-config_file = 'stations.yml'
+config_file = generic.get_var_path() + '/stations.yml'
 
 
 class Station:
