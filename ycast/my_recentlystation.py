@@ -1,5 +1,4 @@
 import logging
-import os
 
 import yaml
 from ycast import generic
@@ -11,41 +10,33 @@ recently_file = generic.get_var_path() + '/recently.yml'
 
 def signal_station_selected(name, url, icon):
     logging.debug("  %s:%s|%s", name, url, icon)
-    list_heared_stations = get_stations_list()
-    if len(list_heared_stations) == 0:
-        list_heared_stations.append("recently used:\n")
+    list_heard_stations = get_stations_list()
+    if len(list_heard_stations) == 0:
+        list_heard_stations.append("recently used:\n")
     # make name yaml - like
     name = name.replace(":", " -")
 
-    for line in list_heared_stations:
+    for line in list_heard_stations:
         elements = line.split(': ')
         if elements[0] == '  '+name:
-            list_heared_stations.remove(line)
+            list_heard_stations.remove(line)
             logging.debug("Name '%s' exists and deleted", name)
     piped_icon = ''
     if icon and len(icon) > 0:
         piped_icon = '|' + icon
 
-    list_heared_stations.insert(1, '  '+name+': '+url+piped_icon+'\n')
-    if len(list_heared_stations) > MAX_ENTRIES+1:
+    list_heard_stations.insert(1, '  '+name+': '+url+piped_icon+'\n')
+    if len(list_heard_stations) > MAX_ENTRIES+1:
         # remove last (oldest) entry
-        list_heared_stations.pop()
+        list_heard_stations.pop()
 
-    set_stations_yaml(list_heared_stations)
+    set_stations_yaml(list_heard_stations)
 
 
-def set_stations_yaml(heared_stations):
-    try:
-        os.makedirs(VAR_PATH)
-    except FileExistsError:
-        pass
-    except PermissionError:
-        logging.error("Could not create folders (%s) because of access permissions", VAR_PATH)
-        return None
-
+def set_stations_yaml(heard_stations):
     try:
         with open(recently_file, 'w') as f:
-            f.writelines(heared_stations)
+            f.writelines(heard_stations)
             logging.info("File written '%s'", recently_file)
 
     except Exception as ex:
@@ -55,14 +46,14 @@ def set_stations_yaml(heared_stations):
 def get_stations_list():
     try:
         with open(recently_file, 'r') as f:
-            heared_stations = f.readlines()
+            heard_stations = f.readlines()
     except FileNotFoundError:
         logging.warning("File not found '%s' not found", recently_file)
         return []
     except yaml.YAMLError as e:
         logging.error("Station configuration format error: %s", e)
         return []
-    return heared_stations
+    return heard_stations
 
 
 def get_recently_stations_yaml():
