@@ -31,12 +31,12 @@ def set_config(config):
         return False
 
 
-def get_station_by_id(uid):
+def get_station_by_id(vtune_id):
     my_stations_yaml = get_stations_yaml()
     if my_stations_yaml:
         for category in my_stations_yaml:
             for station in get_stations_by_category(category):
-                if uid == generic.get_stationid_without_prefix(station.id):
+                if vtune_id == station.id:
                     return station
     return None
 
@@ -82,6 +82,6 @@ def get_stations_by_category(category):
             station_icon = None
             if len(url_list) > 1:
                 station_icon = url_list[1]
-            station_id = str(generic.get_checksum(station_name + station_url)).upper()
+            station_id = generic.get_checksum(station_name + station_url)
             stations.append(Station(station_id, station_name, station_url, category, station_icon))
     return stations

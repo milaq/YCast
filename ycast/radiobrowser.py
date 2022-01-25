@@ -28,7 +28,7 @@ def get_json_attr(json, attr):
 class Station:
     def __init__(self, station_json):
         self.stationuuid = get_json_attr(station_json, 'stationuuid')
-        self.id = generic.get_checksum(self.stationuuid)
+        self.id = generic.generate_stationid_with_prefix(generic.get_checksum(self.stationuuid), ID_PREFIX)
         self.name = get_json_attr(station_json, 'name')
         self.url = get_json_attr(station_json, 'url')
         self.icon = get_json_attr(station_json, 'favicon')
@@ -40,7 +40,7 @@ class Station:
         self.bitrate = get_json_attr(station_json, 'bitrate')
 
     def to_vtuner(self):
-        return vtuner.Station(generic.generate_stationid_with_prefix(self.id, ID_PREFIX), self.name,
+        return vtuner.Station(self.id, self.name,
                               ', '.join(self.tags), self.url, self.icon,
                               self.tags[0], self.countrycode, self.codec, self.bitrate, None)
 

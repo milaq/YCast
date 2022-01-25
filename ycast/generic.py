@@ -34,13 +34,6 @@ def get_stationid_prefix(uid):
     return uid[:2]
 
 
-def get_stationid_without_prefix(uid):
-    if len(uid) < 4:
-        logging.error("Could not extract stationid (Invalid station id length)")
-        return None
-    return uid[3:]
-
-
 def get_cache_path(cache_name):
     cache_path = CACHE_PATH + '/' + cache_name
     try:
@@ -52,6 +45,7 @@ def get_cache_path(cache_name):
         return None
     return cache_path
 
+
 def get_checksum(feed, charlimit=12):
     hash_feed = feed.encode()
     hash_object = hashlib.md5(hash_feed)
@@ -60,4 +54,4 @@ def get_checksum(feed, charlimit=12):
     for i, b in enumerate(digest[8:]):
         xor_fold[i] ^= b
     digest_xor_fold = ''.join(format(x, '02x') for x in bytes(xor_fold))
-    return digest_xor_fold[:charlimit]
+    return str(digest_xor_fold[:charlimit]).upper()

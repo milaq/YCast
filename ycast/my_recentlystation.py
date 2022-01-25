@@ -8,27 +8,31 @@ MAX_ENTRIES = 15
 
 config_file = VAR_PATH + '/recently.yml'
 
-def signalStationSelected(name,url,icon):
-    logging.debug("  %s:%s|%s",name,url,icon)
+
+def signal_station_selected(name, url, icon):
+    logging.debug("  %s:%s|%s", name, url, icon)
     list_heared_stations = get_stations_list()
-    if len(list_heared_stations) == 0 :
+    if len(list_heared_stations) == 0:
         list_heared_stations.append("recently used:\n")
+    # make name yaml - like
+    name = name.replace(":", " -")
 
     for line in list_heared_stations:
-        elements = line.split(':')
+        elements = line.split(': ')
         if elements[0] == '  '+name:
             list_heared_stations.remove(line)
-            logging.debug("Name '%s' exists and deleted",name)
+            logging.debug("Name '%s' exists and deleted", name)
     piped_icon = ''
     if icon and len(icon) > 0:
         piped_icon = '|' + icon
 
-    list_heared_stations.insert(1,'  '+name+': '+url+piped_icon+'\n')
+    list_heared_stations.insert(1, '  '+name+': '+url+piped_icon+'\n')
     if len(list_heared_stations) > MAX_ENTRIES+1:
         # remove last (oldest) entry
         list_heared_stations.pop()
 
     set_stations_yaml(list_heared_stations)
+
 
 def set_stations_yaml(heared_stations):
     try:
@@ -47,6 +51,7 @@ def set_stations_yaml(heared_stations):
     except Exception as ex:
         logging.error("File not written '%s': %s", config_file, ex)
 
+
 def get_stations_list():
     try:
         with open(config_file, 'r') as f:
@@ -58,6 +63,7 @@ def get_stations_list():
         logging.error("Station configuration format error: %s", e)
         return []
     return heared_stations
+
 
 def get_recently_stations_yaml():
     try:

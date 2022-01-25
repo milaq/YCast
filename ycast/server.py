@@ -8,7 +8,7 @@ import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
 import ycast.generic as generic
 import ycast.station_icons as station_icons
-from ycast.my_recentlystation import signalStationSelected
+from ycast.my_recentlystation import signal_station_selected
 
 PATH_ROOT = 'ycast'
 PATH_PLAY = 'play'
@@ -102,9 +102,9 @@ def get_paged_elements(items, requestargs):
 def get_station_by_id(stationid, additional_info=False):
     station_id_prefix = generic.get_stationid_prefix(stationid)
     if station_id_prefix == my_stations.ID_PREFIX:
-        return my_stations.get_station_by_id(generic.get_stationid_without_prefix(stationid))
+        return my_stations.get_station_by_id(stationid)
     elif station_id_prefix == radiobrowser.ID_PREFIX:
-        station = radiobrowser.get_station_by_id(generic.get_stationid_without_prefix(stationid))
+        station = radiobrowser.get_station_by_id(stationid)
         if additional_info:
             station.get_playable_url()
         return station
@@ -299,7 +299,7 @@ def get_station_icon():
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)
-    signalStationSelected(station.name,station.url,station.icon)
+    signal_station_selected(station.name, station.url, station.icon)
     if not hasattr(station, 'icon') or not station.icon:
         logging.warning("No icon information found for station with id '%s'", stationid)
         abort(404)
