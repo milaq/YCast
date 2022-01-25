@@ -296,10 +296,10 @@ def get_station_icon():
         logging.error("Station icon without station ID requested")
         abort(400)
     station = get_station_by_id(stationid)
-    signalStationSelected(station.name,station.url,station.icon)
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
         abort(404)
+    signalStationSelected(station.name,station.url,station.icon)
     if not hasattr(station, 'icon') or not station.icon:
         logging.warning("No icon information found for station with id '%s'", stationid)
         abort(404)

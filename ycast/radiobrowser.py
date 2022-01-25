@@ -13,7 +13,7 @@ DEFAULT_STATION_LIMIT = 200
 SHOW_BROKEN_STATIONS = False
 ID_PREFIX = "RB"
 
-id_registry = {}
+station_cache = {}
 
 def get_json_attr(json, attr):
     try:
@@ -24,7 +24,8 @@ def get_json_attr(json, attr):
 
 class Station:
     def __init__(self, station_json):
-        self.id = get_json_attr(station_json, 'stationuuid')
+        self.stationuuid = get_json_attr(station_json, 'stationuuid')
+        self.id = generic.get_checksum(self.stationuuid)
         self.name = get_json_attr(station_json, 'name')
         self.url = get_json_attr(station_json, 'url')
         self.icon = get_json_attr(station_json, 'favicon')
@@ -36,17 +37,15 @@ class Station:
         self.bitrate = get_json_attr(station_json, 'bitrate')
 
     def to_vtuner(self):
-        tid = generic.get_checksum(self.id)
-        id_registry[tid] = self.id
-        return vtuner.Station(generic.generate_stationid_with_prefix(tid, ID_PREFIX), self.name, ', '.join(self.tags), self.url, self.icon,
+        return vtuner.Station(generic.generate_stationid_with_prefix(self.id, ID_PREFIX), self.name, ', '.join(self.tags), self.url, self.icon,
                               self.tags[0], self.countrycode, self.codec, self.bitrate, None)
 
     def get_playable_url(self):
         try:
-            playable_url_json = request('url/' + str(self.id))[0]
+            playable_url_json = request('url/' + str(self.stationuuid))[0]
             self.url = playable_url_json['url']
         except (IndexError, KeyError):
-            logging.error("Could not retrieve first playlist item for station with id '%s'", self.id)
+            logging.error("Could not retrieve first playlist item for station with id '%s'", self.stationuuid)
 
 
 def request(url):
@@ -63,29 +62,21 @@ def request(url):
     return response.json()
 
 
-def get_station_by_id(uid):
-    try:
-        station_json = request('stations/byuuid/' + str(id_registry[uid]))
-        if station_json and len(station_json):
-            return Station(station_json[0])
-        else:
-            return None
-    except KeyError:
-        return None
-
+def get_station_by_id(id):
+    return station_cache[id]
 
 def search(name, limit=DEFAULT_STATION_LIMIT):
-    id_registry.clear()
+    station_cache.clear()
     stations = []
     stations_json = request('stations/search?order=name&reverse=false&limit=' + str(limit) + '&name=' + str(name))
     for station_json in stations_json:
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
+            curStation = Station(station_json)
+            station_cache[curStation.id] = curStation
+            stations.append(curStation)
     return stations
 
-
 def get_country_directories():
-    id_registry.clear()
     country_directories = []
     apicall = 'countries'
     if not SHOW_BROKEN_STATIONS:
@@ -100,7 +91,6 @@ def get_country_directories():
 
 
 def get_language_directories():
-    id_registry.clear()
     language_directories = []
     apicall = 'languages'
     if not SHOW_BROKEN_STATIONS:
@@ -116,7 +106,6 @@ def get_language_directories():
 
 
 def get_genre_directories():
-    id_registry.clear()
     genre_directories = []
     apicall = 'tags'
     if not SHOW_BROKEN_STATIONS:
@@ -132,40 +121,48 @@ def get_genre_directories():
 
 
 def get_stations_by_country(country):
-    id_registry.clear()
+    station_cache.clear()
     stations = []
     stations_json = request('stations/search?order=name&reverse=false&countryExact=true&country=' + str(country))
     for station_json in stations_json:
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
+            curStation = Station(station_json)
+            station_cache[curStation.id] = curStation
+            stations.append(curStation)
     return stations
 
 
 def get_stations_by_language(language):
-    id_registry.clear()
+    station_cache.clear()
     stations = []
     stations_json = request('stations/search?order=name&reverse=false&languageExact=true&language=' + str(language))
     for station_json in stations_json:
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
+            curStation = Station(station_json)
+            station_cache[curStation.id] = curStation
+            stations.append(curStation)
     return stations
 
 
 def get_stations_by_genre(genre):
-    id_registry.clear()
+    station_cache.clear()
     stations = []
     stations_json = request('stations/search?order=name&reverse=false&tagExact=true&tag=' + str(genre))
     for station_json in stations_json:
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
+            curStation = Station(station_json)
+            station_cache[curStation.id] = curStation
+            stations.append(curStation)
     return stations
 
 
 def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
-    id_registry.clear()
+    station_cache.clear()
     stations = []
     stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
     for station_json in stations_json:
         if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            stations.append(Station(station_json))
+            curStation = Station(station_json)
+            station_cache[curStation.id] = curStation
+            stations.append(curStation)
     return stations
