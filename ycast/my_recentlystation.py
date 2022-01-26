@@ -1,10 +1,7 @@
 import logging
-
-import yaml
 from ycast import generic
 
 MAX_ENTRIES = 15
-
 recently_file = generic.get_var_path() + '/recently.yml'
 
 
@@ -34,36 +31,12 @@ def signal_station_selected(name, url, icon):
 
 
 def set_stations_yaml(heard_stations):
-    try:
-        with open(recently_file, 'w') as f:
-            f.writelines(heard_stations)
-            logging.info("File written '%s'", recently_file)
-
-    except Exception as ex:
-        logging.error("File not written '%s': %s", recently_file, ex)
+    generic.writelns_txt_file(recently_file, heard_stations)
 
 
 def get_stations_list():
-    try:
-        with open(recently_file, 'r') as f:
-            heard_stations = f.readlines()
-    except FileNotFoundError:
-        logging.warning("File not found '%s' not found", recently_file)
-        return []
-    except yaml.YAMLError as e:
-        logging.error("Station configuration format error: %s", e)
-        return []
-    return heard_stations
+    return generic.readlns_txt_file(recently_file)
 
 
 def get_recently_stations_yaml():
-    try:
-        with open(recently_file, 'r') as f:
-            my_stations = yaml.safe_load(f)
-    except FileNotFoundError:
-        logging.error("Station configuration '%s' not found", recently_file)
-        return None
-    except yaml.YAMLError as e:
-        logging.error("Station configuration format error: %s", e)
-        return None
-    return my_stations
+    return generic.read_yaml_file(recently_file)

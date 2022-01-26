@@ -4,6 +4,8 @@ import logging
 from ycast import __version__
 import ycast.vtuner as vtuner
 import ycast.generic as generic
+from ycast.filter import check_station, init_filter, end_filter
+from ycast.generic import get_json_attr
 
 API_ENDPOINT = "http://all.api.radio-browser.info"
 MINIMUM_COUNT_GENRE = 5
@@ -17,27 +19,20 @@ ID_PREFIX = "RB"
 station_cache = {}
 
 
-def get_json_attr(json, attr):
-    try:
-        return json[attr]
-    except Exception as ex:
-        logging.error("json: attr '%s' not found: %s", attr, ex)
-        return None
-
-
 class Station:
     def __init__(self, station_json):
-        self.stationuuid = get_json_attr(station_json, 'stationuuid')
+        self.stationuuid = generic.get_json_attr(station_json, 'stationuuid')
         self.id = generic.generate_stationid_with_prefix(generic.get_checksum(self.stationuuid), ID_PREFIX)
-        self.name = get_json_attr(station_json, 'name')
-        self.url = get_json_attr(station_json, 'url')
-        self.icon = get_json_attr(station_json, 'favicon')
-        self.tags = get_json_attr(station_json, 'tags').split(',')
-        self.countrycode = get_json_attr(station_json, 'countrycode')
-        self.language = get_json_attr(station_json, 'language')
-        self.votes = get_json_attr(station_json, 'votes')
-        self.codec = get_json_attr(station_json, 'codec')
-        self.bitrate = get_json_attr(station_json, 'bitrate')
+        self.name = generic.get_json_attr(station_json, 'name')
+        self.url = generic.get_json_attr(station_json, 'url')
+        self.icon = generic.get_json_attr(station_json, 'favicon')
+        self.tags = generic.get_json_attr(station_json, 'tags').split(',')
+        self.countrycode = generic.get_json_attr(station_json, 'countrycode')
+        self.language = generic.get_json_attr(station_json, 'language')
+        self.languagecodes = generic.get_json_attr(station_json, 'languagecodes')
+        self.votes = generic.get_json_attr(station_json, 'votes')
+        self.codec = generic.get_json_attr(station_json, 'codec')
+        self.bitrate = generic.get_json_attr(station_json, 'bitrate')
 
     def to_vtuner(self):
         return vtuner.Station(self.id, self.name,
@@ -67,23 +62,13 @@ def request(url):
 
 
 def get_station_by_id(vtune_id):
-    return station_cache[vtune_id]
-
-
-def search(name, limit=DEFAULT_STATION_LIMIT):
-    station_cache.clear()
-    stations = []
-    stations_json = request('stations/search?order=name&reverse=false&limit=' + str(limit) + '&name=' + str(name))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
-            cur_station = Station(station_json)
-            if SHOW_WITHOUT_FAVICON or cur_station.icon:
-                station_cache[cur_station.id] = cur_station
-                stations.append(cur_station)
-    return stations
+    if station_cache:
+        return station_cache[vtune_id]
+    return None
 
 
 def get_country_directories():
+    init_filter()
     country_directories = []
     apicall = 'countries'
     if not SHOW_BROKEN_STATIONS:
@@ -98,6 +83,7 @@ def get_country_directories():
 
 
 def get_language_directories():
+    init_filter()
     language_directories = []
     apicall = 'languages'
     if not SHOW_BROKEN_STATIONS:
@@ -128,52 +114,76 @@ def get_genre_directories():
 
 
 def get_stations_by_country(country):
+    init_filter()
     station_cache.clear()
     stations = []
-    stations_json = request('stations/search?order=name&reverse=false&countryExact=true&country=' + str(country))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
+    stations_list_json = request('stations/search?order=name&reverse=false&countryExact=true&country=' + str(country))
+    for station_json in stations_list_json:
+        if check_station(station_json):
             cur_station = Station(station_json)
-            if SHOW_WITHOUT_FAVICON or cur_station.icon:
-                station_cache[cur_station.id] = cur_station
-                stations.append(cur_station)
+            station_cache[cur_station.id] = cur_station
+            stations.append(cur_station)
+    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
+    end_filter()
     return stations
 
 
 def get_stations_by_language(language):
+    init_filter()
     station_cache.clear()
     stations = []
-    stations_json = request('stations/search?order=name&reverse=false&languageExact=true&language=' + str(language))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
+    stations_list_json = \
+        request('stations/search?order=name&reverse=false&languageExact=true&language=' + str(language))
+    for station_json in stations_list_json:
+        if check_station(station_json):
             cur_station = Station(station_json)
-            if SHOW_WITHOUT_FAVICON or cur_station.icon:
-                station_cache[cur_station.id] = cur_station
-                stations.append(cur_station)
+            station_cache[cur_station.id] = cur_station
+            stations.append(cur_station)
+    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
+    end_filter()
     return stations
 
 
 def get_stations_by_genre(genre):
+    init_filter()
     station_cache.clear()
     stations = []
-    stations_json = request('stations/search?order=name&reverse=false&tagExact=true&tag=' + str(genre))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
+    stations_list_json = request('stations/search?order=name&reverse=false&tagExact=true&tag=' + str(genre))
+    for station_json in stations_list_json:
+        if check_station(station_json):
             cur_station = Station(station_json)
-            if SHOW_WITHOUT_FAVICON or cur_station.icon:
-                station_cache[cur_station.id] = cur_station
-                stations.append(cur_station)
+            station_cache[cur_station.id] = cur_station
+            stations.append(cur_station)
+    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
+    end_filter()
     return stations
 
 
 def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
+    init_filter()
     station_cache.clear()
     stations = []
-    stations_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
-    for station_json in stations_json:
-        if SHOW_BROKEN_STATIONS or get_json_attr(station_json, 'lastcheckok') == 1:
+    stations_list_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
+    for station_json in stations_list_json:
+        if check_station(station_json):
             cur_station = Station(station_json)
-            if SHOW_WITHOUT_FAVICON or cur_station.icon:
-                station_cache[cur_station.id] = cur_station
-                stations.append(cur_station)
+            station_cache[cur_station.id] = cur_station
+            stations.append(cur_station)
+    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
+    end_filter()
+    return stations
+
+
+def search(name, limit=DEFAULT_STATION_LIMIT):
+    init_filter()
+    station_cache.clear()
+    stations = []
+    stations_list_json = request('stations/search?order=name&reverse=false&limit=' + str(limit) + '&name=' + str(name))
+    for station_json in stations_list_json:
+        if check_station(station_json):
+            cur_station = Station(station_json)
+            station_cache[cur_station.id] = cur_station
+            stations.append(cur_station)
+    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
+    end_filter()
     return stations

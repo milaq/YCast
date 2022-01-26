@@ -1,11 +1,12 @@
 import logging
 import os
 import hashlib
+import yaml
 
 USER_AGENT = 'YCast'
 VAR_PATH = os.path.expanduser("~") + '/.ycast'
 CACHE_PATH = VAR_PATH + '/cache'
-FILTER_PATH = VAR_PATH + '/filter'
+
 
 class Directory:
     def __init__(self, name, item_count, displayname=None):
@@ -47,15 +48,6 @@ def get_cache_path(cache_name):
         return None
     return cache_path
 
-def get_filter_path():
-    try:
-        os.makedirs(FILTER_PATH)
-    except FileExistsError:
-        pass
-    except PermissionError:
-        logging.error("Could not create cache folders (%s) because of access permissions", cache_path)
-        return None
-    return FILTER_PATH
 
 def get_var_path():
     try:
@@ -63,9 +55,10 @@ def get_var_path():
     except FileExistsError:
         pass
     except PermissionError:
-        logging.error("Could not create cache folders (%s) because of access permissions", cache_path)
+        logging.error("Could not create cache folders (%s) because of access permissions", VAR_PATH)
         return None
     return VAR_PATH
+
 
 def get_checksum(feed, charlimit=12):
     hash_feed = feed.encode()
@@ -76,3 +69,52 @@ def get_checksum(feed, charlimit=12):
         xor_fold[i] ^= b
     digest_xor_fold = ''.join(format(x, '02x') for x in bytes(xor_fold))
     return str(digest_xor_fold[:charlimit]).upper()
+
+
+def read_yaml_file(file_name):
+    try:
+        with open(file_name, 'r') as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        logging.error("YAML file '%s' not found", file_name)
+    except yaml.YAMLError as e:
+        logging.error("YAML format error in '%':\n    %s", file_name, e)
+    return None
+
+
+def write_yaml_file(file_name, dictionary):
+    try:
+        with open(file_name, 'w') as f:
+            yaml.dump(dictionary, f)
+    except yaml.YAMLError as e:
+        logging.error("YAML format error in '%':\n    %s", file_name, e)
+    except Exception as ex:
+        logging.error("File not written '%s':\n    %s", file_name, ex)
+
+
+def readlns_txt_file(file_name):
+    try:
+        with open(file_name, 'r') as f:
+            return f.readlines()
+    except FileNotFoundError:
+        logging.error("YAML file '%s' not found", file_name)
+    except yaml.YAMLError as e:
+        logging.error("YAML format error in '%':\n    %s", file_name, e)
+    return None
+
+
+def writelns_txt_file(file_name, line_list):
+    try:
+        with open(file_name, 'w') as f:
+            f.writelines(line_list)
+            logging.info("File written '%s'", file_name)
+    except Exception as ex:
+        logging.error("File not written '%s':\n    %s", file_name, ex)
+
+
+def get_json_attr(json, attr):
+    try:
+        return json[attr]
+    except Exception as ex:
+        logging.debug("json: attr '%s' not found: %s", attr, ex)
+        return None

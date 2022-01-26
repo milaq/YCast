@@ -1,5 +1,4 @@
 import logging
-import oyaml as yaml
 
 import ycast.vtuner as vtuner
 import ycast.generic as generic
@@ -44,16 +43,7 @@ def get_station_by_id(vtune_id):
 def get_stations_yaml():
     from ycast.my_recentlystation import get_recently_stations_yaml
     my_recently_station = get_recently_stations_yaml()
-    my_stations = None
-    try:
-        with open(config_file, 'r') as f:
-            my_stations = yaml.safe_load(f)
-    except FileNotFoundError:
-        logging.error("Station configuration '%s' not found", config_file)
-
-    except yaml.YAMLError as e:
-        logging.error("Station configuration format error: %s", e)
-
+    my_stations = generic.read_yaml_file(config_file)
     if my_stations:
         if my_recently_station:
             my_stations.update(my_recently_station)
