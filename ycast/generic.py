@@ -35,6 +35,13 @@ def get_stationid_prefix(uid):
     return uid[:2]
 
 
+def get_stationid_without_prefix(uid):
+    if len(uid) < 4:
+        logging.error("Could not extract stationid (Invalid station id length)")
+        return None
+    return uid[3:]
+
+
 def get_cache_path(cache_name):
     cache_path = CACHE_PATH
     if cache_name:

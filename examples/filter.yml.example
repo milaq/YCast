@@ -1,0 +1,6 @@
+blacklist:
+  favicon: ''
+whitelist:
+  countrycode: DE,US,NO,GB
+  languagecodes: en,no
+  lastcheckok: 1

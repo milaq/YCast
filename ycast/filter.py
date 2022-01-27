@@ -8,6 +8,7 @@ black_list = {}
 filter_dir = {}
 parameter_failed_list = {}
 
+
 def init_filter():
     global white_list
     global black_list
@@ -18,26 +19,21 @@ def init_filter():
         white_list = filter_dir['whitelist']
         black_list = filter_dir['blacklist']
     else:
-        white_list = { 'lastcheckok': 1 }
+        white_list = {'lastcheckok': 1}
         black_list = {}
-        filter_dir = {}
-        filter_dir['whitelist'] = white_list
-        filter_dir['blacklist'] = black_list
+        filter_dir = {'whitelist': white_list, 'blacklist': black_list}
         generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dir)
-
-        filter_ex = {}
-        filter_ex['whitelist'] = {'lastcheckok': 1, 'countrycode': 'DE,US,NO,GB', 'languagecodes': 'en,no'}
-        filter_ex['blacklist'] = {'favicon': ''}
-        generic.write_yaml_file(generic.get_var_path() + '/filter.yml_example', filter_ex)
 
     parameter_failed_list.clear()
     return
+
 
 def end_filter():
     if parameter_failed_list:
         logging.info("Used filter parameter: %s", parameter_failed_list)
     else:
         logging.info("Used filter parameter: <nothing used>")
+
 
 def parameter_hit(param_name):
     count = 1
@@ -47,6 +43,7 @@ def parameter_hit(param_name):
     if old:
         count = old + 1
     parameter_failed_list[param_name] = count
+
 
 def check_station(station_json):
     station_name = get_json_attr(station_json, 'name')
@@ -59,7 +56,7 @@ def check_station(station_json):
         black_list_hit = False
         for param_name in black_list:
             unvalid_elements = black_list[param_name]
-            val =  get_json_attr(station_json, param_name)
+            val = get_json_attr(station_json, param_name)
             if not val == None:
                 # attribut in json vorhanden
                 if unvalid_elements:
@@ -71,15 +68,15 @@ def check_station(station_json):
                         black_list_hit = True
                 if black_list_hit:
                     parameter_hit(param_name)
-                    logging.debug("FAIL '%s' blacklist hit on '%s' '%s' == '%s'",
-                                  station_name, param_name, unvalid_elements, val)
+#                    logging.debug("FAIL '%s' blacklist hit on '%s' '%s' == '%s'",
+#                                  station_name, param_name, unvalid_elements, val)
                     return False
 
 # und verknüpft
     if white_list:
         white_list_hit = True
         for param_name in white_list:
-            val =  get_json_attr(station_json, param_name)
+            val = get_json_attr(station_json, param_name)
             if not val == None:
                 # attribut in json vorhanden
                 valid_elements = white_list[param_name]
@@ -88,11 +85,11 @@ def check_station(station_json):
                 else:
                     if val:
                         pos = valid_elements.find(val)
-                        white_list_hit = pos >=0
+                        white_list_hit = pos >= 0
                 if not white_list_hit:
                     parameter_hit(param_name)
-                    logging.debug("FAIL '%s' whitelist failed on '%s' '%s' == '%s'",
-                                  station_name, param_name, valid_elements, val)
+#                    logging.debug("FAIL '%s' whitelist failed on '%s' '%s' == '%s'",
+#                                  station_name, param_name, valid_elements, val)
                     return False
-    logging.debug("OK   '%s' passed", station_name)
+#    logging.debug("OK   '%s' passed", station_name)
     return True

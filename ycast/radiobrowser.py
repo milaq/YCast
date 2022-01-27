@@ -1,3 +1,6 @@
+import base64
+import uuid
+
 import requests
 import logging
 
@@ -22,7 +25,8 @@ station_cache = {}
 class Station:
     def __init__(self, station_json):
         self.stationuuid = generic.get_json_attr(station_json, 'stationuuid')
-        self.id = generic.generate_stationid_with_prefix(generic.get_checksum(self.stationuuid), ID_PREFIX)
+        self.id = generic.generate_stationid_with_prefix(
+            base64.urlsafe_b64encode(uuid.UUID(self.stationuuid).bytes).decode(), ID_PREFIX)
         self.name = generic.get_json_attr(station_json, 'name')
         self.url = generic.get_json_attr(station_json, 'url')
         self.icon = generic.get_json_attr(station_json, 'favicon')
@@ -62,8 +66,22 @@ def request(url):
 
 
 def get_station_by_id(vtune_id):
+    global station_cache
+# decode
+    uidbase64 = generic.get_stationid_without_prefix(vtune_id)
+    uid = str(uuid.UUID(base64.urlsafe_b64decode(uidbase64).hex()))
     if station_cache:
-        return station_cache[vtune_id]
+        station = station_cache[vtune_id]
+        if station:
+            logging.debug('verify %s:%s', station.stationuuid, uid)
+            return station
+# no item in cache, do request
+    station_json = request('stations/byuuid?uuids=' + uid)
+    if station_json and len(station_json):
+        station = Station(station_json[0])
+        if station:
+            station_cache[station.id] = station
+        return station
     return None
 
 
