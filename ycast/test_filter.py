@@ -3,7 +3,7 @@ import logging
 import unittest
 from io import StringIO
 
-import filter
+import my_filter
 import generic
 from ycast import radiobrowser
 
@@ -38,6 +38,10 @@ class MyTestCase(unittest.TestCase):
         logging.info("Stations (%d/%d)" , count, len(stations_json) )
         logging.info("Used filter parameter", filter.parameter_failed_list)
 
+
+    def test_popular_station(self):
+        stations = radiobrowser.get_stations_by_votes()
+        logging.info("Stations (%d)", len(stations))
 
 if __name__ == '__main__':
     unittest.main()

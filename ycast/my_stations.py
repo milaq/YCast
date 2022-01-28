@@ -1,4 +1,3 @@
-import logging
 
 import ycast.vtuner as vtuner
 import ycast.generic as generic

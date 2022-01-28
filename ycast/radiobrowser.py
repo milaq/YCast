@@ -7,7 +7,7 @@ import logging
 from ycast import __version__
 import ycast.vtuner as vtuner
 import ycast.generic as generic
-from ycast.filter import check_station, init_filter, end_filter
+from ycast.my_filter import check_station, init_filter, end_filter
 from ycast.generic import get_json_attr
 
 API_ENDPOINT = "http://all.api.radio-browser.info"
@@ -28,7 +28,11 @@ class Station:
         self.id = generic.generate_stationid_with_prefix(
             base64.urlsafe_b64encode(uuid.UUID(self.stationuuid).bytes).decode(), ID_PREFIX)
         self.name = generic.get_json_attr(station_json, 'name')
-        self.url = generic.get_json_attr(station_json, 'url')
+
+        self.url = generic.get_json_attr(station_json, 'url_resolved')
+        if not self.url:
+            self.url = generic.get_json_attr(station_json, 'url')
+
         self.icon = generic.get_json_attr(station_json, 'favicon')
         self.tags = generic.get_json_attr(station_json, 'tags').split(',')
         self.countrycode = generic.get_json_attr(station_json, 'countrycode')
@@ -45,8 +49,9 @@ class Station:
 
     def get_playable_url(self):
         try:
-            playable_url_json = request('url/' + str(self.stationuuid))[0]
+            playable_url_json = request('url/' + str(self.stationuuid))
             self.url = playable_url_json['url']
+
         except (IndexError, KeyError):
             logging.error("Could not retrieve first playlist item for station with id '%s'", self.stationuuid)
 
@@ -141,7 +146,6 @@ def get_stations_by_country(country):
             cur_station = Station(station_json)
             station_cache[cur_station.id] = cur_station
             stations.append(cur_station)
-    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
     end_filter()
     return stations
 
@@ -157,7 +161,6 @@ def get_stations_by_language(language):
             cur_station = Station(station_json)
             station_cache[cur_station.id] = cur_station
             stations.append(cur_station)
-    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
     end_filter()
     return stations
 
@@ -172,7 +175,6 @@ def get_stations_by_genre(genre):
             cur_station = Station(station_json)
             station_cache[cur_station.id] = cur_station
             stations.append(cur_station)
-    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
     end_filter()
     return stations
 
@@ -187,7 +189,6 @@ def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
             cur_station = Station(station_json)
             station_cache[cur_station.id] = cur_station
             stations.append(cur_station)
-    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
     end_filter()
     return stations
 
@@ -202,6 +203,5 @@ def search(name, limit=DEFAULT_STATION_LIMIT):
             cur_station = Station(station_json)
             station_cache[cur_station.id] = cur_station
             stations.append(cur_station)
-    logging.info("Stations (%d/%d)", len(stations), len(stations_list_json))
     end_filter()
     return stations

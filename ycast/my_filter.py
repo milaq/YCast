@@ -7,13 +7,18 @@ white_list = {}
 black_list = {}
 filter_dir = {}
 parameter_failed_list = {}
-
+count_used = 0
+count_hit = 0
 
 def init_filter():
     global white_list
     global black_list
     global parameter_failed_list
     global filter_dir
+    global count_used
+    global count_hit
+    count_used = 0
+    count_hit = 0
     filter_dir = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
     if filter_dir:
         white_list = filter_dir['whitelist']
@@ -30,9 +35,9 @@ def init_filter():
 
 def end_filter():
     if parameter_failed_list:
-        logging.info("Used filter parameter: %s", parameter_failed_list)
+        logging.info("(%d/%d) stations filtered by: %s", count_hit, count_used, parameter_failed_list)
     else:
-        logging.info("Used filter parameter: <nothing used>")
+        logging.info("(%d/%d) stations filtered by: <no filter used>")
 
 
 def parameter_hit(param_name):
@@ -46,6 +51,9 @@ def parameter_hit(param_name):
 
 
 def check_station(station_json):
+    global count_used
+    global count_hit
+    count_used = count_used + 1
     station_name = get_json_attr(station_json, 'name')
     if not station_name:
         # müll response
@@ -92,4 +100,5 @@ def check_station(station_json):
 #                                  station_name, param_name, valid_elements, val)
                     return False
 #    logging.debug("OK   '%s' passed", station_name)
+    count_hit = count_hit + 1
     return True
