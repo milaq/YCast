@@ -155,7 +155,7 @@ def landing(path=''):
                                   len(my_stations.get_category_directories())))
 
         stations = my_stations.get_stations_by_category(my_recentlystation.directory_name())
-        if stations:
+        if stations and len(stations) > 0:
 # emulate Sp
             page.add(vtuner.Directory(' ', url_for('my_stations_landing', _external=True),
                                       len(my_stations.get_category_directories())))
@@ -171,7 +171,7 @@ def landing(path=''):
                 if count > 4:
                     break
 
-        page.set_count(3)
+        page.set_count(1)
 
     else:
         page.add(vtuner.Display("'My Stations' feature not configured."))

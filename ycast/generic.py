@@ -93,10 +93,12 @@ def write_yaml_file(file_name, dictionary):
     try:
         with open(file_name, 'w') as f:
             yaml.dump(dictionary, f)
+            return True
     except yaml.YAMLError as e:
         logging.error("YAML format error in '%':\n    %s", file_name, e)
     except Exception as ex:
         logging.error("File not written '%s':\n    %s", file_name, ex)
+    return False
 
 
 def readlns_txt_file(file_name):
@@ -104,9 +106,7 @@ def readlns_txt_file(file_name):
         with open(file_name, 'r') as f:
             return f.readlines()
     except FileNotFoundError:
-        logging.error("YAML file '%s' not found", file_name)
-    except yaml.YAMLError as e:
-        logging.error("YAML format error in '%':\n    %s", file_name, e)
+        logging.error("TXT file '%s' not found", file_name)
     return None
 
 
@@ -114,8 +114,10 @@ def writelns_txt_file(file_name, line_list):
     try:
         with open(file_name, 'w') as f:
             f.writelines(line_list)
+            return True
     except Exception as ex:
         logging.error("File not written '%s':\n    %s", file_name, ex)
+    return False
 
 
 def get_json_attr(json, attr):
