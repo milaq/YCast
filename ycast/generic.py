@@ -114,7 +114,6 @@ def writelns_txt_file(file_name, line_list):
     try:
         with open(file_name, 'w') as f:
             f.writelines(line_list)
-            logging.info("File written '%s'", file_name)
     except Exception as ex:
         logging.error("File not written '%s':\n    %s", file_name, ex)
 

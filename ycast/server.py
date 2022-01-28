@@ -8,6 +8,7 @@ import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
 import ycast.generic as generic
 import ycast.station_icons as station_icons
+from ycast import my_recentlystation
 from ycast.my_recentlystation import signal_station_selected
 
 PATH_ROOT = 'ycast'
@@ -122,7 +123,7 @@ def vtuner_redirect(url):
 @app.route('/setupapp/<path:path>',
            methods=['GET', 'POST'])
 def upstream(path):
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('upstream **********************:  %s', request.url)
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
     if request.args.get('search'):
@@ -152,6 +153,26 @@ def landing(path=''):
     if my_stations_enabled:
         page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
                                   len(my_stations.get_category_directories())))
+
+        stations = my_stations.get_stations_by_category(my_recentlystation.directory_name())
+        if stations:
+# emulate Sp
+            page.add(vtuner.Directory(' ', url_for('my_stations_landing', _external=True),
+                                      len(my_stations.get_category_directories())))
+            count = 0
+            for station in stations:
+                vtuner_station = station.to_vtuner()
+                if station_tracking:
+                    vtuner_station.set_trackurl(
+                        request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
+                vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
+                page.add(vtuner_station)
+                count = count + 1
+                if count > 4:
+                    break
+
+        page.set_count(3)
+
     else:
         page.add(vtuner.Display("'My Stations' feature not configured."))
         page.set_count(1)

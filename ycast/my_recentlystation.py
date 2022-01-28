@@ -2,14 +2,15 @@ import logging
 from ycast import generic
 
 MAX_ENTRIES = 15
+DIRECTORY_NAME = "recently used"
+
 recently_file = generic.get_var_path() + '/recently.yml'
 
 
 def signal_station_selected(name, url, icon):
-    logging.debug("  %s:%s|%s", name, url, icon)
     list_heard_stations = get_stations_list()
     if len(list_heard_stations) == 0:
-        list_heard_stations.append("recently used:\n")
+        list_heard_stations.append(DIRECTORY_NAME + ":\n")
     # make name yaml - like
     name = name.replace(":", " -")
 
@@ -17,7 +18,6 @@ def signal_station_selected(name, url, icon):
         elements = line.split(': ')
         if elements[0] == '  '+name:
             list_heard_stations.remove(line)
-            logging.debug("Name '%s' exists and deleted", name)
     piped_icon = ''
     if icon and len(icon) > 0:
         piped_icon = '|' + icon
@@ -40,3 +40,8 @@ def get_stations_list():
 
 def get_recently_stations_yaml():
     return generic.read_yaml_file(recently_file)
+
+
+def directory_name():
+    dir = generic.read_yaml_file(recently_file)
+    return list(dir.keys())[0]
