@@ -78,7 +78,6 @@ def get_station_by_id(vtune_id):
     if station_cache:
         station = station_cache[vtune_id]
         if station:
-            logging.debug('verify %s:%s', station.stationuuid, uid)
             return station
 # no item in cache, do request
     station_json = request('stations/byuuid?uuids=' + uid)
