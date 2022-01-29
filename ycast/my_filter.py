@@ -63,7 +63,7 @@ def verify_value(ref_val, val):
     return False
 
 
-def chk_paramter(parameter_name, val):
+def chk_parameter(parameter_name, val):
     if black_list:
         if parameter_name in black_list:
             if verify_value(black_list[parameter_name], val):

@@ -4,14 +4,14 @@ import uuid
 import requests
 import logging
 
-from ycast import __version__
+from ycast import __version__, my_filter
 import ycast.vtuner as vtuner
 import ycast.generic as generic
 from ycast.my_filter import check_station, init_filter, end_filter
 from ycast.generic import get_json_attr
 
 API_ENDPOINT = "http://all.api.radio-browser.info"
-MINIMUM_COUNT_GENRE = 5
+MINIMUM_COUNT_GENRE = 40
 MINIMUM_COUNT_COUNTRY = 5
 MINIMUM_COUNT_LANGUAGE = 5
 DEFAULT_STATION_LIMIT = 200
@@ -72,14 +72,14 @@ def request(url):
 
 def get_station_by_id(vtune_id):
     global station_cache
-# decode
+    # decode
     uidbase64 = generic.get_stationid_without_prefix(vtune_id)
     uid = str(uuid.UUID(base64.urlsafe_b64decode(uidbase64).hex()))
     if station_cache:
         station = station_cache[vtune_id]
         if station:
             return station
-# no item in cache, do request
+    # no item in cache, do request
     station_json = request('stations/byuuid?uuids=' + uid)
     if station_json and len(station_json):
         station = Station(station_json[0])
@@ -99,8 +99,9 @@ def get_country_directories():
     for country_raw in countries_raw:
         if get_json_attr(country_raw, 'name') and get_json_attr(country_raw, 'stationcount') and \
                 int(get_json_attr(country_raw, 'stationcount')) > MINIMUM_COUNT_COUNTRY:
-            country_directories.append(generic.Directory(get_json_attr(country_raw, 'name'),
-                                                         get_json_attr(country_raw, 'stationcount')))
+            if my_filter.chk_parameter('country', get_json_attr(country_raw, 'name')):
+                country_directories.append(generic.Directory(get_json_attr(country_raw, 'name'),
+                                                             get_json_attr(country_raw, 'stationcount')))
     return country_directories
 
 
@@ -114,9 +115,10 @@ def get_language_directories():
     for language_raw in languages_raw:
         if get_json_attr(language_raw, 'name') and get_json_attr(language_raw, 'stationcount') and \
                 int(get_json_attr(language_raw, 'stationcount')) > MINIMUM_COUNT_LANGUAGE:
-            language_directories.append(generic.Directory(get_json_attr(language_raw, 'name'),
-                                                          get_json_attr(language_raw, 'stationcount'),
-                                                          get_json_attr(language_raw, 'name').title()))
+            if my_filter.chk_parameter('languagecodes', get_json_attr(language_raw, 'iso_639')):
+                language_directories.append(generic.Directory(get_json_attr(language_raw, 'name'),
+                                                              get_json_attr(language_raw, 'stationcount'),
+                                                              get_json_attr(language_raw, 'name').title()))
     return language_directories
 
 
