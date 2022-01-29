@@ -150,32 +150,31 @@ def landing(path=''):
     logging.debug('**********************:  %s', request.url)
     page = vtuner.Page()
     page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
-    if my_stations_enabled:
-        page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
-                                  len(my_stations.get_category_directories())))
 
-        stations = my_stations.get_stations_by_category(my_recentlystation.directory_name())
-        if stations and len(stations) > 0:
-            # make blank line (display is not shown)
-            page.add(vtuner.Directory(' ', url_for('my_stations_landing', _external=True),
-                                      len(my_stations.get_category_directories())))
-            count = 0
-            for station in stations:
-                vtuner_station = station.to_vtuner()
-                if station_tracking:
-                    vtuner_station.set_trackurl(
-                        request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
-                vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
-                page.add(vtuner_station)
-                count = count + 1
-                if count > 4:
-                    break
+    page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
+                              len(my_stations.get_category_directories())))
 
-        page.set_count(1)
+    stations = my_recentlystation.get_stations_by_vote()
+    if stations and len(stations) > 0:
+        # make blank line (display is not shown)
+        #        page.add(vtuner.Directory(' ', url_for('my_stations_landing', _external=True),
+        #                                  len(my_stations.get_category_directories())))
+
+        vtuner_station = stations[0].to_vtuner()
+        vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
+        vtuner_station.name = '   '
+        page.add(vtuner_station)
+        for station in stations:
+            vtuner_station = station.to_vtuner()
+            if station_tracking:
+                vtuner_station.set_trackurl(
+                    request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
+            vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
+            page.add(vtuner_station)
 
     else:
         page.add(vtuner.Display("'My Stations' feature not configured."))
-        page.set_count(1)
+    page.set_count(1)
     return page.to_string()
 
 

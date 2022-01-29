@@ -41,8 +41,8 @@ def get_station_by_id(vtune_id):
 
 
 def get_stations_yaml():
-    from ycast.my_recentlystation import get_recently_stations_yaml
-    my_recently_station = get_recently_stations_yaml()
+    from ycast.my_recentlystation import get_recently_stations_dictionary
+    my_recently_station = get_recently_stations_dictionary()
     my_stations = generic.read_yaml_file(config_file)
     if my_stations:
         if my_recently_station:

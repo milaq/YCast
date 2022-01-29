@@ -92,7 +92,8 @@ def read_yaml_file(file_name):
 def write_yaml_file(file_name, dictionary):
     try:
         with open(file_name, 'w') as f:
-            yaml.dump(dictionary, f)
+            # no sort please
+            yaml.dump(dictionary, f, sort_keys=False)
             return True
     except yaml.YAMLError as e:
         logging.error("YAML format error in '%':\n    %s", file_name, e)
