@@ -89,8 +89,8 @@ def check_station(station_json):
             val = get_json_attr(station_json, param_name)
             if verify_value(black_list[param_name], val):
                 parameter_failed_evt(param_name)
-                logging.debug("FAIL '%s' blacklist failed on '%s' '%s' == '%s'",
-                    station_name, param_name, black_list[param_name], val)
+#                logging.debug("FAIL '%s' blacklist failed on '%s' '%s' == '%s'",
+#                    station_name, param_name, black_list[param_name], val)
                 return False
 
     # und verknüpft
@@ -101,9 +101,8 @@ def check_station(station_json):
                 # attribut in json vorhanden
                 if not verify_value(white_list[param_name], val):
                     parameter_failed_evt(param_name)
-                    logging.debug("FAIL '%s' whitelist failed on '%s' '%s' == '%s'",
-                                  station_name, param_name, white_list[param_name], val)
+#                    logging.debug("FAIL '%s' whitelist failed on '%s' '%s' == '%s'",
+#                                  station_name, param_name, white_list[param_name], val)
                     return False
-#    logging.debug("OK   '%s' passed", station_name)
     count_hit = count_hit + 1
     return True
