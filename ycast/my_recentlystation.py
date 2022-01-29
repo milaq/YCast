@@ -1,57 +1,88 @@
 from ycast import generic
 
 MAX_ENTRIES = 15
+# define a max, so after 5 hits, an other station is get better votes
+MAX_VOTES = 5
 DIRECTORY_NAME = "recently used"
 
 recently_file = generic.get_var_path() + '/recently.yml'
-is_yml_file_loadable = True
+recently_station_dictionary = None
+
+
+class StationVote:
+    def __init__(self, name, params_txt):
+        self.name = name
+        params = params_txt.split('|')
+        self.url = params[0]
+        self.icon = ''
+        self.vote = 0
+        if len(params) > 0:
+            self.icon = params[1]
+            if len(params) > 1:
+                self.vote = int(params[2])
+
+    def to_params_txt(self):
+        text_line = self.url + '|' + self.icon + '|' + str(self.vote) + '\n'
+        return text_line
 
 
 def signal_station_selected(name, url, icon):
-    list_heard_stations = get_stations_list()
-    if not list_heard_stations:
-        list_heard_stations = []
-        list_heard_stations.append(DIRECTORY_NAME + ":\n")
     # make name yaml - like
     name = name.replace(":", " -")
 
-    for line in list_heard_stations:
-        elements = line.split(': ')
-        if elements[0] == '  '+name:
-            list_heard_stations.remove(line)
-    piped_icon = ''
-    if icon and len(icon) > 0:
-        piped_icon = '|' + icon
+    recently_station_list = get_stations_list()
+    station_hit = StationVote(name, url + '|' + icon)
+    for recently_station in recently_station_list:
+        if name == recently_station.name:
+            station_hit.vote = recently_station.vote + 1
+            recently_station_list.remove(recently_station)
+            break
+    recently_station_list.insert(0, station_hit)
 
-    list_heard_stations.insert(1, '  '+name+': '+url+piped_icon+'\n')
-    if len(list_heard_stations) > MAX_ENTRIES+1:
+    if station_hit.vote > MAX_VOTES:
+        for recently_station in recently_station_list:
+            if recently_station.vote > 0:
+                recently_station.vote = recently_station.vote - 1
+
+    if len(recently_station_list) > MAX_ENTRIES:
         # remove last (oldest) entry
-        list_heard_stations.pop()
+        recently_station_list.pop()
 
-    set_stations_yaml(list_heard_stations)
+    set_station_dictionary(directory_name(), recently_station_list)
 
 
-def set_stations_yaml(heard_stations):
-    global is_yml_file_loadable
-    is_yml_file_loadable = generic.writelns_txt_file(recently_file, heard_stations)
+def set_station_dictionary(cathegory, station_list):
+    global recently_station_dictionary
+    new_cathegory_dictionary = {}
+    station_dictionary = {}
+    for station in station_list:
+        station_dictionary[station.name] = station.to_params_txt()
+    new_cathegory_dictionary[cathegory] = station_dictionary
+
+    recently_station_dictionary = new_cathegory_dictionary
+    generic.write_yaml_file(recently_file, recently_station_dictionary)
 
 
 def get_stations_list():
-    return generic.readlns_txt_file(recently_file)
+    stations_list = []
+    cathegory_dict = get_recently_stations_yaml()
+    if cathegory_dict:
+        for cat_key in cathegory_dict:
+            station_dict = cathegory_dict[cat_key]
+            for station_key in station_dict:
+                stations_list.append(StationVote(station_key, station_dict[station_key]))
+    return stations_list
 
 
 def get_recently_stations_yaml():
-    global is_yml_file_loadable
-    dict_stations = None
-    if is_yml_file_loadable:
-        dict_stations = generic.read_yaml_file(recently_file)
-        if not dict_stations:
-            is_yml_file_loadable = False
-    return dict_stations
+    # cached recently
+    global recently_station_dictionary
+    if not recently_station_dictionary:
+        recently_station_dictionary = generic.read_yaml_file(recently_file)
+        if not recently_station_dictionary:
+            recently_station_dictionary[DIRECTORY_NAME] = None
+    return recently_station_dictionary
 
 
 def directory_name():
-    dir = generic.read_yaml_file(recently_file)
-    if dir:
-        return list(dir.keys())[0]
-    return None
+    return list(get_recently_stations_yaml().keys())[0]

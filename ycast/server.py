@@ -156,7 +156,7 @@ def landing(path=''):
 
         stations = my_stations.get_stations_by_category(my_recentlystation.directory_name())
         if stations and len(stations) > 0:
-# emulate Sp
+            # make blank line (display is not shown)
             page.add(vtuner.Directory(' ', url_for('my_stations_landing', _external=True),
                                       len(my_stations.get_category_directories())))
             count = 0

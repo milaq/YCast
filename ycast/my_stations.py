@@ -8,8 +8,9 @@ config_file = generic.get_var_path() + '/stations.yml'
 
 
 class Station:
-    def __init__(self, uid, name, url, category, icon):
-        self.id = generic.generate_stationid_with_prefix(uid, ID_PREFIX)
+    def __init__(self, name, url, category, icon):
+        self.id = generic.generate_stationid_with_prefix(
+            generic.get_checksum(name + url), ID_PREFIX)
         self.name = name
         self.url = url
         self.tag = category
@@ -66,11 +67,10 @@ def get_stations_by_category(category):
     if my_stations_yaml and category in my_stations_yaml:
         for station_name in my_stations_yaml[category]:
             station_urls = my_stations_yaml[category][station_name]
-            url_list = station_urls.split('|')
-            station_url = url_list[0]
+            param_list = station_urls.split('|')
+            station_url = param_list[0]
             station_icon = None
-            if len(url_list) > 1:
-                station_icon = url_list[1]
-            station_id = generic.get_checksum(station_name + station_url)
-            stations.append(Station(station_id, station_name, station_url, category, station_icon))
+            if len(param_list) > 1:
+                station_icon = param_list[1]
+            stations.append(Station(station_name, station_url, category, station_icon))
     return stations
