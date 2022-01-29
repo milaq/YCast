@@ -10,6 +10,7 @@ parameter_failed_list = {}
 count_used = 0
 count_hit = 0
 
+
 def init_filter():
     global white_list
     global black_list
@@ -40,7 +41,7 @@ def end_filter():
         logging.info("(%d/%d) stations filtered by: <no filter used>")
 
 
-def parameter_hit(param_name):
+def parameter_failed_evt(param_name):
     count = 1
     old = None
     if parameter_failed_list:
@@ -48,6 +49,29 @@ def parameter_hit(param_name):
     if old:
         count = old + 1
     parameter_failed_list[param_name] = count
+
+
+def verify_value(ref_val, val):
+    if ref_val == val:
+        return True
+    if ref_val is None:
+        return len(val) == 0
+    if type(val) is int:
+        return val == int(ref_val)
+    if val:
+        return ref_val.find(val) >= 0
+    return False
+
+
+def chk_paramter(parameter_name, val):
+    if black_list:
+        if parameter_name in black_list:
+            if verify_value(black_list[parameter_name], val):
+                return False
+    if white_list:
+        if parameter_name in white_list:
+            return verify_value(white_list[parameter_name], val)
+    return True
 
 
 def check_station(station_json):
@@ -61,43 +85,24 @@ def check_station(station_json):
         return False
 # oder verknüpft
     if black_list:
-        black_list_hit = False
         for param_name in black_list:
-            unvalid_elements = black_list[param_name]
             val = get_json_attr(station_json, param_name)
-            if not val == None:
-                # attribut in json vorhanden
-                if unvalid_elements:
-                    if val:
-                        pos = unvalid_elements.find(val)
-                        black_list_hit = pos >= 0
-                else:
-                    if not val:
-                        black_list_hit = True
-                if black_list_hit:
-                    parameter_hit(param_name)
-#                    logging.debug("FAIL '%s' blacklist hit on '%s' '%s' == '%s'",
-#                                  station_name, param_name, unvalid_elements, val)
-                    return False
+            if verify_value(black_list[param_name], val):
+                parameter_failed_evt(param_name)
+                logging.debug("FAIL '%s' blacklist failed on '%s' '%s' == '%s'",
+                    station_name, param_name, black_list[param_name], val)
+                return False
 
-# und verknüpft
+    # und verknüpft
     if white_list:
-        white_list_hit = True
         for param_name in white_list:
             val = get_json_attr(station_json, param_name)
-            if not val == None:
+            if val is not None:
                 # attribut in json vorhanden
-                valid_elements = white_list[param_name]
-                if type(val) is int:
-                    white_list_hit = val == valid_elements
-                else:
-                    if val:
-                        pos = valid_elements.find(val)
-                        white_list_hit = pos >= 0
-                if not white_list_hit:
-                    parameter_hit(param_name)
-#                    logging.debug("FAIL '%s' whitelist failed on '%s' '%s' == '%s'",
-#                                  station_name, param_name, valid_elements, val)
+                if not verify_value(white_list[param_name], val):
+                    parameter_failed_evt(param_name)
+                    logging.debug("FAIL '%s' whitelist failed on '%s' '%s' == '%s'",
+                                  station_name, param_name, white_list[param_name], val)
                     return False
 #    logging.debug("OK   '%s' passed", station_name)
     count_hit = count_hit + 1

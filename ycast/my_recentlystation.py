@@ -26,8 +26,9 @@ class StationVote:
         text_line = self.url + '|' + self.icon + '|' + str(self.vote)
         return text_line
 
-    def to_server_station(self,cathegory):
+    def to_server_station(self, cathegory):
         return my_stations.Station(self.name, self.url, cathegory, self.icon)
+
 
 def signal_station_selected(name, url, icon):
     recently_station_list = get_stations_list()
@@ -92,6 +93,7 @@ def directory_name():
     if station_dictionary:
         return list(get_recently_stations_dictionary().keys())[0]
     return DIRECTORY_NAME
+
 
 # used in landing page
 def get_stations_by_vote():
