@@ -5,30 +5,31 @@ from ycast.generic import get_json_attr
 
 white_list = {}
 black_list = {}
-filter_dir = {}
+filter_dictionary = {}
 parameter_failed_list = {}
 count_used = 0
 count_hit = 0
+LIMITS_NAME = 'limits'
 
 
 def init_filter():
     global white_list
     global black_list
     global parameter_failed_list
-    global filter_dir
+    global filter_dictionary
     global count_used
     global count_hit
     count_used = 0
     count_hit = 0
-    filter_dir = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
-    if filter_dir:
-        white_list = filter_dir['whitelist']
-        black_list = filter_dir['blacklist']
+    filter_dictionary = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
+    if filter_dictionary:
+        white_list = filter_dictionary['whitelist']
+        black_list = filter_dictionary['blacklist']
     else:
         white_list = {'lastcheckok': 1}
         black_list = {}
-        filter_dir = {'whitelist': white_list, 'blacklist': black_list}
-        generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dir)
+        filter_dictionary = {'whitelist': white_list, 'blacklist': black_list}
+        generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dictionary)
 
     parameter_failed_list.clear()
     return
@@ -106,3 +107,17 @@ def check_station(station_json):
                     return False
     count_hit = count_hit + 1
     return True
+
+
+def get_limit(param_name, default):
+    global filter_dictionary
+    filter_dictionary = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
+    limits_dict = {}
+    if LIMITS_NAME in filter_dictionary:
+        limits_dict = filter_dictionary[LIMITS_NAME]
+    if param_name in limits_dict:
+        return limits_dict[param_name]
+    limits_dict[param_name] = default
+    filter_dictionary[LIMITS_NAME] = limits_dict
+    generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dictionary)
+    return default

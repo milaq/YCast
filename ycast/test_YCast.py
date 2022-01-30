@@ -32,9 +32,9 @@ class MyTestCase(unittest.TestCase):
     def test_init_filter(self):
         my_filter.init_filter()
 
-        for elem in my_filter.filter_dir:
+        for elem in my_filter.filter_dictionary:
             logging.warning("Name filtertype: %s", elem)
-            filter_param = my_filter.filter_dir[elem]
+            filter_param = my_filter.filter_dictionary[elem]
             if filter_param:
                 for par in filter_param:
                     logging.warning("    Name paramter: %s", par)
@@ -73,6 +73,11 @@ class MyTestCase(unittest.TestCase):
     def test_get_genre(self):
         result = radiobrowser.get_genre_directories()
         assert len(result) < 300
+
+    def test_get_limits(self):
+        result = my_filter.get_limit('irgendwas',20)
+        assert result == 20
+
 
     def test_recently_hit(self):
 

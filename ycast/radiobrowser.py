@@ -11,15 +11,15 @@ from ycast.my_filter import check_station, init_filter, end_filter
 from ycast.generic import get_json_attr
 
 API_ENDPOINT = "http://all.api.radio-browser.info"
-MINIMUM_COUNT_GENRE = 40
-MINIMUM_COUNT_COUNTRY = 5
-MINIMUM_COUNT_LANGUAGE = 5
-DEFAULT_STATION_LIMIT = 200
-SHOW_BROKEN_STATIONS = False
-SHOW_WITHOUT_FAVICON = False
+MINIMUM_COUNT_GENRE = my_filter.get_limit('MINIMUM_COUNT_GENRE', 40)
+MINIMUM_COUNT_COUNTRY =  my_filter.get_limit('MINIMUM_COUNT_COUNTRY', 5)
+MINIMUM_COUNT_LANGUAGE =  my_filter.get_limit('MINIMUM_COUNT_LANGUAGE', 5)
+DEFAULT_STATION_LIMIT =  my_filter.get_limit('DEFAULT_STATION_LIMIT', 200)
+SHOW_BROKEN_STATIONS = my_filter.get_limit('SHOW_BROKEN_STATIONS', False)
 ID_PREFIX = "RB"
 
 station_cache = {}
+
 
 
 class Station:
