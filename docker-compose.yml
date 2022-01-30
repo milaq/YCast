@@ -1,0 +1,11 @@
+version: '2.2'
+services:
+  ycast:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image:
+      af/ycast
+    ports:
+      - "8080:8010"
+    mem_limit: 64M
