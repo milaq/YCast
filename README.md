@@ -8,6 +8,8 @@
 
 [Issue tracker](https://github.com/THanika/YCast/issues)
 
+#### pip3 install git+https://github.com/ThHanika/YCast
+
 ### The advanced feature:
 * Icons in my favorites list 'stations.yml' (the icon URL can be appended after the pipe character '|')
 * recently visited radio stations are stored in /.yast/resently.yml (compatible with stations.yml, for easy editing of your favorites and pasting into stations.yml)
