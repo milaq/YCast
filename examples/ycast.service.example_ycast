@@ -1,0 +1,15 @@
+[Unit]
+Description=YCast internet radio service
+After=network.target
+
+[Service]
+Type=simple
+User=ycast
+Group=ycast
+WorkingDirectory=/home/ycast
+StandardOutput=file:/home/ycast/service.log
+StandardError=file:/home/ycast/ycast.log
+ExecStart=/usr/bin/python3 -m ycast -l 127.0.0.1 -p 8010 -d -c /home/ycast/.ycast/stations.yml
+
+[Install]
+WantedBy=multi-user.target

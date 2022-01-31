@@ -4,7 +4,7 @@ import hashlib
 import yaml
 
 USER_AGENT = 'YCast'
-VAR_PATH = os.path.expanduser("~") + '/.ycast'
+VAR_PATH = '.ycast'
 CACHE_PATH = VAR_PATH + '/cache'
 
 

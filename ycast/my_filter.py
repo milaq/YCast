@@ -23,11 +23,15 @@ def init_filter():
     count_hit = 0
     filter_dictionary = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
     if filter_dictionary:
-        white_list = filter_dictionary['whitelist']
-        black_list = filter_dictionary['blacklist']
-    else:
-        white_list = {'lastcheckok': 1}
-        black_list = {}
+        if 'whitelist' in filter_dictionary:
+            white_list = filter_dictionary['whitelist']
+        else:
+            white_list = {'lastcheckok': 1}
+
+        if 'blacklist' in filter_dictionary:
+            black_list = filter_dictionary['blacklist']
+        else:
+            black_list = {}
         filter_dictionary = {'whitelist': white_list, 'blacklist': black_list}
         generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dictionary)
 
@@ -111,7 +115,9 @@ def check_station(station_json):
 
 def get_limit(param_name, default):
     global filter_dictionary
-    filter_dictionary = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
+    tempdict = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
+    if tempdict is not None:
+        filter_dictionary = tempdict
     limits_dict = {}
     if LIMITS_NAME in filter_dictionary:
         limits_dict = filter_dictionary[LIMITS_NAME]

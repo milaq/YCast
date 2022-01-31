@@ -123,7 +123,7 @@ You can redirect all traffic destined for the original request URL (e.g. `radioy
 __Attention__: Do not rewrite the requests transparently. YCast expects the complete URL (i.e. including `/ycast` or `/setupapp`). It also need an intact `Host` header; so if you're proxying YCast you need to pass the original header on. For Nginx, this can be accomplished with `proxy_set_header Host $host;`.
 
 In case you are using (or plan on using) Nginx to proxy requests, have a look at [this example](examples/nginx-ycast.conf.example).
-This can be used together with [this systemd service example](examples/ycast.service.example) for a fully functional deployment.
+This can be used together with [this systemd service example](examples/ycast.service.example_ycast) for a fully functional deployment.
 
 #### With WSGI
 
