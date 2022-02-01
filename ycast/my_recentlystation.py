@@ -1,11 +1,11 @@
 from ycast import generic, my_stations
+from ycast.generic import get_recently_file
 
 MAX_ENTRIES = 15
-# define a max, so after 5 hits, an other station is get better votes
+# define a max, so after 5 hits, another station is get better votes
 MAX_VOTES = 5
 DIRECTORY_NAME = "recently used"
 
-recently_file = generic.get_var_path() + '/recently.yml'
 recently_station_dictionary = None
 voted5_station_dictinary = None
 
@@ -56,7 +56,7 @@ def signal_station_selected(name, url, icon):
 def set_recently_station_dictionary(station_dict):
     global recently_station_dictionary
     recently_station_dictionary = station_dict
-    generic.write_yaml_file(recently_file, recently_station_dictionary)
+    generic.write_yaml_file(get_recently_file(), recently_station_dictionary)
 
 
 def mk_station_dictionary(cathegory, station_list):
@@ -84,7 +84,7 @@ def get_recently_stations_dictionary():
     # cached recently
     global recently_station_dictionary
     if not recently_station_dictionary:
-        recently_station_dictionary = generic.read_yaml_file(recently_file)
+        recently_station_dictionary = generic.read_yaml_file(get_recently_file())
     return recently_station_dictionary
 
 

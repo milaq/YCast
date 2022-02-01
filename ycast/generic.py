@@ -1,11 +1,17 @@
 import logging
 import os
 import hashlib
+import sys
+
 import yaml
 
+
 USER_AGENT = 'YCast'
-VAR_PATH = '.ycast'
-CACHE_PATH = VAR_PATH + '/cache'
+
+# initialize it start
+VAR_PATH = ''
+CACHE_PATH = ''
+stations_file_by_config = ''
 
 
 class Directory:
@@ -16,6 +22,46 @@ class Directory:
             self.displayname = displayname
         else:
             self.displayname = name
+
+
+def mk_writeable_dir(path):
+    try:
+        os.makedirs(path)
+    except FileExistsError:
+        pass
+    except Exception as ex:
+        logging.error("Could not create base folder (%s) because of access permissions: %s", path, ex)
+        return None
+    return path
+
+
+def init_base_dir(path_element):
+    global VAR_PATH, CACHE_PATH
+    logging.info('Initialize base directory %s', path_element)
+    logging.debug('    HOME: %s',os.path.expanduser("~"))
+    logging.debug('     PWD: %s',os.getcwd())
+    var_dir = None
+
+    if not os.getcwd().endswith('/ycast'):
+        # specified working dir with /ycast has prio
+        try_path = os.path.expanduser("~") + path_element
+        logging.info('   try Home-Dir: %s', try_path)
+        var_dir = mk_writeable_dir(try_path)
+
+    if var_dir is None:
+        # avoid using root '/' and it's subdir
+        if len(os.getcwd()) < 6:
+            logging.error("   len(PWD) < 6 (PWD is too small) < 6: '%s'", os.getcwd())
+        else:
+            try_path = os.getcwd() + path_element
+            logging.info('   try Work-Dir: %s', try_path)
+            var_dir = mk_writeable_dir(os.getcwd() + path_element)
+        if var_dir is None:
+            sys.exit('YCast: ###### No usable directory found #######, I give up....')
+    logging.info('using var directory: %s', var_dir)
+    VAR_PATH = var_dir
+    CACHE_PATH = var_dir + '/cache'
+    return
 
 
 def generate_stationid_with_prefix(uid, prefix):
@@ -67,6 +113,27 @@ def get_var_path():
     return VAR_PATH
 
 
+def get_recently_file():
+    return get_var_path() + '/recently.yml'
+
+
+def get_filter_file():
+    return get_var_path() + '/filter.yml'
+
+
+def get_stations_file():
+    global stations_file_by_config
+    if stations_file_by_config:
+        return stations_file_by_config
+    return get_var_path() + '/stations.yml'
+
+
+def set_stations_file(stations_file):
+    global stations_file_by_config
+    if stations_file:
+        stations_file_by_config = stations_file
+
+
 def get_checksum(feed, charlimit=12):
     hash_feed = feed.encode()
     hash_object = hashlib.md5(hash_feed)
@@ -83,7 +150,7 @@ def read_yaml_file(file_name):
         with open(file_name, 'r') as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        logging.error("YAML file '%s' not found", file_name)
+        logging.warning("YAML file '%s' not found", file_name)
     except yaml.YAMLError as e:
         logging.error("YAML format error in '%':\n    %s", file_name, e)
     return None
@@ -107,7 +174,7 @@ def readlns_txt_file(file_name):
         with open(file_name, 'r') as f:
             return f.readlines()
     except FileNotFoundError:
-        logging.error("TXT file '%s' not found", file_name)
+        logging.warning("TXT file '%s' not found", file_name)
     return None
 
 

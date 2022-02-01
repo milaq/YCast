@@ -23,6 +23,13 @@ def launch_server():
         logging.debug("Debug logging enabled")
     else:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
+    # initialize important ycast parameters
+    from ycast.generic import init_base_dir
+    init_base_dir('/.ycast')
+    from ycast.my_filter import init_limits_and_filters
+    init_limits_and_filters()
+
     server.run(arguments.config, arguments.address, arguments.port)
 
 

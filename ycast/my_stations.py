@@ -4,8 +4,6 @@ import ycast.generic as generic
 
 ID_PREFIX = "MY"
 
-config_file = generic.get_var_path() + '/stations.yml'
-
 
 class Station:
     def __init__(self, name, url, category, icon):
@@ -18,16 +16,6 @@ class Station:
 
     def to_vtuner(self):
         return vtuner.Station(self.id, self.name, self.tag, self.url, self.icon, self.tag, None, None, None, None)
-
-
-def set_config(config):
-    global config_file
-    if config:
-        config_file = config
-    if get_stations_yaml():
-        return True
-    else:
-        return False
 
 
 def get_station_by_id(vtune_id):
@@ -43,7 +31,7 @@ def get_station_by_id(vtune_id):
 def get_stations_yaml():
     from ycast.my_recentlystation import get_recently_stations_dictionary
     my_recently_station = get_recently_stations_dictionary()
-    my_stations = generic.read_yaml_file(config_file)
+    my_stations = generic.read_yaml_file(generic.get_stations_file())
     if my_stations:
         if my_recently_station:
             my_stations.update(my_recently_station)

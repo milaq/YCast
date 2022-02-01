@@ -30,7 +30,7 @@ class MyTestCase(unittest.TestCase):
         assert not my_filter.verify_value('3,4,5,6', '9')
 
     def test_init_filter(self):
-        my_filter.init_filter()
+        my_filter.begin_filter()
 
         for elem in my_filter.filter_dictionary:
             logging.warning("Name filtertype: %s", elem)
@@ -42,7 +42,7 @@ class MyTestCase(unittest.TestCase):
                 logging.warning("    <empty list>")
 
     def test_valid_station(self):
-        my_filter.init_filter()
+        my_filter.begin_filter()
         test_lines = generic.readlns_txt_file(generic.get_var_path()+"/test.json")
 
         test_lines = radiobrowser.get_stations_by_votes()

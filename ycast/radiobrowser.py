@@ -7,19 +7,14 @@ import logging
 from ycast import __version__, my_filter
 import ycast.vtuner as vtuner
 import ycast.generic as generic
-from ycast.my_filter import check_station, init_filter, end_filter
+from ycast.my_filter import check_station, begin_filter, end_filter, SHOW_BROKEN_STATIONS, MINIMUM_COUNT_COUNTRY, \
+    MINIMUM_COUNT_LANGUAGE, MINIMUM_COUNT_GENRE, DEFAULT_STATION_LIMIT
 from ycast.generic import get_json_attr
 
 API_ENDPOINT = "http://all.api.radio-browser.info"
-MINIMUM_COUNT_GENRE = my_filter.get_limit('MINIMUM_COUNT_GENRE', 40)
-MINIMUM_COUNT_COUNTRY =  my_filter.get_limit('MINIMUM_COUNT_COUNTRY', 5)
-MINIMUM_COUNT_LANGUAGE =  my_filter.get_limit('MINIMUM_COUNT_LANGUAGE', 5)
-DEFAULT_STATION_LIMIT =  my_filter.get_limit('DEFAULT_STATION_LIMIT', 200)
-SHOW_BROKEN_STATIONS = my_filter.get_limit('SHOW_BROKEN_STATIONS', False)
 ID_PREFIX = "RB"
 
 station_cache = {}
-
 
 
 class Station:
@@ -90,7 +85,7 @@ def get_station_by_id(vtune_id):
 
 
 def get_country_directories():
-    init_filter()
+    begin_filter()
     country_directories = []
     apicall = 'countries'
     if not SHOW_BROKEN_STATIONS:
@@ -106,7 +101,7 @@ def get_country_directories():
 
 
 def get_language_directories():
-    init_filter()
+    begin_filter()
     language_directories = []
     apicall = 'languages'
     if not SHOW_BROKEN_STATIONS:
@@ -138,7 +133,7 @@ def get_genre_directories():
 
 
 def get_stations_by_country(country):
-    init_filter()
+    begin_filter()
     station_cache.clear()
     stations = []
     stations_list_json = request('stations/search?order=name&reverse=false&countryExact=true&country=' + str(country))
@@ -152,7 +147,7 @@ def get_stations_by_country(country):
 
 
 def get_stations_by_language(language):
-    init_filter()
+    begin_filter()
     station_cache.clear()
     stations = []
     stations_list_json = \
@@ -167,7 +162,7 @@ def get_stations_by_language(language):
 
 
 def get_stations_by_genre(genre):
-    init_filter()
+    begin_filter()
     station_cache.clear()
     stations = []
     stations_list_json = request('stations/search?order=name&reverse=false&tagExact=true&tag=' + str(genre))
@@ -181,7 +176,7 @@ def get_stations_by_genre(genre):
 
 
 def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
-    init_filter()
+    begin_filter()
     station_cache.clear()
     stations = []
     stations_list_json = request('stations?order=votes&reverse=true&limit=' + str(limit))
@@ -195,7 +190,7 @@ def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
 
 
 def search(name, limit=DEFAULT_STATION_LIMIT):
-    init_filter()
+    begin_filter()
     station_cache.clear()
     stations = []
     stations_list_json = request('stations/search?order=name&reverse=false&limit=' + str(limit) + '&name=' + str(name))

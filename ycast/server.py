@@ -24,21 +24,15 @@ PATH_RADIOBROWSER_GENRE = 'genre'
 PATH_RADIOBROWSER_POPULAR = 'popular'
 
 station_tracking = False
-my_stations_enabled = False
 app = Flask(__name__)
 
 
 def run(config, address='0.0.0.0', port=8010):
     try:
-        check_my_stations_feature(config)
+        generic.set_stations_file(config)
         app.run(host=address, port=port)
     except PermissionError:
         logging.error("No permission to create socket. Are you trying to use ports below 1024 without elevated rights?")
-
-
-def check_my_stations_feature(config):
-    global my_stations_enabled
-    my_stations_enabled = my_stations.set_config(config)
 
 
 def get_directories_page(subdir, directories, request_obj):
