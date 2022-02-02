@@ -38,22 +38,23 @@ def run(config, address='0.0.0.0', port=8010):
 def get_directories_page(subdir, directories, request_obj):
     page = vtuner.Page()
     if len(directories) == 0:
-        page.add(vtuner.Display("No entries found"))
+        page.add_item(vtuner.Display("No entries found"))
         page.set_count(1)
         return page
     for directory in get_paged_elements(directories, request_obj.args):
         vtuner_directory = vtuner.Directory(directory.displayname,
                                             url_for(subdir, _external=True, directory=directory.name),
                                             directory.item_count)
-        page.add(vtuner_directory)
+        page.add_item(vtuner_directory)
     page.set_count(len(directories))
     return page
 
 
 def get_stations_page(stations, request_obj):
     page = vtuner.Page()
+    page.add_item(vtuner.Previous(url_for('landing', _external=True)))
     if len(stations) == 0:
-        page.add(vtuner.Display("No stations found"))
+        page.add_item(vtuner.Display("No stations found"))
         page.set_count(1)
         return page
     for station in get_paged_elements(stations, request_obj.args):
@@ -62,7 +63,7 @@ def get_stations_page(stations, request_obj):
             vtuner_station.set_trackurl(
                 request_obj.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
         vtuner_station.icon = request_obj.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
-        page.add(vtuner_station)
+        page.add_item(vtuner_station)
     page.set_count(len(stations))
     return page
 
@@ -117,7 +118,7 @@ def vtuner_redirect(url):
 @app.route('/setupapp/<path:path>',
            methods=['GET', 'POST'])
 def upstream(path):
-    logging.debug('upstream **********************:  %s', request.url)
+    logging.debug('upstream **********************')
     if request.args.get('token') == '0':
         return vtuner.get_init_token()
     if request.args.get('search'):
@@ -141,41 +142,37 @@ def upstream(path):
            defaults={'path': ''},
            methods=['GET', 'POST'])
 def landing(path=''):
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     page = vtuner.Page()
-    page.add(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
 
-    page.add(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
-                              len(my_stations.get_category_directories())))
+    page.add_item(vtuner.Directory('Radiobrowser', url_for('radiobrowser_landing', _external=True), 4))
+
+    page.add_item(vtuner.Directory('My Stations', url_for('my_stations_landing', _external=True),
+                                   len(my_stations.get_category_directories())))
 
     stations = my_recentlystation.get_stations_by_vote()
     if stations and len(stations) > 0:
         # make blank line (display is not shown)
-        #        page.add(vtuner.Directory(' ', url_for('my_stations_landing', _external=True),
-        #                                  len(my_stations.get_category_directories())))
+        page.add_item(vtuner.Spacer())
 
-        vtuner_station = stations[0].to_vtuner()
-        vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
-        vtuner_station.name = '   '
-        page.add(vtuner_station)
         for station in stations:
             vtuner_station = station.to_vtuner()
             if station_tracking:
                 vtuner_station.set_trackurl(
                     request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
             vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
-            page.add(vtuner_station)
+            page.add_item(vtuner_station)
 
     else:
-        page.add(vtuner.Display("'My Stations' feature not configured."))
-    page.set_count(1)
+        page.add_item(vtuner.Display("'My Stations' feature not configured."))
+    page.set_count(-1)
     return page.to_string()
 
 
 @app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/',
            methods=['GET', 'POST'])
 def my_stations_landing():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     directories = my_stations.get_category_directories()
     return get_directories_page('my_stations_category', directories, request).to_string()
 
@@ -183,7 +180,7 @@ def my_stations_landing():
 @app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/<directory>',
            methods=['GET', 'POST'])
 def my_stations_category(directory):
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     stations = my_stations.get_stations_by_category(directory)
     return get_stations_page(stations, request).to_string()
 
@@ -191,16 +188,16 @@ def my_stations_category(directory):
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/',
            methods=['GET', 'POST'])
 def radiobrowser_landing():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     page = vtuner.Page()
-    page.add(vtuner.Directory('Genres', url_for('radiobrowser_genres', _external=True),
-                              len(radiobrowser.get_genre_directories())))
-    page.add(vtuner.Directory('Countries', url_for('radiobrowser_countries', _external=True),
-                              len(radiobrowser.get_country_directories())))
-    page.add(vtuner.Directory('Languages', url_for('radiobrowser_languages', _external=True),
-                              len(radiobrowser.get_language_directories())))
-    page.add(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
-                              len(radiobrowser.get_stations_by_votes())))
+    page.add_item(vtuner.Directory('Genres', url_for('radiobrowser_genres', _external=True),
+                                   len(radiobrowser.get_genre_directories())))
+    page.add_item(vtuner.Directory('Countries', url_for('radiobrowser_countries', _external=True),
+                                   len(radiobrowser.get_country_directories())))
+    page.add_item(vtuner.Directory('Languages', url_for('radiobrowser_languages', _external=True),
+                                   len(radiobrowser.get_language_directories())))
+    page.add_item(vtuner.Directory('Most Popular', url_for('radiobrowser_popular', _external=True),
+                                   len(radiobrowser.get_stations_by_votes())))
     page.set_count(4)
     return page.to_string()
 
@@ -208,7 +205,7 @@ def radiobrowser_landing():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/',
            methods=['GET', 'POST'])
 def radiobrowser_countries():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     directories = radiobrowser.get_country_directories()
     return get_directories_page('radiobrowser_country_stations', directories, request).to_string()
 
@@ -216,7 +213,7 @@ def radiobrowser_countries():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_COUNTRY + '/<directory>',
            methods=['GET', 'POST'])
 def radiobrowser_country_stations(directory):
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     stations = radiobrowser.get_stations_by_country(directory)
     return get_stations_page(stations, request).to_string()
 
@@ -224,7 +221,7 @@ def radiobrowser_country_stations(directory):
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/',
            methods=['GET', 'POST'])
 def radiobrowser_languages():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     directories = radiobrowser.get_language_directories()
     return get_directories_page('radiobrowser_language_stations', directories, request).to_string()
 
@@ -232,7 +229,7 @@ def radiobrowser_languages():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_LANGUAGE + '/<directory>',
            methods=['GET', 'POST'])
 def radiobrowser_language_stations(directory):
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     stations = radiobrowser.get_stations_by_language(directory)
     return get_stations_page(stations, request).to_string()
 
@@ -240,7 +237,7 @@ def radiobrowser_language_stations(directory):
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/',
            methods=['GET', 'POST'])
 def radiobrowser_genres():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     directories = radiobrowser.get_genre_directories()
     return get_directories_page('radiobrowser_genre_stations', directories, request).to_string()
 
@@ -248,7 +245,7 @@ def radiobrowser_genres():
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_GENRE + '/<directory>',
            methods=['GET', 'POST'])
 def radiobrowser_genre_stations(directory):
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     stations = radiobrowser.get_stations_by_genre(directory)
     return get_stations_page(stations, request).to_string()
 
@@ -256,7 +253,7 @@ def radiobrowser_genre_stations(directory):
 @app.route('/' + PATH_ROOT + '/' + PATH_RADIOBROWSER + '/' + PATH_RADIOBROWSER_POPULAR + '/',
            methods=['GET', 'POST'])
 def radiobrowser_popular():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     stations = radiobrowser.get_stations_by_votes()
     return get_stations_page(stations, request).to_string()
 
@@ -264,11 +261,11 @@ def radiobrowser_popular():
 @app.route('/' + PATH_ROOT + '/' + PATH_SEARCH + '/',
            methods=['GET', 'POST'])
 def station_search():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     query = request.args.get('search')
     if not query or len(query) < 3:
         page = vtuner.Page()
-        page.add(vtuner.Display("Search query too short"))
+        page.add_item(vtuner.Display("Search query too short"))
         page.set_count(1)
         return page.to_string()
     else:
@@ -280,7 +277,7 @@ def station_search():
 @app.route('/' + PATH_ROOT + '/' + PATH_PLAY,
            methods=['GET', 'POST'])
 def get_stream_url():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     stationid = request.args.get('id')
     if not stationid:
         logging.error("Stream URL without station ID requested")
@@ -296,7 +293,7 @@ def get_stream_url():
 @app.route('/' + PATH_ROOT + '/' + PATH_STATION,
            methods=['GET', 'POST'])
 def get_station_info():
-    logging.debug('**********************:  %s', request.url)
+    logging.debug('===============================================================')
     stationid = request.args.get('id')
     if not stationid:
         logging.error("Station info without station ID requested")
@@ -305,7 +302,7 @@ def get_station_info():
     if not station:
         logging.error("Could not get station with id '%s'", stationid)
         page = vtuner.Page()
-        page.add(vtuner.Display("Station not found"))
+        page.add_item(vtuner.Display("Station not found"))
         page.set_count(1)
         return page.to_string()
     vtuner_station = station.to_vtuner()
@@ -313,7 +310,7 @@ def get_station_info():
         vtuner_station.set_trackurl(request.host_url + PATH_ROOT + '/' + PATH_PLAY + '?id=' + vtuner_station.uid)
     vtuner_station.icon = request.host_url + PATH_ROOT + '/' + PATH_ICON + '?id=' + vtuner_station.uid
     page = vtuner.Page()
-    page.add(vtuner_station)
+    page.add_item(vtuner_station)
     page.set_count(1)
     return page.to_string()
 
