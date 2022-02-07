@@ -1,7 +1,8 @@
 import logging
 import re
 
-from flask import Flask, request, url_for, redirect, abort, make_response
+import flask
+from flask import Flask, request, url_for, redirect, abort, make_response, render_template
 
 import ycast.vtuner as vtuner
 import ycast.radiobrowser as radiobrowser
@@ -135,9 +136,45 @@ def upstream(path):
     abort(404)
 
 
+@app.route('/api/<path:path>',
+           methods=['GET', 'POST'])
+def landing_api(path):
+    if path.endswith('stations'):
+        category = request.args.get('category')
+        stations = None
+        if category.endswith('recently'):
+            stations = my_recentlystation.get_stations_by_recently()
+        if category.endswith('voted'):
+            stations = radiobrowser.get_stations_by_votes()
+        if category.endswith('language'):
+            language = request.args.get('language','german')
+            stations = radiobrowser.get_stations_by_language(language)
+        if category.endswith('countrycode'):
+            country = request.args.get('country','Germany')
+            stations = radiobrowser.get_stations_by_country(country)
+
+        if stations is not None:
+            stations_dict = []
+            for station in stations:
+                stations_dict.append(station.to_dict())
+
+            return flask.jsonify(stations_dict)
+
+    if path.endswith('bookmarks'):
+        category = request.args.get('category')
+        stations = my_stations.get_stations_by_category(category)
+        return flask.jsonify({'stations': stations})
+    return abort(400,'Not implemented: ' + path)
+
+
 @app.route('/',
            defaults={'path': ''},
            methods=['GET', 'POST'])
+def landing_root(path=''):
+    return render_template("index.html")
+
+
+
 @app.route('/' + PATH_ROOT + '/',
            defaults={'path': ''},
            methods=['GET', 'POST'])

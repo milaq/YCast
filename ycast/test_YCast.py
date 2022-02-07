@@ -4,9 +4,9 @@ import os
 import unittest
 from io import StringIO
 
-import my_filter
-import generic
-from ycast import radiobrowser, my_recentlystation
+import flask
+
+from ycast import my_filter, generic, radiobrowser, my_recentlystation
 
 
 class MyTestCase(unittest.TestCase):
@@ -78,11 +78,21 @@ class MyTestCase(unittest.TestCase):
         result = my_filter.get_limit('irgendwas',20)
         assert result == 20
 
+    def test_jsonable_classes(self):
+        generic.init_base_dir('.ycast')
+        my_filter.init_filter_file()
+        stations = radiobrowser.get_stations_by_country('Germany')
+        station = stations[0]
+        text = station.to_vtuner()
+        response = station.toJson()
+        response = json.dumps(station, skipkeys= True)
+
+        assert response is not None
 
     def test_recently_hit(self):
 
         try:
-            os.remove(my_recentlystation.recently_file)
+            os.remove(my_recentlystation.get_recently_file())
         except Exception:
             pass
 

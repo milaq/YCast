@@ -17,6 +17,9 @@ class Station:
     def to_vtuner(self):
         return vtuner.Station(self.id, self.name, self.tag, self.url, self.icon, self.tag, None, None, None, None)
 
+    def to_dict(self):
+        return {'name': self.name , 'url': self.url, 'icon': self.icon, 'description': self.tag }
+
 
 def get_station_by_id(vtune_id):
     my_stations_yaml = get_stations_yaml()

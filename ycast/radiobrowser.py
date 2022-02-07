@@ -1,4 +1,5 @@
 import base64
+import json
 import uuid
 
 import requests
@@ -29,6 +30,7 @@ class Station:
             self.url = generic.get_json_attr(station_json, 'url')
 
         self.icon = generic.get_json_attr(station_json, 'favicon')
+        self.description = generic.get_json_attr(station_json, 'tags')
         self.tags = generic.get_json_attr(station_json, 'tags').split(',')
         self.countrycode = generic.get_json_attr(station_json, 'countrycode')
         self.language = generic.get_json_attr(station_json, 'language')
@@ -39,8 +41,10 @@ class Station:
 
     def to_vtuner(self):
         return vtuner.Station(self.id, self.name,
-                              ', '.join(self.tags), self.url, self.icon,
+                              self.description, self.url, self.icon,
                               self.tags[0], self.countrycode, self.codec, self.bitrate, None)
+    def to_dict(self):
+        return {'name': self.name , 'url': self.url, 'icon': self.icon, 'description': self.description }
 
     def get_playable_url(self):
         try:
