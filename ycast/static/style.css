@@ -1,61 +1,78 @@
 body {
     font-family: sans-serif;
     height: 100%;
+    align-items: center;
 }
+
+.page {
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
 .header {
-    height = 30rem;
-    width: 90%;
+    height=30rem;
+    width: 38.9rem;
+    margin: 0rem;
     background-color: blue;
     color: white;
     text-align: center;
-    border: 4px #eee solid;
     min-width: 20rem;
+    max-width: 40rem;
+    padding: 0.5rem
 }
+
 .container {
     display: block;
     width: 100%;
-    height: 100%;
-    max-height: auto;
+    bottom: 0rem;
     background-color: aquamarine;
 }
+
 .content {
-    position: relative;
-    border: 2px #eee solid;
-    width: 45%;
+    display: block;
+    width: 20rem;
     min-width: 20rem;
     float: left;
     margin: 0rem;
-    height: 20rem;
+    height: calc(100% - 13rem);
+    max-height: 30rem;
 }
 
 .contentheader {
+    display: block;
     background-color: blue;
     color: white;
     align-items: center;
     margin: 0rem;
     padding: 0.2rem;
+    border: 2px #eee solid;
+    height: 5rem;
+    width: 100%
 }
 
 .contentitems {
-    position: absolute;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    width: 100%;
-    height: 100%;
     display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: 6rem;
+    width: 100%;
+    height: calc(100% - 20rem);
+    max-height: 30rem;
+    border: 2px #eee solid ;
 }
 
 .item {
+    display: flex;
     border: 2px #eee solid;
     margin: 0rem;
-    display: flex;
     height: 2.4rem;
     align-items: center;
-        
 }
+
 .item:hover {
-        background-color: beige;
-    }
+    background-color: beige;
+}
 
 .itemicon {
     height: 2.4rem;
@@ -63,7 +80,9 @@ body {
 }
 
 .itemtext {
-    
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 ul {
@@ -73,16 +92,23 @@ ul {
     width: 100%;
     display: contents;
 }
+
 li {
     width: 95%;
     padding: 0rem;
     margin: 0rem;
 }
+
+h2 {
+    padding: 0rem;
+    margin: 0.5rem;
+}
+
 h3 {
-    border: 2px #eee solid;
     text-align: center;
     padding: 10px;
     margin: 0rem;
+    padding: 0.5rem;
 }
 
 h4 {
@@ -90,13 +116,16 @@ h4 {
     padding-left: 1rem;
     margin: auto
 }
+
 p {
     padding-left: 1.1rem;
     margin: auto;
     font-size: 0.8rem;
-        
+
 }
-img {
-    height: 100%;
-    width: 100%;
+
+label {
+    padding-left: 1.1rem;
 }
+
+input

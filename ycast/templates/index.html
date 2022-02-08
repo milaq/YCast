@@ -1,56 +1,72 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
+
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../static/style.css">
-    <script type="text/javascript"
-         src="../static/script.js"></script>    <title>YCast</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script type="text/javascript" src="/static/script.js"></script>
+    <title>YCast</title>
 </head>
+
 <body>
-<div class="header">
-    <h2>Hallo YCast</h2>
-</div>
-<div class="content">
-    <div class="contentheader" onclick="stationsAddItem()">
-        <h3>Stations</h3>
+    <div class="page">
+        <div class="header">
+            <h2>YCast advanced</h2>
+            <div>
+                <label for="id_category">station-source:</label>
+                <select tabindex="1" id="id_category" name="category" oninput="onInputSelect(event, this)">
+                    <option value="recently">recently</option>
+                    <option value="voted">voted</option>
+                    <option value="language">language</option>
+                    <option value="country">country</option>
+                </select>
+            </div>
+            <div>
+                <label for="id_param">language or country:</label>
+                <input tabindex="2" list="paramlist" id="id_param" autocomplete=off disabled=true onclick="this.value=''" onfocus="this.value=''" onkeyup="keyUpEvent(event,this)">
+                <datalist id="paramlist">
+                </datalist>
+            </div>
+        </div>
+        <div class="content">
+            <div class="contentheader">
+                <h3 onclick="stations_request()">Stations</h3>
+                <label for="stationsearch">search:</label>
+                <input tabindex="3" type="search" id="stationsearch">
+            </div>
+            <div class="contentitems">
+                <ul id="stationList">
+                </ul>
+            </div>
+        </div>
+        <div class="content">
+            <div class="contentheader">
+                <h3>Bookmarks</h3>
+                <label for="idCategory">category:</label>
+                <input tabindex="10000" list="category" id="idCategory">
+                <datalist id="category">
+                    <option value="Actual">
+                    <option value="Pop">
+                    <option value="Classics">
+                </datalist>
+
+            </div>
+            <div class="contentitems">
+                <ul id="bookmarkList">
+                         <li class="item">
+        <div class="itemicon">
+             <img class="itemicon" src="http://www.klassikradio.de/_nuxt/icons/icon_64.a00w80w0000.png">
+        </div>
+        <div class="itemtext">
+            <h4>Radio</h4>
+            <p>ard,actuell</p>
+        </div>
+    </li>
+
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="contentitems">
-    <ul id="stationList">
-    <li class="item">
-        <div class="itemicon">
-             <img src="http://www.klassikradio.de/_nuxt/icons/icon_64.a00w80w0000.png">
-        </div>
-        <div class="itemtext">
-            <h4>Radio</h4>
-            <p>ard,actuell</p>
-        </div>
-    </li>
-    <li class="item">
-        <div class="itemicon">
-            <img src="http://wgbh.org//apple-touch-icon.png">
-        </div>
-        <div class="itemtext">
-            <h4>Radio</h4>
-            <p>ard,actuell</p>
-        </div>
-    </li>
-    </ul>
-    </div>
-</div>
-<div class="content">
-    <div class="contentheader"><h3>Bookmarks</h3></div>
-    <ul>
-     <li class="item">
-        <div class="itemicon">
-             <img src="http://www.klassikradio.de/_nuxt/icons/icon_64.a00w80w0000.png">
-        </div>
-        <div class="itemtext">
-            <h4>Radio</h4>
-            <p>ard,actuell</p>
-        </div>
-    </li>
-    </ul>
-</div>
 </body>
+
 </html>

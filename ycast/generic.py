@@ -23,6 +23,10 @@ class Directory:
         else:
             self.displayname = name
 
+    def to_dict(self):
+        return {'name': self.name , 'displayname': self.displayname, 'count': self.item_count }
+
+
 
 def mk_writeable_dir(path):
     try:

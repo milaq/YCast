@@ -149,7 +149,7 @@ def landing_api(path):
         if category.endswith('language'):
             language = request.args.get('language','german')
             stations = radiobrowser.get_stations_by_language(language)
-        if category.endswith('countrycode'):
+        if category.endswith('country'):
             country = request.args.get('country','Germany')
             stations = radiobrowser.get_stations_by_country(country)
 
@@ -163,7 +163,26 @@ def landing_api(path):
     if path.endswith('bookmarks'):
         category = request.args.get('category')
         stations = my_stations.get_stations_by_category(category)
-        return flask.jsonify({'stations': stations})
+        if stations is not None:
+            stations_dict = []
+            for station in stations:
+                stations_dict.append(station.to_dict())
+            return flask.jsonify(stations_dict)
+
+    if path.endswith('paramlist'):
+        category = request.args.get('category')
+        directories = None
+        if category.endswith('language'):
+            directories = radiobrowser.get_language_directories();
+        if category.endswith('country'):
+            directories = radiobrowser.get_country_directories();
+        if directories is not None:
+            directories_dict = []
+            for directory in directories:
+                directories_dict.append(directory.to_dict())
+            return flask.jsonify(directories_dict)
+
+
     return abort(400,'Not implemented: ' + path)
 
 

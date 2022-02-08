@@ -67,6 +67,9 @@ class MyTestCase(unittest.TestCase):
         assert len(result) == 3
 
     def test_get_countries(self):
+        generic.init_base_dir('.ycast')
+        my_filter.init_filter_file()
+
         result = radiobrowser.get_country_directories()
         assert len(result) == 4
 
@@ -79,8 +82,6 @@ class MyTestCase(unittest.TestCase):
         assert result == 20
 
     def test_jsonable_classes(self):
-        generic.init_base_dir('.ycast')
-        my_filter.init_filter_file()
         stations = radiobrowser.get_stations_by_country('Germany')
         station = stations[0]
         text = station.to_vtuner()
