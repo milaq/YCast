@@ -12,6 +12,9 @@ from ycast import my_filter, generic, radiobrowser, my_recentlystation
 class MyTestCase(unittest.TestCase):
 
     logging.getLogger().setLevel(logging.DEBUG)
+    generic.init_base_dir("../../.test_ycast")
+    my_filter.init_filter_file()
+
 
     def test_verify_values(self):
         assert my_filter.verify_value(None, None)
@@ -41,22 +44,6 @@ class MyTestCase(unittest.TestCase):
             else:
                 logging.warning("    <empty list>")
 
-    def test_valid_station(self):
-        my_filter.begin_filter()
-        test_lines = generic.readlns_txt_file(generic.get_var_path()+"/test.json")
-
-        test_lines = radiobrowser.get_stations_by_votes()
-
-        io = StringIO(test_lines[0])
-        stations_json = json.load(io)
-        count = 0
-        for station_json in stations_json:
-            if my_filter.check_station(station_json):
-                station = radiobrowser.Station(station_json)
-                count = count + 1
-
-        my_filter.end_filter()
-
     def test_life_popular_station(self):
         # hard test for filter
         stations = radiobrowser.get_stations_by_votes(10000000)
@@ -67,11 +54,10 @@ class MyTestCase(unittest.TestCase):
         assert len(result) == 3
 
     def test_get_countries(self):
-        generic.init_base_dir('.ycast')
         my_filter.init_filter_file()
 
         result = radiobrowser.get_country_directories()
-        assert len(result) == 4
+        assert len(result) == 137
 
     def test_get_genre(self):
         result = radiobrowser.get_genre_directories()
@@ -80,15 +66,6 @@ class MyTestCase(unittest.TestCase):
     def test_get_limits(self):
         result = my_filter.get_limit('irgendwas',20)
         assert result == 20
-
-    def test_jsonable_classes(self):
-        stations = radiobrowser.get_stations_by_country('Germany')
-        station = stations[0]
-        text = station.to_vtuner()
-        response = station.toJson()
-        response = json.dumps(station, skipkeys= True)
-
-        assert response is not None
 
     def test_recently_hit(self):
 

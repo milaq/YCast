@@ -65,3 +65,18 @@ def get_stations_by_category(category):
                 station_icon = param_list[1]
             stations.append(Station(station_name, station_url, category, station_icon))
     return stations
+
+def get_all_bookmarks_stations():
+    bm_stations_category = generic.read_yaml_file(generic.get_stations_file())
+    stations = []
+    if bm_stations_category :
+        for category in bm_stations_category:
+            for station_name in bm_stations_category[category]:
+                station_urls = bm_stations_category[category][station_name]
+                param_list = station_urls.split('|')
+                station_url = param_list[0]
+                station_icon = None
+                if len(param_list) > 1:
+                    station_icon = param_list[1]
+                stations.append(Station(station_name, station_url, category, station_icon))
+    return stations

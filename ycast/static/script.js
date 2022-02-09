@@ -1,23 +1,27 @@
 window.onload = function () {
     category = document.getElementById('id_category').value;
     param = document.getElementById('id_param').value;
-    requestStationList(category, param) 
-    
+    requestStationList(category, param);
+    requestStationList('', '', true);
 }
 
-function initSearch() {
+function initSearchStation() {
     var stationsearch = document.getElementById('stationsearch');
     stationsearch.value = '';
     stationsearch.onkeyup = function () {
         var filter = stationsearch.value.toUpperCase();
-        var lis = document.getElementsByTagName('li');
-        for (var i = 0; i < lis.length; i++) {
-            var searchval = lis[i].dataset.search;
-            if (searchval.indexOf(filter) > -1)
-                lis[i].style.display = 'flex';
-            else
-                lis[i].style.display = 'none';
-        }
+        var stationList = Array.from(document.getElementById("stationList").childNodes);
+        stationList.forEach(function (listItem) {
+            try {
+                var searchval = listItem.dataset.search;
+                if (searchval.indexOf(filter) > -1)
+                    listItem.style.display = 'flex';
+                else
+                    listItem.style.display = 'none';
+            } catch (e) {
+                console.error(listItem, e)
+            }
+        })
     }
 }
 
@@ -50,17 +54,23 @@ function createItem(name, icon, description) {
     return itemElem;
 }
 
-function requestStationList(category, param) {
+function requestStationList(category, param, isbookmarklist = false) {
     var url = 'api/stations?category=' + category;
-
-    if (category.indexOf('language') > -1) {
-        url = url + '&language=' + param.toLowerCase();
+    var id_listnode = "stationList";
+    if (isbookmarklist) {
+        var url = 'api/bookmarks?category=' + category;
+        var id_listnode = "bookmarkList";
     }
-    if (category.indexOf('country') > -1) {
-        url = url + '&country=' + param;
+    if (param.length > 0) {
+        if (category.indexOf('language') > -1) {
+            url = url + '&language=' + param.toLowerCase();
+        }
+        if (category.indexOf('country') > -1) {
+            url = url + '&country=' + param;
+        }
     }
     var myRequest = new Request(url);
-    var myOldList = document.getElementById("stationList");
+    var myOldList = document.getElementById(id_listnode);
 
     var myList = myOldList.cloneNode(false);
     myOldList.parentNode.replaceChild(myList, myOldList);
@@ -75,11 +85,15 @@ function requestStationList(category, param) {
                 );
                 listItem.dataset.json = JSON.stringify(station);
                 listItem.dataset.search = (station.name + '#' + station.description).toUpperCase();
+                listItem.dataset.category = station.description;
                 myList.appendChild(listItem);
+            }
+            if(isbookmarklist) {
+                setBookmarkCategoryList();
             }
         })
         .catch(console.error);
-    initSearch();
+    initSearchStation();
 }
 
 function onInputSelect(e, objElem) {
@@ -91,11 +105,15 @@ function onInputSelect(e, objElem) {
         switch (category) {
             case 'language':
                 setParamlist();
-                try {paramElem.fokus();} catch(e) {};
+                try {
+                    paramElem.fokus();
+                } catch (e) {};
                 return;
             case 'country':
                 setParamlist();
-                try {paramElem.fokus();} catch(e) {};
+                try {
+                    paramElem.fokus();
+                } catch (e) {};
                 return;
             default:
                 paramElem.disabled = true;
@@ -105,13 +123,54 @@ function onInputSelect(e, objElem) {
     }
 }
 
+function setBookmarkCategoryList() {
+    var categoryList = [];
+    var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
+    bookmarkList.forEach(function (listItem) {
+        try {
+            var category = listItem.dataset.category;
+            if (!categoryList.find(function(arElem) { return (category == arElem);})) {
+                console.log(category);
+                categoryList.push(category);
+            }
+        } catch (e) {
+            console.error(listItem, e)
+        }
+    })
+    console.log(categoryList);
+    if (categoryList.length >0) {
+        var myOldList = document.getElementById('categorylist');
+        var myList = myOldList.cloneNode(false);
+        myOldList.parentNode.replaceChild(myList, myOldList);
+    
+        for (const categ of categoryList) {
+            var option = document.createElement('option');
+            option.value = categ;
+            myList.appendChild(option);
+        }
+    }
+}
+
+function filterBookmarkCategoryList(category) {
+    var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
+    bookmarkList.forEach(function (listItem) {
+        try {
+            if (listItem.dataset.category.indexOf(category) > -1)
+                listItem.style.display = 'flex';
+            else
+                listItem.style.display = 'none';
+        } catch (e) {
+            console.error(listItem, e)
+        }
+    })
+}
+
 function setParamlist() {
     var category = document.getElementById('id_category').value
     var url = 'api/paramlist?category=' + category;
     document.getElementById('id_param').value = '';
     var myRequest = new Request(url);
     var myOldList = document.getElementById('paramlist');
-
     var myList = myOldList.cloneNode(false);
     myOldList.parentNode.replaceChild(myList, myOldList);
 

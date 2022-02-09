@@ -162,7 +162,7 @@ def landing_api(path):
 
     if path.endswith('bookmarks'):
         category = request.args.get('category')
-        stations = my_stations.get_stations_by_category(category)
+        stations = my_stations.get_all_bookmarks_stations()
         if stations is not None:
             stations_dict = []
             for station in stations:
