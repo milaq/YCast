@@ -1,3 +1,4 @@
+
 window.onload = function () {
     category = document.getElementById('id_category').value;
     param = document.getElementById('id_param').value;
@@ -8,22 +9,25 @@ window.onload = function () {
 function initSearchStation() {
     var stationsearch = document.getElementById('stationsearch');
     stationsearch.value = '';
-    stationsearch.onkeyup = function () {
+    stationsearch.onkeyup = function (event) {
+        if(event.code == 'Backspace')
+            stationsearch.value = '';
         var filter = stationsearch.value.toUpperCase();
-        var stationList = Array.from(document.getElementById("stationList").childNodes);
-        stationList.forEach(function (listItem) {
-            try {
-                var searchval = listItem.dataset.search;
-                if (searchval.indexOf(filter) > -1)
-                    listItem.style.display = 'flex';
-                else
-                    listItem.style.display = 'none';
-            } catch (e) {
-                console.error(listItem, e)
-            }
-        })
+        refreshFilteredList(
+                document.getElementById('stationList'), filter, false );
     }
 }
+
+function initSearchBookmark() {
+    bookmarksearch = document.getElementById('idCategory');
+    bookmarksearch.value = '';
+    bookmarksearch.onkeyup = function (event) {
+        if(event.code == 'Backspace')
+            document.getElementById('idCategory').value = '';
+        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
+    }
+}
+
 
 function createItem(name, icon, description) {
 
@@ -32,9 +36,13 @@ function createItem(name, icon, description) {
 
     var itemicon = document.createElement("div");
     itemicon.className = "itemicon";
-    var itemiconimg = document.createElement("img");
-    itemiconimg.src = icon;
-    itemiconimg.className = "itemicon";
+
+    if (icon.length > 0){
+        var itemiconimg = document.createElement("img");
+        itemiconimg.src = icon;
+        itemiconimg.className = "itemicon";
+        itemicon.appendChild(itemiconimg);
+    }
 
     var itemtext = document.createElement("div");
     itemtext.className = "itemtext";
@@ -43,7 +51,6 @@ function createItem(name, icon, description) {
     var desc = document.createElement("p");
     desc.textContent = description;
 
-    itemicon.appendChild(itemiconimg);
 
     itemtext.appendChild(h4text);
     itemtext.appendChild(desc);
@@ -73,6 +80,12 @@ function requestStationList(category, param, isbookmarklist = false) {
     var myOldList = document.getElementById(id_listnode);
 
     var myList = myOldList.cloneNode(false);
+    // First Elemet is empty (workaround <ul> needs a <li> element)
+    let listItemEmpty = document.createElement('li');
+    listItemEmpty.appendChild(createItem('','', ''));
+    listItemEmpty.dataset.isemptyelement = true;
+    listItemEmpty.hidden = false;
+    myList.appendChild(listItemEmpty);
     myOldList.parentNode.replaceChild(myList, myOldList);
 
     fetch(myRequest)
@@ -84,9 +97,17 @@ function requestStationList(category, param, isbookmarklist = false) {
                     createItem(station.name, station.icon, station.description)
                 );
                 listItem.dataset.json = JSON.stringify(station);
-                listItem.dataset.search = (station.name + '#' + station.description).toUpperCase();
+                if(isbookmarklist){
+                    listItem.dataset.search = (station.description);
+                    listItem.onclick = function (event) {deleteElement(event,listItem)};
+                } else {
+                    listItem.dataset.search = (station.name + '#' + station.description).toUpperCase();
+                    listItem.onclick = function (event) {copyElementToBookmark(event,listItem)};
+                }
                 listItem.dataset.category = station.description;
+                listItem.dataset.emptyelement = false;
                 myList.appendChild(listItem);
+                if (listItemEmpty) listItemEmpty.hidden = true;
             }
             if(isbookmarklist) {
                 setBookmarkCategoryList();
@@ -94,6 +115,69 @@ function requestStationList(category, param, isbookmarklist = false) {
         })
         .catch(console.error);
     initSearchStation();
+    initSearchBookmark();
+}
+
+function deleteElement(event, objElem){
+    if(objElem) {
+        objElem.remove();
+        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
+        setBookmarkCategoryList()
+    }
+}
+
+function copyElementToBookmark(event, objElem){
+    if(objElem) {
+        let myList = document.getElementById("bookmarkList")
+        let listItem = document.createElement('li');
+        let station = JSON.parse(objElem.dataset.json);
+        let bookmarksearch = document.getElementById('idCategory');
+        if(bookmarksearch.value.length == 0) bookmarksearch.value = 'Others'
+        station.description = bookmarksearch.value;
+        listItem.appendChild(
+            createItem(station.name , station.icon, station.description)
+        );
+        listItem.dataset.json = JSON.stringify(station);
+        listItem.dataset.search = station.description;
+        listItem.dataset.category =  station.description;
+        listItem.dataset.emptyelement = false;
+        listItem.onclick = function (event) {deleteElement(event,listItem)};
+        myList.appendChild(listItem);
+        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
+        setBookmarkCategoryList();
+    }
+}
+
+function refreshFilteredList(myListNode, filtertxt, chkEqual = false){
+    var isEmpty = true;
+    var myListAr = Array.from(myListNode.childNodes);
+    var emptyElement = null;
+    myListAr.forEach(function (listItem) {
+        try {
+            if (listItem.dataset.isemptyelement){
+                emptyElement = listItem;
+            } else {
+                let bfound = true;
+                if (filtertxt.length > 0) {
+                    var searchval = listItem.dataset.search;
+                    if(chkEqual) {
+                        bfound = (searchval === filtertxt);
+                    } else {
+                        bfound = (searchval.indexOf(filtertxt) > -1);
+                    }
+                }
+                if(bfound) {
+                    listItem.hidden =  false;
+                    isEmpty = false;
+                } else {
+                    listItem.hidden = true;
+                }
+            }
+        } catch (e) {
+            console.error(listItem, e)
+        }
+    });
+    if (emptyElement) emptyElement.hidden = !isEmpty;
 }
 
 function onInputSelect(e, objElem) {
@@ -128,10 +212,12 @@ function setBookmarkCategoryList() {
     var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
     bookmarkList.forEach(function (listItem) {
         try {
-            var category = listItem.dataset.category;
-            if (!categoryList.find(function(arElem) { return (category == arElem);})) {
-                console.log(category);
-                categoryList.push(category);
+            if(!listItem.dataset.isemptyelement) {
+                var category = listItem.dataset.category;
+                if (!categoryList.find(function(arElem) { return (category == arElem);})) {
+                    console.log(category);
+                    categoryList.push(category);
+                }
             }
         } catch (e) {
             console.error(listItem, e)
@@ -151,19 +237,6 @@ function setBookmarkCategoryList() {
     }
 }
 
-function filterBookmarkCategoryList(category) {
-    var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
-    bookmarkList.forEach(function (listItem) {
-        try {
-            if (listItem.dataset.category.indexOf(category) > -1)
-                listItem.style.display = 'flex';
-            else
-                listItem.style.display = 'none';
-        } catch (e) {
-            console.error(listItem, e)
-        }
-    })
-}
 
 function setParamlist() {
     var category = document.getElementById('id_category').value

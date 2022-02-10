@@ -30,7 +30,7 @@
         </div>
         <div class="content">
             <div class="contentheader">
-                <h3 onclick="stations_request()">Stations</h3>
+                <h3>Stations</h3>
                 <label for="stationsearch">search:</label>
                 <input tabindex="3" type="search" id="stationsearch">
             </div>
@@ -43,7 +43,8 @@
             <div class="contentheader">
                 <h3>Bookmarks</h3>
                 <label for="idCategory">category:</label>
-                <input tabindex="10000" list="categorylist" id="idCategory">
+                <input tabindex="10000" list="categorylist" id="idCategory"
+                       onfocus="this.value=''" onclick="this.value=''">
                 <datalist id="categorylist">
                     <option value="Actual">
                     <option value="Pop">
