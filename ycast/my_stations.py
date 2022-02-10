@@ -1,3 +1,4 @@
+import logging
 
 import ycast.vtuner as vtuner
 import ycast.generic as generic
@@ -80,3 +81,15 @@ def get_all_bookmarks_stations():
                     station_icon = param_list[1]
                 stations.append(Station(station_name, station_url, category, station_icon))
     return stations
+
+
+def putBookmarkJson(elements):
+    newDict={}
+    for stationJson in elements:
+        logging.debug("%s ... %s",stationJson['description'], stationJson['name'])
+        if stationJson['description'] not in newDict:
+            newDict[stationJson['description']] = {}
+
+        newDict[stationJson['description']][stationJson['name']] = stationJson['url'] + "|" + stationJson['icon']
+    generic.write_yaml_file(generic.get_stations_file(),newDict)
+    return elements

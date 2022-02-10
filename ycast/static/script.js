@@ -247,7 +247,6 @@ function setBookmarkCategoryList() {
             if(!listItem.dataset.isemptyelement) {
                 var category = listItem.dataset.category;
                 if (!categoryList.find(function(arElem) { return (category == arElem);})) {
-                    console.log(category);
                     categoryList.push(category);
                 }
             }
@@ -255,7 +254,6 @@ function setBookmarkCategoryList() {
             console.error(listItem, e)
         }
     })
-    console.log(categoryList);
     if (categoryList.length >0) {
         var myOldList = document.getElementById('categorylist');
         var myList = myOldList.cloneNode(false);
@@ -312,4 +310,27 @@ function keyUpEvent(e, objElem) {
         default:
             break;
     }
+}
+
+function saveBookmarks(){
+    var bookmarkJsonlist=[]
+    var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
+    bookmarkList.forEach(function (listItem) {
+        if(!listItem.dataset.isemptyelement) {
+            station = JSON.parse(listItem.dataset.json)
+            bookmarkJsonlist.push( station )
+        }
+    })
+    var data = JSON.stringify(bookmarkJsonlist)
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", 'api/bookmarks', true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+            console.log(json);
+        }
+    };
+    xhr.send(data);
 }
