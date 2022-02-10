@@ -62,6 +62,13 @@ body {
     border: 2px #eee solid;
 }
 
+.miniinfo {
+    display: block;
+    position: absolute;
+    font-size: 8px;
+    top: 15px;
+}
+
 .item {
     position: relative;
     display: inline-flex;

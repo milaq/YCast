@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="/static/style.css">
     <script type="text/javascript" src="/static/script.js"></script>
     <title>YCast</title>
@@ -23,18 +24,21 @@
             </div>
             <div>
                 <label for="id_param">language or country:</label>
-                <input tabindex="2" list="paramlist" id="id_param" autocomplete=off disabled=true onclick="this.value=''" onfocus="this.value=''" onkeyup="keyUpEvent(event,this)">
+                <input tabindex="2" list="paramlist" id="id_param" autocomplete=off disabled=true
+                       onclick="this.value=''" onfocus="this.value=''"
+                       onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
                 <datalist id="paramlist">
                 </datalist>
             </div>
         </div>
         <div class="content">
             <div class="contentheader">
+                <label class="miniinfo" id="stationcount">0/0</label>
                 <h3>Stations</h3>
                 <label for="stationsearch">search:</label>
-                <input tabindex="3" type="search" id="stationsearch">
+                <input tabindex="3" type="search" id="stationsearch" oninput="onInputSelect(event, this)">
             </div>
-            <div class="contentitems">
+            <div class="contentitems" title="Clicking on this item copies it as a bookmark">
                 <ul id="stationList">
                 </ul>
             </div>
@@ -44,7 +48,7 @@
                 <h3>Bookmarks</h3>
                 <label for="idCategory">category:</label>
                 <input tabindex="10000" list="categorylist" id="idCategory"
-                       onfocus="this.value=''" onclick="this.value=''">
+                       onfocus="this.value=''" onclick="this.value=''" oninput="onInputSelect(event, this)">
                 <datalist id="categorylist">
                     <option value="Actual">
                     <option value="Pop">
@@ -52,7 +56,7 @@
                 </datalist>
 
             </div>
-            <div class="contentitems">
+            <div class="contentitems" title="Clicking on this item will delete it">
                 <ul id="bookmarkList">
                 </ul>
             </div>

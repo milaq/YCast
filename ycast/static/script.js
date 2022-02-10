@@ -6,6 +6,7 @@ window.onload = function () {
     requestStationList('', '', true);
 }
 
+
 function initSearchStation() {
     var stationsearch = document.getElementById('stationsearch');
     stationsearch.value = '';
@@ -13,10 +14,11 @@ function initSearchStation() {
         if(event.code == 'Backspace')
             stationsearch.value = '';
         var filter = stationsearch.value.toUpperCase();
-        refreshFilteredList(
+        document.getElementById('stationcount').textContent = refreshFilteredList(
                 document.getElementById('stationList'), filter, false );
     }
 }
+
 
 function initSearchBookmark() {
     bookmarksearch = document.getElementById('idCategory');
@@ -61,9 +63,11 @@ function createItem(name, icon, description) {
     return itemElem;
 }
 
+
 function requestStationList(category, param, isbookmarklist = false) {
     var url = 'api/stations?category=' + category;
     var id_listnode = "stationList";
+    var countall = 0;
     if (isbookmarklist) {
         var url = 'api/bookmarks?category=' + category;
         var id_listnode = "bookmarkList";
@@ -92,6 +96,7 @@ function requestStationList(category, param, isbookmarklist = false) {
         .then(response => response.json())
         .then(data => {
             for (const station of data) {
+                countall = countall + 1;
                 let listItem = document.createElement('li');
                 listItem.appendChild(
                     createItem(station.name, station.icon, station.description)
@@ -111,12 +116,16 @@ function requestStationList(category, param, isbookmarklist = false) {
             }
             if(isbookmarklist) {
                 setBookmarkCategoryList();
+            } else {
+                document.getElementById('stationcount').textContent = countall + '/' + countall;
             }
-        })
+
+         })
         .catch(console.error);
     initSearchStation();
     initSearchBookmark();
 }
+
 
 function deleteElement(event, objElem){
     if(objElem) {
@@ -125,6 +134,7 @@ function deleteElement(event, objElem){
         setBookmarkCategoryList()
     }
 }
+
 
 function copyElementToBookmark(event, objElem){
     if(objElem) {
@@ -152,11 +162,14 @@ function refreshFilteredList(myListNode, filtertxt, chkEqual = false){
     var isEmpty = true;
     var myListAr = Array.from(myListNode.childNodes);
     var emptyElement = null;
+    var countall = 0;
+    var countfiltered = 0;
     myListAr.forEach(function (listItem) {
         try {
             if (listItem.dataset.isemptyelement){
                 emptyElement = listItem;
             } else {
+                countall = countall+1;
                 let bfound = true;
                 if (filtertxt.length > 0) {
                     var searchval = listItem.dataset.search;
@@ -167,6 +180,7 @@ function refreshFilteredList(myListNode, filtertxt, chkEqual = false){
                     }
                 }
                 if(bfound) {
+                    countfiltered = countfiltered + 1;
                     listItem.hidden =  false;
                     isEmpty = false;
                 } else {
@@ -178,33 +192,51 @@ function refreshFilteredList(myListNode, filtertxt, chkEqual = false){
         }
     });
     if (emptyElement) emptyElement.hidden = !isEmpty;
+    return countfiltered + '/' +countall;
 }
 
 function onInputSelect(e, objElem) {
 
-    if (objElem.id == 'id_category') {
-        paramElem = document.getElementById('id_param')
-        param = paramElem.value
-        category = objElem.value
-        switch (category) {
-            case 'language':
-                setParamlist();
-                try {
-                    paramElem.fokus();
-                } catch (e) {};
-                return;
-            case 'country':
-                setParamlist();
-                try {
-                    paramElem.fokus();
-                } catch (e) {};
-                return;
-            default:
-                paramElem.disabled = true;
-                break;
-        }
-        requestStationList(category, param);
-    }
+    switch(objElem.id){
+        case 'id_category':
+            paramElem = document.getElementById('id_param')
+            param = paramElem.value
+            category = objElem.value
+            switch (category) {
+                case 'language':
+                    setParamlist();
+                    try {
+                        paramElem.fokus();
+                    } catch (e) {};
+                    return;
+                case 'country':
+                    setParamlist();
+                    try {
+                        paramElem.fokus();
+                    } catch (e) {};
+                    return;
+                default:
+                    paramElem.disabled = true;
+                    break;
+            }
+            document.getElementById('stationcount').textContent = requestStationList(category, param);
+            break;
+        case 'id_param':
+            document.getElementById('stationcount').textContent = requestStationList(
+                document.getElementById('id_category').value,
+                document.getElementById('id_param').value);
+            break;
+
+        case 'idCategory':
+            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
+            break;
+
+        case 'stationsearch':
+            document.getElementById('stationcount').textContent =
+            refreshFilteredList(document.getElementById('stationList'),
+            document.getElementById('stationsearch').value.toUpperCase(), false );
+            break;
+   }
 }
 
 function setBookmarkCategoryList() {
@@ -269,12 +301,12 @@ function keyUpEvent(e, objElem) {
             if (e instanceof KeyboardEvent) {
                 // it is a keyboard event!
                 if (e.code == 'Enter') {
-                    requestStationList(category, param);
+                    document.getElementById('stationcount').textContent = requestStationList(category, param);
                 } else if (e.code == 'Backspace')
                     this.value = '';
             } else if (e instanceof Event) {
                 // one Element from selection is selected
-                requestStationList(category, param);
+                document.getElementById('stationcount').textContent = requestStationList(category, param);
             }
             break;
         default:
