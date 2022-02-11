@@ -121,7 +121,7 @@ def vtuner_redirect(url):
 @app.route('/setupapp/<path:path>',
            methods=['GET', 'POST'])
 def upstream(path):
-    if request.args.get('token') == '0':
+    if request.args.get('token') == '0' or 'SignIn.asp' in path:
         return vtuner.get_init_token()
     if request.args.get('search'):
         return station_search()
@@ -153,7 +153,6 @@ def landing(path=''):
         page.add(vtuner.Display("'My Stations' feature not configured."))
         page.set_count(1)
     return page.to_string()
-
 
 @app.route('/' + PATH_ROOT + '/' + PATH_MY_STATIONS + '/',
            methods=['GET', 'POST'])

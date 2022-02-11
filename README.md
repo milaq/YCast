@@ -31,6 +31,7 @@ Any reported device helps the community to see which AVRs work properly and whic
 
  * Denon AVR-X_000 series (AVR-X1000, AVR-2000, AVR-X3000, AVR-X4000)
  * Denon AVR-1912
+ * Denon AVR-3313
  * Denon AVR-X2200W
  * Denon CEOL piccolo N5
  * Denon CEOL N9
