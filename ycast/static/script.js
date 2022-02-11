@@ -131,7 +131,8 @@ function deleteElement(event, objElem){
     if(objElem) {
         objElem.remove();
         refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
-        setBookmarkCategoryList()
+        setBookmarkCategoryList();
+        saveBookmarks();
     }
 }
 
@@ -155,6 +156,7 @@ function copyElementToBookmark(event, objElem){
         myList.appendChild(listItem);
         refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
         setBookmarkCategoryList();
+        saveBookmarks();
     }
 }
 

@@ -13,7 +13,6 @@
     <div class="page">
         <div class="header">
             <h2>YCast advanced</h2>
-             <button onclick="saveBookmarks()">Save</button>
             <div>
                 <label for="id_category">station-source:</label>
                 <select tabindex="1" id="id_category" name="category" oninput="onInputSelect(event, this)">
@@ -49,7 +48,7 @@
                 <h3>Bookmarks</h3>
                 <label for="idCategory">category:</label>
                 <input tabindex="10000" list="categorylist" id="idCategory"
-                       onfocus="this.value=''" onclick="this.value=''" oninput="onInputSelect(event, this)">
+                       onfocus="this.value=''" onclick="setBookmarkCategoryList()" oninput="onInputSelect(event, this)">
                 <datalist id="categorylist">
                     <option value="Actual">
                     <option value="Pop">
