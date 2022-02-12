@@ -9,6 +9,20 @@ window.onload = function () {
     setBookmarkTopicList();
 }
 
+function searchTree(element, id) {
+    if (element.id === id) {
+        return element;
+    } else if (element.children != null) {
+        var i;
+        var result = null;
+        for (i = 0; result == null && i < element.children.length; i++) {
+            result = searchTree(element.children[i], id);
+        }
+        return result;
+    }
+    return null;
+}
+
 
 function createItem(name, icon, description) {
 
@@ -99,7 +113,10 @@ function requestStationList(category, param, isbookmarklist) {
                 myList.appendChild(listItem);
                 if (listItemEmpty) listItemEmpty.hidden = true;
             }
-            //            if (listItemEmpty) listItemEmpty.getElementById('name').textContent = '<empty>';
+            if (listItemEmpty) {
+                textElem = searchTree(listItemEmpty, 'name');
+                if (textElem) textElem.textContent = '';
+            }
             if (isbookmarklist) {
                 setBookmarkTopicList();
             } else {
