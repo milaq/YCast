@@ -1,33 +1,12 @@
-
 window.onload = function () {
-    category = document.getElementById('id_category').value;
-    param = document.getElementById('id_param').value;
-    requestStationList(category, param);
+    document.getElementById('idRequestSrc').value = 'recently';
+    document.getElementById('idLanOrCountSelect').disabled = true;
+    var requestSrc = document.getElementById('idRequestSrc').value;
+    var param = document.getElementById('idLanOrCountSelect').value;
+    requestStationList(requestSrc, param, false);
+
     requestStationList('', '', true);
-}
-
-
-function initSearchStation() {
-    var stationsearch = document.getElementById('stationsearch');
-    stationsearch.value = '';
-    stationsearch.onkeyup = function (event) {
-        if(event.code == 'Backspace')
-            stationsearch.value = '';
-        var filter = stationsearch.value.toUpperCase();
-        document.getElementById('stationcount').textContent = refreshFilteredList(
-                document.getElementById('stationList'), filter, false );
-    }
-}
-
-
-function initSearchBookmark() {
-    bookmarksearch = document.getElementById('idCategory');
-    bookmarksearch.value = '';
-    bookmarksearch.onkeyup = function (event) {
-        if(event.code == 'Backspace')
-            document.getElementById('idCategory').value = '';
-        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
-    }
+    setBookmarkTopicList();
 }
 
 
@@ -39,7 +18,7 @@ function createItem(name, icon, description) {
     var itemicon = document.createElement("div");
     itemicon.className = "itemicon";
 
-    if (icon.length > 0){
+    if (icon.length > 0) {
         var itemiconimg = document.createElement("img");
         itemiconimg.src = icon;
         itemiconimg.className = "itemicon";
@@ -50,8 +29,10 @@ function createItem(name, icon, description) {
     itemtext.className = "itemtext";
     var h4text = document.createElement("h4");
     h4text.textContent = name;
+    h4text.id = 'name'
     var desc = document.createElement("p");
     desc.textContent = description;
+    desc.id = 'description';
 
 
     itemtext.appendChild(h4text);
@@ -64,7 +45,7 @@ function createItem(name, icon, description) {
 }
 
 
-function requestStationList(category, param, isbookmarklist = false) {
+function requestStationList(category, param, isbookmarklist) {
     var url = 'api/stations?category=' + category;
     var id_listnode = "stationList";
     var countall = 0;
@@ -86,8 +67,8 @@ function requestStationList(category, param, isbookmarklist = false) {
     var myList = myOldList.cloneNode(false);
     // First Elemet is empty (workaround <ul> needs a <li> element)
     let listItemEmpty = document.createElement('li');
-    listItemEmpty.appendChild(createItem('','', ''));
-    listItemEmpty.dataset.isemptyelement = true;
+    listItemEmpty.appendChild(createItem('<<< loading >>>', '', ''));
+    listItemEmpty.dataset.isemptyelement = 'true';
     listItemEmpty.hidden = false;
     myList.appendChild(listItemEmpty);
     myOldList.parentNode.replaceChild(myList, myOldList);
@@ -102,65 +83,70 @@ function requestStationList(category, param, isbookmarklist = false) {
                     createItem(station.name, station.icon, station.description)
                 );
                 listItem.dataset.json = JSON.stringify(station);
-                if(isbookmarklist){
+                if (isbookmarklist) {
                     listItem.dataset.search = (station.description);
-                    listItem.onclick = function (event) {deleteElement(event,listItem)};
+                    listItem.onclick = function (event) {
+                        deleteElement(event, listItem)
+                    };
                 } else {
                     listItem.dataset.search = (station.name + '#' + station.description).toUpperCase();
-                    listItem.onclick = function (event) {copyElementToBookmark(event,listItem)};
+                    listItem.onclick = function (event) {
+                        copyElementToBookmark(event, listItem)
+                    };
                 }
                 listItem.dataset.category = station.description;
-                listItem.dataset.emptyelement = false;
+                listItem.dataset.isemptyelement = 'false';
                 myList.appendChild(listItem);
                 if (listItemEmpty) listItemEmpty.hidden = true;
             }
-            if(isbookmarklist) {
-                setBookmarkCategoryList();
+            //            if (listItemEmpty) listItemEmpty.getElementById('name').textContent = '<empty>';
+            if (isbookmarklist) {
+                setBookmarkTopicList();
             } else {
                 document.getElementById('stationcount').textContent = countall + '/' + countall;
             }
 
-         })
+        })
         .catch(console.error);
-    initSearchStation();
-    initSearchBookmark();
 }
 
 
-function deleteElement(event, objElem){
-    if(objElem) {
+function deleteElement(event, objElem) {
+    if (objElem) {
         objElem.remove();
-        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
-        setBookmarkCategoryList();
+        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
+        setBookmarkTopicList();
         saveBookmarks();
     }
 }
 
 
-function copyElementToBookmark(event, objElem){
-    if(objElem) {
+function copyElementToBookmark(event, objElem) {
+    if (objElem) {
         let myList = document.getElementById("bookmarkList")
         let listItem = document.createElement('li');
         let station = JSON.parse(objElem.dataset.json);
-        let bookmarksearch = document.getElementById('idCategory');
-        if(bookmarksearch.value.length == 0) bookmarksearch.value = 'Others'
-        station.description = bookmarksearch.value;
+        let topicElem = document.getElementById('idTopic');
+        if (topicElem.value.length == 0) topicElem.value = 'Others'
+        station.description = topicElem.value;
         listItem.appendChild(
-            createItem(station.name , station.icon, station.description)
+            createItem(station.name, station.icon, station.description)
         );
         listItem.dataset.json = JSON.stringify(station);
         listItem.dataset.search = station.description;
-        listItem.dataset.category =  station.description;
-        listItem.dataset.emptyelement = false;
-        listItem.onclick = function (event) {deleteElement(event,listItem)};
+        listItem.dataset.category = station.description;
+        listItem.dataset.isemptyelement = 'false';
+        listItem.onclick = function (event) {
+            deleteElement(event, listItem)
+        };
         myList.appendChild(listItem);
-        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
-        setBookmarkCategoryList();
+        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
+        setBookmarkTopicList();
         saveBookmarks();
     }
 }
 
-function refreshFilteredList(myListNode, filtertxt, chkEqual = false){
+function refreshFilteredList(myListNode, filtertxt, chkEqual) {
     var isEmpty = true;
     var myListAr = Array.from(myListNode.childNodes);
     var emptyElement = null;
@@ -168,22 +154,22 @@ function refreshFilteredList(myListNode, filtertxt, chkEqual = false){
     var countfiltered = 0;
     myListAr.forEach(function (listItem) {
         try {
-            if (listItem.dataset.isemptyelement){
+            if (listItem.dataset.isemptyelement === 'true') {
                 emptyElement = listItem;
             } else {
-                countall = countall+1;
-                let bfound = true;
+                countall = countall + 1;
+                var bfound = true;
                 if (filtertxt.length > 0) {
                     var searchval = listItem.dataset.search;
-                    if(chkEqual) {
+                    if (chkEqual) {
                         bfound = (searchval === filtertxt);
                     } else {
                         bfound = (searchval.indexOf(filtertxt) > -1);
                     }
                 }
-                if(bfound) {
+                if (bfound) {
                     countfiltered = countfiltered + 1;
-                    listItem.hidden =  false;
+                    listItem.hidden = false;
                     isEmpty = false;
                 } else {
                     listItem.hidden = true;
@@ -194,14 +180,20 @@ function refreshFilteredList(myListNode, filtertxt, chkEqual = false){
         }
     });
     if (emptyElement) emptyElement.hidden = !isEmpty;
-    return countfiltered + '/' +countall;
+    return countfiltered + '/' + countall;
+}
+
+function checkOptionElement(optionsElementList, value) {
+    var optionList = Array.from(optionsElementList.childNodes);
+    return optionList.find(function (optionElem) {
+        return (optionElem.value === value)
+    })
 }
 
 function onInputSelect(e, objElem) {
-
-    switch(objElem.id){
-        case 'id_category':
-            paramElem = document.getElementById('id_param')
+    switch (objElem.id) {
+        case 'idRequestSrc':
+            paramElem = document.getElementById('idLanOrCountSelect')
             param = paramElem.value
             category = objElem.value
             switch (category) {
@@ -223,47 +215,51 @@ function onInputSelect(e, objElem) {
             }
             document.getElementById('stationcount').textContent = requestStationList(category, param);
             break;
-        case 'id_param':
-            document.getElementById('stationcount').textContent = requestStationList(
-                document.getElementById('id_category').value,
-                document.getElementById('id_param').value);
+        case 'idLanOrCountSelect':
+            if (checkOptionElement(document.getElementById('listLangOrCountry'), document.getElementById('idLanOrCountSelect').value)) {
+                document.getElementById('stationcount').textContent = requestStationList(
+                    document.getElementById('idRequestSrc').value,
+                    document.getElementById('idLanOrCountSelect').value);
+            }
             break;
 
-        case 'idCategory':
-            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idCategory').value, true);
+        case 'idTopic':
+            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
             break;
 
         case 'stationsearch':
             document.getElementById('stationcount').textContent =
-            refreshFilteredList(document.getElementById('stationList'),
-            document.getElementById('stationsearch').value.toUpperCase(), false );
+                refreshFilteredList(document.getElementById('stationList'),
+                    document.getElementById('stationsearch').value.toUpperCase(), false);
             break;
-   }
+    }
 }
 
-function setBookmarkCategoryList() {
-    var categoryList = [];
+function setBookmarkTopicList() {
+    var topicList = [];
     var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
     bookmarkList.forEach(function (listItem) {
         try {
-            if(!listItem.dataset.isemptyelement) {
-                var category = listItem.dataset.category;
-                if (!categoryList.find(function(arElem) { return (category == arElem);})) {
-                    categoryList.push(category);
+            if (listItem.dataset.isemptyelement === 'false') {
+                var topic = listItem.dataset.category;
+                if (!topicList.find(function (arElem) {
+                        return (topic === arElem);
+                    })) {
+                    topicList.push(topic);
                 }
             }
         } catch (e) {
             console.error(listItem, e)
         }
     })
-    if (categoryList.length >0) {
-        var myOldList = document.getElementById('categorylist');
+    if (topicList.length > 0) {
+        var myOldList = document.getElementById('topicList');
         var myList = myOldList.cloneNode(false);
         myOldList.parentNode.replaceChild(myList, myOldList);
-    
-        for (const categ of categoryList) {
+
+        for (const topic of topicList) {
             var option = document.createElement('option');
-            option.value = categ;
+            option.value = topic;
             myList.appendChild(option);
         }
     }
@@ -271,11 +267,11 @@ function setBookmarkCategoryList() {
 
 
 function setParamlist() {
-    var category = document.getElementById('id_category').value
+    var category = document.getElementById('idRequestSrc').value
     var url = 'api/paramlist?category=' + category;
-    document.getElementById('id_param').value = '';
+    document.getElementById('idLanOrCountSelect').value = '';
     var myRequest = new Request(url);
-    var myOldList = document.getElementById('paramlist');
+    var myOldList = document.getElementById('listLangOrCountry');
     var myList = myOldList.cloneNode(false);
     myOldList.parentNode.replaceChild(myList, myOldList);
 
@@ -290,37 +286,65 @@ function setParamlist() {
             }
         })
         .catch(console.error);
-    document.getElementById('id_param').disabled = false;
+    document.getElementById('idLanOrCountSelect').disabled = false;
 }
 
 function keyUpEvent(e, objElem) {
+    if (e instanceof KeyboardEvent) {
+        if (e.code === 'Backspace') {
+            objElem.value = '';
+            switch (objElem.id) {
+                case 'stationsearch':
+                    document.getElementById('stationcount').textContent =
+                        refreshFilteredList(document.getElementById('stationList'),
+                            document.getElementById('stationsearch').value.toUpperCase(), false);
+                    break;
+                case 'idTopic':
+                    refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
+                    break;
+
+                default:
+                    break;
+            }
+            return;
+        }
+    }
     switch (objElem.id) {
-        case 'id_param':
+        case 'idLanOrCountSelect':
             param = objElem.value;
-            category = document.getElementById('id_category').value;
+            category = document.getElementById('idRequestSrc').value;
             if (e instanceof KeyboardEvent) {
                 // it is a keyboard event!
                 if (e.code == 'Enter') {
-                    document.getElementById('stationcount').textContent = requestStationList(category, param);
-                } else if (e.code == 'Backspace')
-                    this.value = '';
+                    if (checkOptionElement(document.getElementById('listLangOrCountry'), param)) {
+                        document.getElementById('stationcount').textContent = requestStationList(category, param);
+                    }
+                }
             } else if (e instanceof Event) {
                 // one Element from selection is selected
                 document.getElementById('stationcount').textContent = requestStationList(category, param);
             }
+            break;
+        case 'stationsearch':
+            document.getElementById('stationcount').textContent =
+                refreshFilteredList(document.getElementById('stationList'),
+                    document.getElementById('stationsearch').value.toUpperCase(), false);
+            break;
+        case 'idTopic':
+            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
             break;
         default:
             break;
     }
 }
 
-function saveBookmarks(){
-    var bookmarkJsonlist=[]
+function saveBookmarks() {
+    var bookmarkJsonlist = []
     var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
     bookmarkList.forEach(function (listItem) {
-        if(!listItem.dataset.isemptyelement) {
+        if (listItem.dataset.isemptyelement === 'false') {
             station = JSON.parse(listItem.dataset.json)
-            bookmarkJsonlist.push( station )
+            bookmarkJsonlist.push(station)
         }
     })
     var data = JSON.stringify(bookmarkJsonlist)

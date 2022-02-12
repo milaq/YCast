@@ -14,8 +14,8 @@
         <div class="header">
             <h2>YCast advanced</h2>
             <div>
-                <label for="id_category">station-source:</label>
-                <select tabindex="1" id="id_category" name="category" oninput="onInputSelect(event, this)">
+                <label for="idRequestSrc">station-source:</label>
+                <select tabindex="1" id="idRequestSrc" name="category" oninput="onInputSelect(event, this)">
                     <option value="recently">recently</option>
                     <option value="voted">voted</option>
                     <option value="language">language</option>
@@ -23,11 +23,9 @@
                 </select>
             </div>
             <div>
-                <label for="id_param">language or country:</label>
-                <input tabindex="2" list="paramlist" id="id_param" autocomplete=off disabled=true
-                       onclick="this.value=''" onfocus="this.value=''"
-                       onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
-                <datalist id="paramlist">
+                <label for="idLanOrCountSelect">language or country:</label>
+                <input type="search" tabindex="2" list="listLangOrCountry" id="idLanOrCountSelect" autocomplete=off onclick="this.value=''" onfocus="this.value=''" onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
+                <datalist id="listLangOrCountry">
                 </datalist>
             </div>
         </div>
@@ -36,9 +34,9 @@
                 <label class="miniinfo" id="stationcount">0/0</label>
                 <h3>Stations</h3>
                 <label for="stationsearch">search:</label>
-                <input tabindex="3" type="search" id="stationsearch" oninput="onInputSelect(event, this)">
+                <input type="search" tabindex="3" type="search" id="stationsearch" onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
             </div>
-            <div class="contentitems" title="Clicking on this item copies it as a bookmark">
+            <div class="contentitems" title="Clicking on this item copies it as a bookmark" tabindex="4">
                 <ul id="stationList">
                 </ul>
             </div>
@@ -46,17 +44,16 @@
         <div class="content">
             <div class="contentheader">
                 <h3>Bookmarks</h3>
-                <label for="idCategory">category:</label>
-                <input tabindex="10000" list="categorylist" id="idCategory"
-                       onfocus="this.value=''" onclick="setBookmarkCategoryList()" oninput="onInputSelect(event, this)">
-                <datalist id="categorylist">
+                <label for="idTopic">category:</label>
+                <input type="search" tabindex="10000" list="topicList" id="idTopic" onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
+                <datalist id="topicList">
                     <option value="Actual">
                     <option value="Pop">
                     <option value="Classics">
                 </datalist>
 
             </div>
-            <div class="contentitems" title="Clicking on this item will delete it">
+            <div class="contentitems" title="Clicking on this item will delete it" tabindex="5">
                 <ul id="bookmarkList">
                 </ul>
             </div>

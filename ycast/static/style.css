@@ -1,3 +1,15 @@
+*:focus{ 
+    outline: 4px solid red;
+}
+
+input: {
+    margin: 0.4rem;
+}
+
+li:hover, input:hover {
+    background-color: dodgerblue;
+}
+
 body {
     font-family: sans-serif;
 }
@@ -78,14 +90,11 @@ body {
     display: inline-flex;
     border: 2px #eee solid;
     margin: 0.1rem;
-    min-height: 2.6rem;
-    min-width: 19rem;
+    height: 2.6rem;
+    width: 100%;
     align-items: center;
 }
 
-.item:hover {
-    background-color: beige;
-}
 
 .itemicon {
     display: flex;
