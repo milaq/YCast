@@ -6,7 +6,7 @@ window.onload = function () {
     requestStationList(requestSrc, param, false);
 
     requestStationList('', '', true);
-    setBookmarkTopicList();
+    setBookmarkcategoryList();
 }
 
 function searchTree(element, id) {
@@ -32,7 +32,7 @@ function createItem(name, icon, description) {
     var itemicon = document.createElement("div");
     itemicon.className = "itemicon";
 
-    if (icon.length > 0) {
+    if (icon && icon.length > 0) {
         var itemiconimg = document.createElement("img");
         itemiconimg.src = icon;
         itemiconimg.className = "itemicon";
@@ -118,7 +118,7 @@ function requestStationList(category, param, isbookmarklist) {
                 if (textElem) textElem.textContent = '';
             }
             if (isbookmarklist) {
-                setBookmarkTopicList();
+                setBookmarkcategoryList();
             } else {
                 document.getElementById('stationcount').textContent = countall + '/' + countall;
             }
@@ -131,8 +131,8 @@ function requestStationList(category, param, isbookmarklist) {
 function deleteElement(event, objElem) {
     if (objElem) {
         objElem.remove();
-        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
-        setBookmarkTopicList();
+        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idcategory').value, true);
+        setBookmarkcategoryList();
         saveBookmarks();
     }
 }
@@ -143,9 +143,9 @@ function copyElementToBookmark(event, objElem) {
         let myList = document.getElementById("bookmarkList")
         let listItem = document.createElement('li');
         let station = JSON.parse(objElem.dataset.json);
-        let topicElem = document.getElementById('idTopic');
-        if (topicElem.value.length == 0) topicElem.value = 'Others'
-        station.description = topicElem.value;
+        let categoryElem = document.getElementById('idcategory');
+        if (categoryElem.value.length == 0) categoryElem.value = 'Others'
+        station.description = categoryElem.value;
         listItem.appendChild(
             createItem(station.name, station.icon, station.description)
         );
@@ -157,8 +157,8 @@ function copyElementToBookmark(event, objElem) {
             deleteElement(event, listItem)
         };
         myList.appendChild(listItem);
-        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
-        setBookmarkTopicList();
+        refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idcategory').value, true);
+        setBookmarkcategoryList();
         saveBookmarks();
     }
 }
@@ -240,8 +240,8 @@ function onInputSelect(e, objElem) {
             }
             break;
 
-        case 'idTopic':
-            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
+        case 'idcategory':
+            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idcategory').value, true);
             break;
 
         case 'stationsearch':
@@ -252,31 +252,31 @@ function onInputSelect(e, objElem) {
     }
 }
 
-function setBookmarkTopicList() {
-    var topicList = [];
+function setBookmarkcategoryList() {
+    var categoryList = [];
     var bookmarkList = Array.from(document.getElementById("bookmarkList").childNodes);
     bookmarkList.forEach(function (listItem) {
         try {
             if (listItem.dataset.isemptyelement === 'false') {
-                var topic = listItem.dataset.category;
-                if (!topicList.find(function (arElem) {
-                        return (topic === arElem);
+                var category = listItem.dataset.category;
+                if (!categoryList.find(function (arElem) {
+                        return (category === arElem);
                     })) {
-                    topicList.push(topic);
+                    categoryList.push(category);
                 }
             }
         } catch (e) {
             console.error(listItem, e)
         }
     })
-    if (topicList.length > 0) {
-        var myOldList = document.getElementById('topicList');
+    if (categoryList.length > 0) {
+        var myOldList = document.getElementById('categoryList');
         var myList = myOldList.cloneNode(false);
         myOldList.parentNode.replaceChild(myList, myOldList);
 
-        for (const topic of topicList) {
+        for (const category of categoryList) {
             var option = document.createElement('option');
-            option.value = topic;
+            option.value = category;
             myList.appendChild(option);
         }
     }
@@ -316,8 +316,8 @@ function keyUpEvent(e, objElem) {
                         refreshFilteredList(document.getElementById('stationList'),
                             document.getElementById('stationsearch').value.toUpperCase(), false);
                     break;
-                case 'idTopic':
-                    refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
+                case 'idcategory':
+                    refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idcategory').value, true);
                     break;
 
                 default:
@@ -347,8 +347,8 @@ function keyUpEvent(e, objElem) {
                 refreshFilteredList(document.getElementById('stationList'),
                     document.getElementById('stationsearch').value.toUpperCase(), false);
             break;
-        case 'idTopic':
-            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idTopic').value, true);
+        case 'idcategory':
+            refreshFilteredList(document.getElementById("bookmarkList"), document.getElementById('idcategory').value, true);
             break;
         default:
             break;

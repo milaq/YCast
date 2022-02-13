@@ -89,7 +89,11 @@ def putBookmarkJson(elements):
         logging.debug("%s ... %s",stationJson['description'], stationJson['name'])
         if stationJson['description'] not in newDict:
             newDict[stationJson['description']] = {}
+        logging.debug(stationJson)
+        if stationJson['icon'] is not None:
+            newDict[stationJson['description']][stationJson['name']] = stationJson['url'] + "|" + stationJson['icon']
+        else:
+            newDict[stationJson['description']][stationJson['name']] = stationJson['url']
 
-        newDict[stationJson['description']][stationJson['name']] = stationJson['url'] + "|" + stationJson['icon']
     generic.write_yaml_file(generic.get_stations_file(),newDict)
     return elements
