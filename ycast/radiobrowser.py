@@ -13,7 +13,7 @@ MINIMUM_COUNT_LANGUAGE = 5
 DEFAULT_STATION_LIMIT = 200
 SHOW_BROKEN_STATIONS = False
 ID_PREFIX = "RB"
-session = requests_cache.CachedSession('ycast_cache')
+session = requests_cache.CachedSession('ycast_cache', backend='memory')
 
 
 def get_json_attr(json, attr):

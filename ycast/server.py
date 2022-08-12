@@ -30,7 +30,7 @@ app = Flask(__name__)
 
 def revalidate_cache():
     logging.info("Starting cache revalidation")
-    session = requests_cache.CachedSession('ycast_cache')
+    session = requests_cache.CachedSession('ycast_cache', backend='memory')
     get_urls = [
         response.url for response in session.cache.responses.values()
         if response.request.method == 'GET'
