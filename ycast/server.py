@@ -1,14 +1,15 @@
 import logging
 import re
 
+import requests_cache
 from flask import Flask, request, url_for, redirect, abort, make_response
+from apscheduler.schedulers.background import BackgroundScheduler
 
 import ycast.vtuner as vtuner
 import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
 import ycast.generic as generic
 import ycast.station_icons as station_icons
-
 
 PATH_ROOT = 'ycast'
 PATH_PLAY = 'play'
@@ -27,8 +28,27 @@ my_stations_enabled = False
 app = Flask(__name__)
 
 
+def revalidate_cache():
+    logging.info("Starting cache revalidation")
+    session = requests_cache.CachedSession('ycast_cache', backend='memory')
+    get_urls = [
+        response.url for response in session.cache.responses.values()
+        if response.request.method == 'GET'
+    ]
+    session.cache.clear()
+    for url in get_urls[:25]:
+        session.get(url)
+    logging.info("Cache revalidated")
+
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(revalidate_cache, 'interval', hours=6)
+sched.start()
+
+
 def run(config, address='0.0.0.0', port=8010):
     try:
+        revalidate_cache()
         check_my_stations_feature(config)
         app.run(host=address, port=port)
     except PermissionError:
