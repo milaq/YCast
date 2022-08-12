@@ -12,12 +12,12 @@ config_file = 'stations.yml'
 
 
 class Station:
-    def __init__(self, uid, name, url, category):
+    def __init__(self, uid, name, url, category, icon):
         self.id = generic.generate_stationid_with_prefix(uid, ID_PREFIX)
         self.name = name
         self.url = url
         self.tag = category
-        self.icon = None
+        self.icon = icon
 
     def to_vtuner(self):
         return vtuner.Station(self.id, self.name, self.tag, self.url, self.icon, self.tag, None, None, None, None)
@@ -70,9 +70,10 @@ def get_stations_by_category(category):
     stations = []
     if my_stations_yaml and category in my_stations_yaml:
         for station_name in my_stations_yaml[category]:
-            station_url = my_stations_yaml[category][station_name]
+            station_url = my_stations_yaml[category][station_name]['url']
+            station_icon = my_stations_yaml[category][station_name]['icon']
             station_id = str(get_checksum(station_name + station_url)).upper()
-            stations.append(Station(station_id, station_name, station_url, category))
+            stations.append(Station(station_id, station_name, station_url, category, station_icon))
     return stations
 
 
