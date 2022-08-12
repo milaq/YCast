@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='ycast',
+    name='ycast-cache',
     version=ycast.__version__,
     author='milaq',
     author_email='micha.laqua@gmail.com',
     description='Self hosted vTuner internet radio service emulation',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/milaq/YCast',
+    url='https://github.com/milaq/YCast-Cache',
     license='GPLv3',
     classifiers=[
         'Development Status :: 4 - Beta',
