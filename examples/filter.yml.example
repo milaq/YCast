@@ -1,6 +1,7 @@
 blacklist:
   favicon: ''
 whitelist:
+  country: Germany
   countrycode: DE,US,NO,GB
   languagecodes: en,no
   lastcheckok: 1

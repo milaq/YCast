@@ -12,7 +12,7 @@ from ycast import my_filter, generic, radiobrowser, my_recentlystation
 class MyTestCase(unittest.TestCase):
 
     logging.getLogger().setLevel(logging.DEBUG)
-    generic.init_base_dir("../../.test_ycast")
+    generic.init_base_dir("/.test_ycast")
     my_filter.init_filter_file()
 
 
@@ -34,10 +34,10 @@ class MyTestCase(unittest.TestCase):
 
     def test_init_filter(self):
         my_filter.begin_filter()
-
-        for elem in my_filter.filter_dictionary:
+        filter_dictionary={ "whitelist" : my_filter.white_list, "blacklist" : my_filter.black_list}
+        for elem in filter_dictionary:
             logging.warning("Name filtertype: %s", elem)
-            filter_param = my_filter.filter_dictionary[elem]
+            filter_param = filter_dictionary[elem]
             if filter_param:
                 for par in filter_param:
                     logging.warning("    Name paramter: %s", par)
@@ -51,21 +51,29 @@ class MyTestCase(unittest.TestCase):
 
     def test_get_languages(self):
         result = radiobrowser.get_language_directories()
-        assert len(result) == 3
+        logging.info("Languages (%d)", len(result))
+        # Based on the example filter is should yield 2
+        assert len(result) == 2
 
     def test_get_countries(self):
         my_filter.init_filter_file()
 
         result = radiobrowser.get_country_directories()
-        assert len(result) == 137
+        logging.info("Countries (%d)", len(result))
+        # Test for Germany only 1, nach der Wiedervereinigung...
+        assert len(result) == 1
 
     def test_get_genre(self):
         result = radiobrowser.get_genre_directories()
-        assert len(result) < 300
+        logging.info("Genres (%d)", len(result))
+        # Not a useful test, changes all the time
+        #assert len(result) < 300
 
     def test_get_limits(self):
-        result = my_filter.get_limit('irgendwas',20)
-        assert result == 20
+        result = my_filter.get_limit('MINIMUM_COUNT_COUNTRY')
+        assert result == 5
+        result = my_filter.get_limit('SHOW_BROKEN_STATIONS')
+        assert result == False
 
     def test_recently_hit(self):
 

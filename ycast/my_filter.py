@@ -3,53 +3,39 @@ import logging
 from ycast import generic
 from ycast.generic import get_json_attr
 
-white_list = {}
+white_list = {'lastcheckok': 1}
 black_list = {}
-filter_dictionary = {}
+limit_list = {}
+limit_defs_int ={ 'MINIMUM_COUNT_GENRE' : 40, 'MINIMUM_COUNT_COUNTRY' : 5, 'MINIMUM_COUNT_LANGUAGE' : 5, 'DEFAULT_STATION_LIMIT' : 200}
+limit_defs_bool ={ 'SHOW_BROKEN_STATIONS' : False}
 parameter_failed_list = {}
 count_used = 0
 count_hit = 0
 
-LIMITS_NAME = 'limits'
-MINIMUM_COUNT_GENRE = 40
-MINIMUM_COUNT_COUNTRY = 5
-MINIMUM_COUNT_LANGUAGE = 5
-DEFAULT_STATION_LIMIT = 200
-SHOW_BROKEN_STATIONS = False
-
-
-def init_limits_and_filters():
-    global MINIMUM_COUNT_GENRE, MINIMUM_COUNT_LANGUAGE, MINIMUM_COUNT_COUNTRY, DEFAULT_STATION_LIMIT, SHOW_BROKEN_STATIONS
-    logging.info('Initialize Limits and Filters')
-    init_filter_file()
-    MINIMUM_COUNT_GENRE = get_limit('MINIMUM_COUNT_GENRE', 40)
-    MINIMUM_COUNT_COUNTRY = get_limit('MINIMUM_COUNT_COUNTRY', 5)
-    MINIMUM_COUNT_LANGUAGE = get_limit('MINIMUM_COUNT_LANGUAGE', 5)
-    DEFAULT_STATION_LIMIT = get_limit('DEFAULT_STATION_LIMIT', 200)
-    SHOW_BROKEN_STATIONS = get_limit('SHOW_BROKEN_STATIONS', False)
-
 def init_filter_file():
-    global filter_dictionary, white_list, black_list
+    global white_list, black_list, limit_list
+    logging.info('Reading Limits and Filters')
     filter_dictionary = generic.read_yaml_file(generic.get_filter_file())
-    is_updated = False
     if filter_dictionary is None:
         filter_dictionary = {}
         is_updated = True
     if 'whitelist' in filter_dictionary:
-        white_list = filter_dictionary['whitelist']
-    else:
-        white_list = {'lastcheckok': 1}
-        is_updated = True
+        # Copy dict items to keep the 1 default item
+        for f in filter_dictionary['whitelist']:
+            white_list[f]=filter_dictionary['whitelist'][f]
 
     if 'blacklist' in filter_dictionary:
+        # reference, no defaults
         black_list = filter_dictionary['blacklist']
-    else:
-        black_list = {}
-        is_updated = True
 
-    if is_updated:
-        filter_dictionary = {'whitelist': white_list, 'blacklist': black_list}
-        generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dictionary)
+    if 'limits' in filter_dictionary:
+        set_limits(filter_dictionary['limits'])
+
+def write_filter_config():
+    global limit_list
+    filter_dictionary = {'whitelist': white_list, 'blacklist': black_list}
+    if len(limit_list) > 0: filter_dictionary['limits']=limit_list
+    generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dictionary)
 
 def begin_filter():
     global parameter_failed_list
@@ -58,7 +44,7 @@ def begin_filter():
     count_used = 0
     count_hit = 0
 
-    init_filter_file()
+    #init_filter_file()
 
     parameter_failed_list.clear()
     return
@@ -138,17 +124,31 @@ def check_station(station_json):
     return True
 
 
-def get_limit(param_name, default):
-    global filter_dictionary
-    tempdict = generic.read_yaml_file(generic.get_var_path() + '/filter.yml')
-    if tempdict is not None:
-        filter_dictionary = tempdict
-    limits_dict = {}
-    if LIMITS_NAME in filter_dictionary:
-        limits_dict = filter_dictionary[LIMITS_NAME]
-    if param_name in limits_dict:
-        return limits_dict[param_name]
-    limits_dict[param_name] = default
-    filter_dictionary[LIMITS_NAME] = limits_dict
-    generic.write_yaml_file(generic.get_var_path() + '/filter.yml', filter_dictionary)
-    return default
+def get_limit(param_name):
+    global limit_defs
+    if param_name in limit_defs_int: return limit_list.get(param_name,limit_defs_int[param_name])
+    if param_name in limit_defs_bool: return limit_list.get(param_name,limit_defs_bool[param_name])
+    else: return None
+
+def get_limit_list():
+    global limit_defs_int, limit_defs_bool
+    my_limits={}
+    limit_defs=dict(limit_defs_int)
+    limit_defs.update(limit_defs_bool)
+    for l in limit_defs:
+         my_limits[l]=get_limit(l)
+    return my_limits
+
+def set_limits(limits):
+    global limit_list, limit_defs_int, limit_defs_bool
+    for l in limits:
+        if limits[l] == None:
+            limit_list.pop(l, None)
+        elif l in limit_defs_int:
+            if isinstance(limits[l], int) and limits[l] > 0:
+                limit_list[l]=limits[l]
+        elif l in limit_defs_bool:
+            if isinstance(limits[l], bool): limit_list[l]=limits[l]
+        else:
+            loggin.error("Invalid limit %s") % l
+    return get_limit_list()
