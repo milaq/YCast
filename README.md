@@ -15,7 +15,7 @@
 * recently visited radio stations are stored in /.yast/resently.yml (compatible with stations.yml, for easy editing of your favorites and pasting into stations.yml)
 * global filter configurable file ./ycast/filter.yml (with this you can globally reduce the radio stations according to your interests)
 * 5 frequently used radio stations can be selected on the target page (self-learning algorithm based on frequency of station selection)
-* web frontend to set your favourits
+* web frontend to setup your favorites
 
 <img src="https://github.com/ThHanika/YCast/blob/master/webFrontEnd.png" width="400">
 
