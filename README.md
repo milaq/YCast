@@ -13,7 +13,7 @@
 ### The advanced feature:
 * Icons in my favorites list 'stations.yml' (the icon URL can be appended after the pipe character '|')
 * recently visited radio stations are stored in /.yast/resently.yml (compatible with stations.yml, for easy editing of your favorites and pasting into stations.yml)
-* global filter configurable file ./ycast/filter.yml (with this you can globally reduce the radio stations according to your interests)
+* global filter/limits configurable file ./ycast/filter.yml (with this you can globally reduce the radio stations according to your interests). The filter can be modified at runtime useing a REST API (/control/filter...), see below.
 * 5 frequently used radio stations can be selected on the target page (self-learning algorithm based on frequency of station selection)
 * web frontend to setup your favorites
 
@@ -147,6 +147,20 @@ Category two name:
 ```
 
 You can also have a look at the provided [example](examples/stations.yml.example) to better understand the configuration.
+
+### Filter/limits
+The filter configuration file .ycast/filter.yml (see example) allows to filter stations based on a whitelist / blacklist. The contents of this list specifies which attributes to filter on.
+
+The limits allow to filter out genres, countries and languages that fail to have a certain amount of items. It also sets the default station limit and allows to show or hide broken stations. Defaults are as follows:
+* MINIMUM_COUNT_GENRE : 40
+* MINIMUM_COUNT_COUNTRY : 5
+* MINIMUM_COUNT_LANGUAGE : 5
+* DEFAULT_STATION_LIMIT : 200
+* SHOW_BROKEN_STATIONS : False
+
+You can set your own valies in .ycast/filter.xml by adding these attributes and there values in the limits list. The filter file is not reread automatically when modified while the server is running. Send a HUP signal to trigger but it's preferred to use the api (see below) to modify the lists.
+
+The current filters/limits can be queried  through a REST API by calling the GET method on /control/filter/whitelist, /control/filter/blacklist and /control/filter/limits. They can be modified by using the POST method an posting a JSON with the items to modify. Specifying a null value for an item will delete it from the list or, in the case of the limits, reset it to its default.
 
 ## Firewall rules
 

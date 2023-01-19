@@ -8,8 +8,7 @@ import logging
 from ycast import __version__, my_filter
 import ycast.vtuner as vtuner
 import ycast.generic as generic
-from ycast.my_filter import check_station, begin_filter, end_filter, SHOW_BROKEN_STATIONS, MINIMUM_COUNT_COUNTRY, \
-    MINIMUM_COUNT_LANGUAGE, MINIMUM_COUNT_GENRE, DEFAULT_STATION_LIMIT
+from ycast.my_filter import check_station, begin_filter, end_filter, get_limit 
 from ycast.generic import get_json_attr
 
 API_ENDPOINT = "http://all.api.radio-browser.info"
@@ -92,12 +91,12 @@ def get_country_directories():
     begin_filter()
     country_directories = []
     apicall = 'countries'
-    if not SHOW_BROKEN_STATIONS:
+    if not get_limit('SHOW_BROKEN_STATIONS'):
         apicall += '?hidebroken=true'
     countries_raw = request(apicall)
     for country_raw in countries_raw:
         if get_json_attr(country_raw, 'name') and get_json_attr(country_raw, 'stationcount') and \
-                int(get_json_attr(country_raw, 'stationcount')) > MINIMUM_COUNT_COUNTRY:
+                int(get_json_attr(country_raw, 'stationcount')) > get_limit('MINIMUM_COUNT_COUNTRY'):
             if my_filter.chk_parameter('country', get_json_attr(country_raw, 'name')):
                 country_directories.append(generic.Directory(get_json_attr(country_raw, 'name'),
                                                              get_json_attr(country_raw, 'stationcount')))
@@ -108,12 +107,12 @@ def get_language_directories():
     begin_filter()
     language_directories = []
     apicall = 'languages'
-    if not SHOW_BROKEN_STATIONS:
+    if not get_limit('SHOW_BROKEN_STATIONS'):
         apicall += '?hidebroken=true'
     languages_raw = request(apicall)
     for language_raw in languages_raw:
         if get_json_attr(language_raw, 'name') and get_json_attr(language_raw, 'stationcount') and \
-                int(get_json_attr(language_raw, 'stationcount')) > MINIMUM_COUNT_LANGUAGE:
+                int(get_json_attr(language_raw, 'stationcount')) > get_limit('MINIMUM_COUNT_LANGUAGE'):
             if my_filter.chk_parameter('languagecodes', get_json_attr(language_raw, 'iso_639')):
                 language_directories.append(generic.Directory(get_json_attr(language_raw, 'name'),
                                                               get_json_attr(language_raw, 'stationcount'),
@@ -124,12 +123,12 @@ def get_language_directories():
 def get_genre_directories():
     genre_directories = []
     apicall = 'tags'
-    if not SHOW_BROKEN_STATIONS:
+    if not get_limit('SHOW_BROKEN_STATIONS'):
         apicall += '?hidebroken=true'
     genres_raw = request(apicall)
     for genre_raw in genres_raw:
         if get_json_attr(genre_raw, 'name') and get_json_attr(genre_raw, 'stationcount') and \
-                int(get_json_attr(genre_raw, 'stationcount')) > MINIMUM_COUNT_GENRE:
+                int(get_json_attr(genre_raw, 'stationcount')) > get_limit('MINIMUM_COUNT_GENRE'):
             genre_directories.append(generic.Directory(get_json_attr(genre_raw, 'name'),
                                                        get_json_attr(genre_raw, 'stationcount'),
                                                        get_json_attr(genre_raw, 'name').capitalize()))
@@ -179,7 +178,7 @@ def get_stations_by_genre(genre):
     return stations
 
 
-def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
+def get_stations_by_votes(limit=get_limit('DEFAULT_STATION_LIMIT')):
     begin_filter()
     station_cache.clear()
     stations = []
@@ -193,7 +192,7 @@ def get_stations_by_votes(limit=DEFAULT_STATION_LIMIT):
     return stations
 
 
-def search(name, limit=DEFAULT_STATION_LIMIT):
+def search(name, limit=get_limit('DEFAULT_STATION_LIMIT')):
     begin_filter()
     station_cache.clear()
     stations = []

@@ -9,6 +9,7 @@ import ycast.radiobrowser as radiobrowser
 import ycast.my_stations as my_stations
 import ycast.generic as generic
 import ycast.station_icons as station_icons
+import ycast.my_filter as my_filter
 from ycast import my_recentlystation
 from ycast.my_recentlystation import signal_station_selected
 
@@ -135,6 +136,37 @@ def upstream(path):
     logging.error("Unhandled upstream query (/setupapp/%s)", path)
     abort(404)
 
+@app.route('/control/filter/<path:item>',
+           methods=['POST','GET'])
+def set_filters(item):
+    update_limits=False
+    # POST updates the whitelist or blacklist, GET just returns the current attributes/values.
+    myfilter={}
+    if item.endswith('blacklist'):
+        myfilter=my_filter.black_list
+    if item.endswith('whitelist'):
+        myfilter=my_filter.white_list
+    if item.endswith('limits'):
+        myfilter=my_filter.get_limit_list()
+        update_limits=True
+    if request.method == 'POST':
+        content_type = request.headers.get('Content-Type')
+        if (content_type == 'application/json'):
+            json = request.json
+        else:
+            return  abort(400,'Content-Type not supported!: ' + item)
+        if update_limits:
+            myfilter=my_filter.set_limits(json)
+        else:
+            for j in json:
+                # Attribute with null value removes item from the list otherwise add the attribute or update the value
+                if json[j] == None:
+                    myfilter.pop(j, None)
+                else:
+                    myfilter[j]=json[j]
+        my_filter.write_filter_config()
+    json=flask.jsonify(myfilter)
+    return json
 
 @app.route('/api/<path:path>',
            methods=['GET', 'POST'])
