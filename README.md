@@ -15,6 +15,9 @@
 * recently visited radio stations are stored in /.yast/resently.yml (compatible with stations.yml, for easy editing of your favorites and pasting into stations.yml)
 * global filter/limits configurable file ./ycast/filter.yml (with this you can globally reduce the radio stations according to your interests). The filter can be modified at runtime useing a REST API (/control/filter...), see below.
 * 5 frequently used radio stations can be selected on the target page (self-learning algorithm based on frequency of station selection)
+* web frontend to setup your favorites
+
+<img src="https://github.com/ThHanika/YCast/blob/master/webFrontEnd.png" width="400">
 
 YCast is a self hosted replacement for the vTuner internet radio service which many AVRs use.
 It emulates a vTuner backend to provide your AVR with the necessary information to play self defined categorized internet radio stations and listen to Radio stations listed in the [Community Radio Browser index](http://www.radio-browser.info).
