@@ -149,9 +149,9 @@ Category two name:
 You can also have a look at the provided [example](examples/stations.yml.example) to better understand the configuration.
 
 ### Filter/limits
-The filter configuration file .ycast/filter.yml (see example) allows to filter stations based on a whitelist / blacklist. The contents of this list specifies which attributes to filter on.
+The filter configuration file .ycast/filter.ymlallows to filter stations based on a whitelist / blacklist. The contents of this list specifies which attributes to filter on. Look at the provided [example](examples/filter.yml.examepl) for the configuration details.
 
-The limits allow to filter out genres, countries and languages that fail to have a certain amount of items. It also sets the default station limit and allows to show or hide broken stations. Defaults are as follows:
+The limits allow to filter out genres, countries and languages that fail to have a certain amount of items. It also sets the default station limit for search and votes and allows to show or hide broken stations. Defaults are as follows:
 * MINIMUM_COUNT_GENRE : 40
 * MINIMUM_COUNT_COUNTRY : 5
 * MINIMUM_COUNT_LANGUAGE : 5
