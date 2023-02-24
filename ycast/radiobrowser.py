@@ -88,7 +88,6 @@ def get_station_by_id(vtune_id):
 
 
 def get_country_directories():
-    begin_filter()
     country_directories = []
     apicall = 'countries'
     if not get_limit('SHOW_BROKEN_STATIONS'):
@@ -104,7 +103,6 @@ def get_country_directories():
 
 
 def get_language_directories():
-    begin_filter()
     language_directories = []
     apicall = 'languages'
     if not get_limit('SHOW_BROKEN_STATIONS'):
@@ -129,7 +127,8 @@ def get_genre_directories():
     for genre_raw in genres_raw:
         if get_json_attr(genre_raw, 'name') and get_json_attr(genre_raw, 'stationcount') and \
                 int(get_json_attr(genre_raw, 'stationcount')) > get_limit('MINIMUM_COUNT_GENRE'):
-            genre_directories.append(generic.Directory(get_json_attr(genre_raw, 'name'),
+            if my_filter.chk_parameter('tags', get_json_attr(genre_raw, 'name')):
+                genre_directories.append(generic.Directory(get_json_attr(genre_raw, 'name'),
                                                        get_json_attr(genre_raw, 'stationcount'),
                                                        get_json_attr(genre_raw, 'name').capitalize()))
     return genre_directories

@@ -20,13 +20,19 @@ def init_filter_file():
         filter_dictionary = {}
         is_updated = True
     if 'whitelist' in filter_dictionary:
-        # Copy dict items to keep the 1 default item
-        for f in filter_dictionary['whitelist']:
-            white_list[f]=filter_dictionary['whitelist'][f]
+        if filter_dictionary['whitelist'] is None:
+            white_list = { "lastcheckok" : 1}
+        else:
+            # Copy so the default is preserved.
+            for f in filter_dictionary['whitelist']:
+                white_list[f]=filter_dictionary['whitelist'][f]
 
     if 'blacklist' in filter_dictionary:
         # reference, no defaults
-        black_list = filter_dictionary['blacklist']
+        if filter_dictionary['blacklist'] is None:
+            black_list={}
+        else:
+            black_list=filter_dictionary['blacklist']
 
     if 'limits' in filter_dictionary:
         set_limits(filter_dictionary['limits'])
@@ -68,14 +74,24 @@ def parameter_failed_evt(param_name):
 
 
 def verify_value(ref_val, val):
-    if ref_val == val:
-        return True
-    if ref_val is None:
-        return len(val) == 0
-    if type(val) is int:
-        return val == int(ref_val)
-    if val:
-        return ref_val.find(val) >= 0
+    if isinstance(val, str) and val.find(",") > -1:
+        val_list=val.split(",")
+    else:
+        val_list=[val]
+ 
+    for v in val_list:
+        if v == None:
+           v='' 
+        if isinstance(ref_val, list):
+            return v in ref_val
+        if str(ref_val) == str(v):
+            return True
+        if ref_val is None:
+            return len(v) == 0
+#        if type(val) is int:
+##            return val == int(ref_val)
+#    if val:
+#        return ref_val.find(str(val)) >= 0
     return False
 
 

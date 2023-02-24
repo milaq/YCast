@@ -18,19 +18,23 @@ class MyTestCase(unittest.TestCase):
 
     def test_verify_values(self):
         assert my_filter.verify_value(None, None)
+        assert my_filter.verify_value('', None)
         assert my_filter.verify_value('', '')
         assert my_filter.verify_value(None, '')
         assert my_filter.verify_value(3, 3)
         assert my_filter.verify_value('3', 3)
         assert my_filter.verify_value('3', '3')
-        assert my_filter.verify_value('3,4,5,6', '5')
+        assert my_filter.verify_value('3', '3,4,5')
+        assert my_filter.verify_value(['3','5'], '3')
+        assert my_filter.verify_value(['3','5'], '3,6')
+        assert my_filter.verify_value([3,4,5,6], 5)
 
-        assert not my_filter.verify_value('', None)
         assert not my_filter.verify_value('', '3')
         assert not my_filter.verify_value(3, 4)
         assert not my_filter.verify_value('3', 4)
         assert not my_filter.verify_value('4', '3')
-        assert not my_filter.verify_value('3,4,5,6', '9')
+        assert not my_filter.verify_value(['3,4,5,6'], '9')
+        assert not my_filter.verify_value(['3,4,5,6'], '9,8')
 
     def test_init_filter(self):
         my_filter.begin_filter()
@@ -44,26 +48,72 @@ class MyTestCase(unittest.TestCase):
             else:
                 logging.warning("    <empty list>")
 
-    def test_life_popular_station(self):
+    def test_station_search(self):
         # hard test for filter
-        stations = radiobrowser.get_stations_by_votes(10000000)
+        my_filter.white_list={}
+        my_filter.black_list={}
+        stations = radiobrowser.search('Pinguin Pop')
+        logging.info("Stations found (%d)", len(stations))
+        assert len(stations) == 1
+        my_filter.white_list={}
+        my_filter.black_list={ "countrycode": 'NL'}
+        stations = radiobrowser.search('Pinguin Pop')
+        logging.info("Stations found (%d)", len(stations))
+        assert len(stations) == 0
+
+    def test_station_by_country(self):
+        my_filter.white_list={ "codec" : "OGG" }
+        my_filter.black_list={ }
+        stations = radiobrowser.get_stations_by_country('Germany')
         logging.info("Stations (%d)", len(stations))
+        # Currently yields 40 but is not fixed of course
+        assert len(stations) > 20 and len(stations) < 70
+
+    def test_station_by_language(self):
+        my_filter.white_list={ "codec" : "AAC"}
+        my_filter.black_list={"countrycode": "NL"}
+        stations = radiobrowser.get_stations_by_language('dutch')
+        logging.info("Stations (%d)", len(stations))
+        # With this filter there is only 1 (atm).
+        assert len(stations) == 1
+
+    def test_station_by_genre(self):
+        my_filter.white_list={"bitrate" : 320}
+        my_filter.black_list={}
+        stations = radiobrowser.get_stations_by_genre('rock')
+        logging.info("Stations (%d)", len(stations))
+        # Currently yields 86 but is not fixed of course
+        assert len(stations) > 50 and len(stations) < 100
+
+    def test_station_by_votes(self):
+        my_filter.white_list={}
+        my_filter.black_list={}
+        stations = radiobrowser.get_stations_by_votes()
+        logging.info("Stations (%d)", len(stations))
+        assert len(stations) == my_filter.get_limit('DEFAULT_STATION_LIMIT')
+        #stations = radiobrowser.get_stations_by_votes(10000)
+        #logging.info("Stations (%d)", len(stations))
+        #assert len(stations) == 10000
 
     def test_get_languages(self):
+        my_filter.white_list={ 'languagecodes' : ['en','no'] }
+        my_filter.black_list={}
         result = radiobrowser.get_language_directories()
         logging.info("Languages (%d)", len(result))
-        # Based on the example filter is should yield 2
         assert len(result) == 2
 
     def test_get_countries(self):
-        my_filter.init_filter_file()
+        # Test for Germany only 1, nach der Wiedervereinigung...
+        my_filter.white_list={ 'country' : 'Germany' }
+        my_filter.black_list={}
 
         result = radiobrowser.get_country_directories()
         logging.info("Countries (%d)", len(result))
-        # Test for Germany only 1, nach der Wiedervereinigung...
         assert len(result) == 1
 
     def test_get_genre(self):
+        my_filter.white_list={ 'tags' : ['rock','pop'] }
+        my_filter.black_list={}
         result = radiobrowser.get_genre_directories()
         logging.info("Genres (%d)", len(result))
         # Not a useful test, changes all the time
