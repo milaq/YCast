@@ -1,7 +1,7 @@
 #
 # Docker Buildfile for the ycast-docker container based on alpine linux - about 41.4MB
 # put dockerfile and bootstrap.sh in same directory and build or enter
-# docker build  https://github.com/MaartenSanders/ycast-docker.git
+# docker build https://github.com/ThHanika/YCast.git#:docker
 #
 FROM alpine:latest
 
@@ -29,11 +29,11 @@ RUN apk --no-cache update && \
     apk add --no-cache jpeg-dev && \
     apk add --no-cache build-base && \
     apk add --no-cache python3-dev && \
-    pip3 install --no-cache-dir requests && \
-    pip3 install --no-cache-dir flask && \
-    pip3 install --no-cache-dir PyYAML && \
-    pip3 install --no-cache-dir Pillow  && \
-    pip3 install --no-cache-dir olefile && \
+    pip3 install --no-cache-dir requests --break-system-packages && \
+    pip3 install --no-cache-dir flask --break-system-packages && \
+    pip3 install --no-cache-dir PyYAML --break-system-packages && \
+    pip3 install --no-cache-dir Pillow  --break-system-packages && \
+    pip3 install --no-cache-dir olefile --break-system-packages && \
     mkdir -p /opt/ycast/YCast-master && \
     apk del --no-cache python3-dev && \
     apk del --no-cache build-base && \
