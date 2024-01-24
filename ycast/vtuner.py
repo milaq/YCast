@@ -29,7 +29,7 @@ class Page:
         self.count = -1
         self.dontcache = False
 
-    def add(self, item):
+    def add_item(self, item):
         self.items.append(item)
 
     def set_count(self, count):
@@ -68,6 +68,14 @@ class Display:
         item = ET.Element('Item')
         ET.SubElement(item, 'ItemType').text = 'Display'
         ET.SubElement(item, 'Display').text = self.text
+        return item
+
+
+class Spacer:
+
+    def to_xml(self):
+        item = ET.Element('Item')
+        ET.SubElement(item, 'ItemType').text = 'Spacer'
         return item
 
 

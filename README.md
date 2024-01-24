@@ -1,14 +1,23 @@
 <img src="https://image.ibb.co/iBY6hq/yamaha.png" width="600">
 
-# YCast
+# YCast (advanced)
 
 [![PyPI latest version](https://img.shields.io/pypi/v/ycast?color=success)](https://pypi.org/project/ycast/) [![GitHub latest version](https://img.shields.io/github/v/release/milaq/YCast?color=success&label=github&sort=semver)](https://github.com/milaq/YCast/releases) [![Python version](https://img.shields.io/pypi/pyversions/ycast)](https://www.python.org/downloads/) [![License](https://img.shields.io/pypi/l/ycast)](https://www.gnu.org/licenses/gpl-3.0.en.html) [![GitHub issues](https://img.shields.io/github/issues/milaq/ycast)](https://github.com/milaq/YCast/issues)
 
-[Get it via PyPI](https://pypi.org/project/ycast/)
+[Download from GitHub](https://github.com/THanika/YCast/releases)
 
-[Download from GitHub](https://github.com/milaq/YCast/releases)
+[Issue tracker](https://github.com/THanika/YCast/issues)
 
-[Issue tracker](https://github.com/milaq/YCast/issues)
+#### pip3 install git+https://github.com/ThHanika/YCast
+
+### The advanced feature:
+* Icons in my favorites list 'stations.yml' (the icon URL can be appended after the pipe character '|')
+* recently visited radio stations are stored in /.yast/resently.yml (compatible with stations.yml, for easy editing of your favorites and pasting into stations.yml)
+* global filter/limits configurable file ./ycast/filter.yml (with this you can globally reduce the radio stations according to your interests). The filter can be modified at runtime useing a REST API (/control/filter...), see below.
+* 5 frequently used radio stations can be selected on the target page (self-learning algorithm based on frequency of station selection)
+* web frontend to setup your favorites
+
+<img src="https://github.com/ThHanika/YCast/blob/master/webFrontEnd.png" width="400">
 
 YCast is a self hosted replacement for the vTuner internet radio service which many AVRs use.
 It emulates a vTuner backend to provide your AVR with the necessary information to play self defined categorized internet radio stations and listen to Radio stations listed in the [Community Radio Browser index](http://www.radio-browser.info).
@@ -117,7 +126,7 @@ You can redirect all traffic destined for the original request URL (e.g. `radioy
 __Attention__: Do not rewrite the requests transparently. YCast expects the complete URL (i.e. including `/ycast` or `/setupapp`). It also need an intact `Host` header; so if you're proxying YCast you need to pass the original header on. For Nginx, this can be accomplished with `proxy_set_header Host $host;`.
 
 In case you are using (or plan on using) Nginx to proxy requests, have a look at [this example](examples/nginx-ycast.conf.example).
-This can be used together with [this systemd service example](examples/ycast.service.example) for a fully functional deployment.
+This can be used together with [this systemd service example](examples/ycast.service.example_ycast) for a fully functional deployment.
 
 #### With WSGI
 
@@ -138,6 +147,20 @@ Category two name:
 ```
 
 You can also have a look at the provided [example](examples/stations.yml.example) to better understand the configuration.
+
+### Filter/limits
+As the amount of stations can be overwhelming on a AV receiver interface Ycast allows for filtering. The filter configuration file .ycast/filter.yml allows to filter stations based on a whitelist / blacklist. The contents of this list specifies which attributes to filter on. Look at the provided [example](examples/filter.yml.example) for the details.
+
+The limits allow to filter out genres, countries and languages that fail to have a certain amount of items. It also sets the default station limit for search and votes and allows to show or hide broken stations. Defaults are as follows:
+* MINIMUM_COUNT_GENRE : 40
+* MINIMUM_COUNT_COUNTRY : 5
+* MINIMUM_COUNT_LANGUAGE : 5
+* DEFAULT_STATION_LIMIT : 200
+* SHOW_BROKEN_STATIONS : False
+
+You can set your own values in filter.xml by adding these attributes and values in the limits list. The filter file is not reread automatically when modified while the server is running. Send a HUP signal to trigger but it's preferred to use the api (see below) to modify the lists.
+
+The current filters/limits can be queried  through a REST API by calling the GET method on /control/filter/whitelist, /control/filter/blacklist and /control/filter/limits. They can be modified by using the POST method an posting a JSON with the items to modify. Specifying a null value for an item will delete it from the list or, in the case of the limits, reset it to its default.
 
 ## Firewall rules
 

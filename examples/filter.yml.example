@@ -1,0 +1,53 @@
+# Filters can be applied to the search results coming back from
+# api.radio-browser.info. Results can either be whitelisted or blacklisted. The
+# attributes in the whitelist are actually the attributes of the Station Struct
+# defined here: https://de1.api.radio-browser.info/#Struct_station. The most
+# useful ones to filter on are: codec, bitrate, language, languagecode. Ycast
+# has a default whitelist for the lastcheckok attribute to be set (1) which
+# indicates the stream is currently operational, as it does not make sense to
+# return stations to the AV receiver that are broken. There are a few
+# attributes that have a multi value string, the values are separated by a
+# comma (,) (imo this should be a json list so clients don't have to parse the
+# string, but it is as it is). The filter code will split these strings into a
+# list first and then will try to match the the value from the whitelist or
+# blacklist on any of the values in the list. The most interesting multi value
+# attribute is the tags attribute which carries the genre(s) of the station.
+# Unfortunately the values are rather free format, so there is no fixed list of
+# genres to filter on and most stations indicate multiple genres. Attribute
+# filter values can be either a single or multi-value. Multi-values
+# should be entered in the filter file as a json list, either using the bracket
+# ([]) or list (-) syntax. See the examples below.
+#
+# For the directory listings by Genre, Language, Country the following filter
+# attributes will be applied: Genre: tags; Language: languagecodes; Country:
+# country.
+
+whitelist:
+#Filter on the full country name:
+  #country: Germany
+#Filter on any of the country codes specified in this [] list:
+  #countrycode: [ "DE","US","NO","GB" ]
+#Filter on any of the language codes specified in this - list:
+  #languagecodes: 
+  # - "en"
+  # - "no"
+# Filter on bitrate:
+  #bitrate: 192
+#To override the lastcheckok default (1) use this:
+  #lastcheckok: [ 0,1 ]
+blacklist:
+# Filter out stations with no favicon:
+  favicon: ''
+# Filter on codecs:
+  #codec: ["AAC", "AAC+"]
+# Limits can be applied, below are the hardcoded defautls, which can be overridden in this file.
+#limits:
+# The following limits will be applied to the directory listing of genre, country and language. Each item should contain this minium amount of entries to be returned.
+  #MINIMUM_COUNT_GENRE: 40
+  #MINIMUM_COUNT_COUNTRY: 5
+  #MINIMUM_COUNT_LANGUAGE: 5
+# The default maximum amount of entries to return from search and search by
+# votes.
+  #DEFAULT_STATION_LIMIT: 200
+# Include broken stations in the result.
+  #SHOW_BROKEN_STATIONS: False

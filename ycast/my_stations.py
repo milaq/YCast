@@ -1,58 +1,46 @@
 import logging
-import hashlib
-
-import yaml
 
 import ycast.vtuner as vtuner
 import ycast.generic as generic
 
 ID_PREFIX = "MY"
 
-config_file = 'stations.yml'
-
 
 class Station:
-    def __init__(self, uid, name, url, category):
-        self.id = generic.generate_stationid_with_prefix(uid, ID_PREFIX)
+    def __init__(self, name, url, category, icon):
+        self.id = generic.generate_stationid_with_prefix(
+            generic.get_checksum(name + url), ID_PREFIX)
         self.name = name
         self.url = url
         self.tag = category
-        self.icon = None
+        self.icon = icon
 
     def to_vtuner(self):
         return vtuner.Station(self.id, self.name, self.tag, self.url, self.icon, self.tag, None, None, None, None)
 
-
-def set_config(config):
-    global config_file
-    if config:
-        config_file = config
-    if get_stations_yaml():
-        return True
-    else:
-        return False
+    def to_dict(self):
+        return {'name': self.name , 'url': self.url, 'icon': self.icon, 'description': self.tag }
 
 
-def get_station_by_id(uid):
+def get_station_by_id(vtune_id):
     my_stations_yaml = get_stations_yaml()
     if my_stations_yaml:
         for category in my_stations_yaml:
             for station in get_stations_by_category(category):
-                if uid == generic.get_stationid_without_prefix(station.id):
+                if vtune_id == station.id:
                     return station
     return None
 
 
 def get_stations_yaml():
-    try:
-        with open(config_file, 'r') as f:
-            my_stations = yaml.safe_load(f)
-    except FileNotFoundError:
-        logging.error("Station configuration '%s' not found", config_file)
-        return None
-    except yaml.YAMLError as e:
-        logging.error("Station configuration format error: %s", e)
-        return None
+    from ycast.my_recentlystation import get_recently_stations_dictionary
+    my_recently_station = get_recently_stations_dictionary()
+    my_stations = generic.read_yaml_file(generic.get_stations_file())
+    if my_stations:
+        if my_recently_station:
+            my_stations.update(my_recently_station)
+    else:
+        return my_recently_station
     return my_stations
 
 
@@ -70,18 +58,42 @@ def get_stations_by_category(category):
     stations = []
     if my_stations_yaml and category in my_stations_yaml:
         for station_name in my_stations_yaml[category]:
-            station_url = my_stations_yaml[category][station_name]
-            station_id = str(get_checksum(station_name + station_url)).upper()
-            stations.append(Station(station_id, station_name, station_url, category))
+            station_urls = my_stations_yaml[category][station_name]
+            param_list = station_urls.split('|')
+            station_url = param_list[0]
+            station_icon = None
+            if len(param_list) > 1:
+                station_icon = param_list[1]
+            stations.append(Station(station_name, station_url, category, station_icon))
+    return stations
+
+def get_all_bookmarks_stations():
+    bm_stations_category = generic.read_yaml_file(generic.get_stations_file())
+    stations = []
+    if bm_stations_category :
+        for category in bm_stations_category:
+            for station_name in bm_stations_category[category]:
+                station_urls = bm_stations_category[category][station_name]
+                param_list = station_urls.split('|')
+                station_url = param_list[0]
+                station_icon = None
+                if len(param_list) > 1:
+                    station_icon = param_list[1]
+                stations.append(Station(station_name, station_url, category, station_icon))
     return stations
 
 
-def get_checksum(feed, charlimit=12):
-    hash_feed = feed.encode()
-    hash_object = hashlib.md5(hash_feed)
-    digest = hash_object.digest()
-    xor_fold = bytearray(digest[:8])
-    for i, b in enumerate(digest[8:]):
-        xor_fold[i] ^= b
-    digest_xor_fold = ''.join(format(x, '02x') for x in bytes(xor_fold))
-    return digest_xor_fold[:charlimit]
+def putBookmarkJson(elements):
+    newDict={}
+    for stationJson in elements:
+        logging.debug("%s ... %s",stationJson['description'], stationJson['name'])
+        if stationJson['description'] not in newDict:
+            newDict[stationJson['description']] = {}
+        logging.debug(stationJson)
+        if stationJson['icon'] is not None:
+            newDict[stationJson['description']][stationJson['name']] = stationJson['url'] + "|" + stationJson['icon']
+        else:
+            newDict[stationJson['description']][stationJson['name']] = stationJson['url']
+
+    generic.write_yaml_file(generic.get_stations_file(),newDict)
+    return elements

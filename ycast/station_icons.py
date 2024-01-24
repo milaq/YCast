@@ -16,17 +16,20 @@ def get_icon(station):
     cache_path = generic.get_cache_path(CACHE_NAME)
     if not cache_path:
         return None
-    station_icon_file = cache_path + '/' + station.id
+
+# make icon filename from favicon-adress
+    station_icon_file = cache_path + '/' + generic.get_checksum(station.icon) + '.jpg'
     if not os.path.exists(station_icon_file):
         logging.debug("Station icon cache miss. Fetching and converting station icon for station id '%s'", station.id)
         headers = {'User-Agent': generic.USER_AGENT + '/' + __version__}
         try:
             response = requests.get(station.icon, headers=headers)
         except requests.exceptions.ConnectionError as err:
-            logging.error("Connection to station icon URL failed (%s)", err)
+            logging.debug("Connection to station icon URL failed (%s)", err)
             return None
         if response.status_code != 200:
-            logging.error("Could not get station icon data from %s (HTML status %s)", station.icon, response.status_code)
+            logging.debug("Could not get station icon data from %s (HTML status %s)",
+                          station.icon, response.status_code)
             return None
         try:
             image = Image.open(io.BytesIO(response.content))

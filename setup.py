@@ -13,7 +13,9 @@ setup(
     description='Self hosted vTuner internet radio service emulation',
     long_description=long_description,
     long_description_content_type="text/markdown",
+    include_package_data=True,
     url='https://github.com/milaq/YCast',
+    entry_points={"console_scripts": ["ycast=ycast.__main__:launch_server"]},
     license='GPLv3',
     classifiers=[
         'Development Status :: 4 - Beta',

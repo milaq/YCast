@@ -3,12 +3,18 @@
 import argparse
 import logging
 import sys
+import signal
 
 from ycast import __version__
 from ycast import server
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
 
+def handler(signum, frame):
+    logging.info('Signal received: rereading filter config')
+    from ycast.my_filter import init_filter_file
+    init_filter_file()
+signal.signal(signal.SIGHUP, handler)
 
 def launch_server():
     parser = argparse.ArgumentParser(description='vTuner API emulation')
@@ -23,6 +29,13 @@ def launch_server():
         logging.debug("Debug logging enabled")
     else:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
+    # initialize important ycast parameters
+    from ycast.generic import init_base_dir
+    init_base_dir('/.ycast')
+    from ycast.my_filter import init_filter_file
+    init_filter_file()
+
     server.run(arguments.config, arguments.address, arguments.port)
 
 

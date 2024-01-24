@@ -1,2 +1,4 @@
 include README.md
 include LICENCE.txt
+recursive-include ycast/templates *
+recursive-include ycast/static *

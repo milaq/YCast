@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/style.css">
+    <script type="text/javascript" src="/static/script.js"></script>
+    <title>YCast</title>
+</head>
+
+<body>
+    <div class="page">
+        <div class="header">
+            <h2>YCast advanced</h2>
+            <div>
+                <label for="idRequestSrc">station-source:</label>
+                <select tabindex="1" id="idRequestSrc" name="category" oninput="onInputSelect(event, this)">
+                    <option value="recently">recently</option>
+                    <option value="voted">voted</option>
+                    <option value="language">language</option>
+                    <option value="country">country</option>
+                </select>
+            </div>
+            <div>
+                <label for="idLanOrCountSelect">language or country:</label>
+                <input type="search" tabindex="2" list="listLangOrCountry" id="idLanOrCountSelect" autocomplete=off onclick="this.value=''" onfocus="this.value=''" onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
+                <datalist id="listLangOrCountry">
+                </datalist>
+            </div>
+        </div>
+        <div class="content">
+            <div class="contentheader">
+                <label class="miniinfo" id="stationcount">0/0</label>
+                <h3>Stations</h3>
+                <label for="stationsearch">search:</label>
+                <input type="search" tabindex="3" type="search" id="stationsearch" onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
+            </div>
+            <div class="contentitems" title="Clicking on this item copies it as a bookmark" tabindex="4">
+                <ul id="stationList">
+                </ul>
+            </div>
+        </div>
+        <div class="content">
+            <div class="contentheader">
+                <h3>Bookmarks</h3>
+                <label for="idcategory">category:</label>
+                <input type="search" tabindex="10000" list="categoryList" id="idcategory" title="filter existing or a new category, if empty all bookmarks are shown." onkeyup="keyUpEvent(event,this)" oninput="onInputSelect(event, this)">
+                <datalist id="categoryList">
+                    <option value="Actual">
+                    <option value="Pop">
+                    <option value="Classics">
+                </datalist>
+
+            </div>
+            <div class="contentitems" title="Clicking on this item will delete it" tabindex="5">
+                <ul id="bookmarkList">
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
